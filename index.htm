@@ -1,0 +1,266 @@
+<head>
+<title>MyIndex</title>
+<meta name="viewport" content="initial-scale=1">
+<style>
+#alertDiv{
+  color: red; font-size:48px;
+}
+#notesResult, #notes{ 
+  float:left; width:50%; 
+}
+#templatesDiv, #recentDiv, #notesSearchDiv, #dailyDiv, #scheduledTodayDiv{ 
+  float:right; width:40%;
+}
+</style>
+</head>
+<body>
+<!--<pre>index4 scrapnote / deadlink checker too</pre>-->
+<div id="alertDiv"></div>
+<div id="tipsDiv"></div>
+<div id="goalsDiv"></div>
+ <div id="searchResultDiv"></div>
+ 
+<input autofocus="autofocus" style="height:40px;width:70%" placeholder="search notes" id="searchNotes">
+ <div id="notes"></div>
+  <div id="notesResult"></div>
+
+<!--<div id="recentDiv"></div>-->
+<div id="dailyDiv">
+  <input type="button" value="Scheduled Daily" onclick="openDaily()">  
+</div>  
+<div id="scheduledTodayDiv"></div><!-- runExtra -->
+<div id="notesSearchDiv"></div>
+<div id="templatesDiv"></div> 
+
+ <script src="commonNotes.js"></script>
+ 
+<script>
+// added so can use immediately
+window.onload = function() {
+    window.onfocus = function() { 
+	//$('searchNotes').select(); 
+	// for safari but don't work
+	$('searchNotes').setSelectionRange(0, 9999);
+  };
+};
+
+// save and get function. don't work for IE in file:\\ and not really useful.
+/*function localSupported(){ return (localStorage != null) }
+function saveLocal(name, array){ localStorage.setItem(name, JSON.stringify(array)); }
+function getLocal(name){  arr=localStorage.getItem(name); if(arr==null){return null;} return JSON.parse(arr); }
+function saveRecent(search){
+ if(localSupported()){
+   var recentArr=getLocal("recentArr");
+   if(recentArr==null){
+    recentArr=[];
+   }
+   if(recentArr.indexOf(search) != -1){
+    return;
+   }
+   recentArr.push(search);
+   while(recentArr.length > 5){ recentArr.shift(); }
+   saveLocal("recentArr",recentArr);
+  }
+}
+function loadRecentToDiv(){
+ var recentArr=getLocal("recentArr");
+ var out="<b>Recent</b><br/>";
+ for(i in recentArr){
+   item=recentArr[i];
+   out+="<a href='#' onclick=setNotes('"+item+"')>"+item+"</a><br/>"
+ }
+ $('recentDiv').innerHTML=out;
+}
+function setNotes(item){
+  $('searchNotes').value=item;  
+  queryBoxCallback();
+}*/
+//tips
+var tips=["Each day this week before going to bed write down three things that you are grateful for"
+,"This week whenever you are eating meals with others make an effort to avoid all electronic distractions."
+,"This week when you hear a negative comment about or towards someone choose one positive thing to say about that person."
+,"No matter where you live, choose one day this week to visit a place within your city that you have wanted to visit but have never done so."
+,"This week find a new diet that fits your needs and makes you feel better. Try your hardest to follow this diet all week."
+,"This week take time to get to know someone that you see often but have never really talked with. Ask them a few questions and really listen to their responses."
+,"Volunteer at a non-proft organization that supports a cause that resonates with you"
+,"Get a head start on your day by waking up thirty minutes earlier than usual and use this extra time to plan out your day more efectively"
+,"Every night before you go to bed write down at least one thing that you did well that day"
+,"At least three times this week sit down to meditate and don’t allow yourself to get distracted by your phone or other electronic devices. Just sit and clear your mind."
+,"When possible, spend as much time as you can outside this week."
+,"Set three goals this week that are acheivable but still stretch you, and do everything you can to ensure that you accomplish those goals"
+,"Every day this week before going to bed get a little nostalgic and write down a positive memory that makes you happy."
+,"Plan some event or activity this week that helps you expand your cultural horizons. For example, go to a museum or attend an art show."
+,"Our minds enjoy the thrill of anticipating some future event. Plan an event with friends or family this week that is outside of your normal routine."
+,"Exercise releases endorphins that make you feel better and aids in the quality of your sleep. Do some form of exercise four times this week."
+,"At least two times this week go out of your way to help someone in need."
+,"Ask someone what their favorite part of the day was and then share your favorite part of the day with them."
+,"Take a picture with someone you care about, post it to social media, and explain what you appreciate about them."
+,"Offer a friendly smile to at least ten people each day this week, whether they are strangers, co-workers, or friends."
+,"As you go through life this week take time to savor the good things around you. For example, the sunset, sunrise, the food you eat , and the people around you."
+,"Sometime this week buy a meal or a drink for someone and let them know how grateful you are for them."
+,"When you have an ungrateful thought make a conscious effort to think of something you are grateful for"
+,"Select a few object and every time you interact with that object consider how grateful you are for that object (i.e. car, food, house, or apartment)."
+,"Answer four questions every day: 1. What touched me today? 2. Who or what inspired me today? 3. What made me smile today? 4. What’s the best thing that happened today?"
+,"Throughout this week make a conscious efort not to pass negative judgment on those around you or on any situation."
+,"Perform one act of kindness each day this week then write down what you did"
+,"At least two times this week, take a picture of something you are grateful for and post the image to social media with an explanation of why you are grateful"
+,"Think of three people who have made a diference in your life. Write them a Thank You note and deliver it to them by email, by hand, or by mail."
+,"Review the last 6 months and write down what you did well and how you could improve. Consider your fndings, then make goals and plan for the next 6 months"
+]
+$('tipsDiv').innerHTML=tips[Math.floor(Math.random()*tips.length)];
+
+if(! /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+  // load files only for non-mobile
+  loadjs('files.js');
+}
+
+/// continue script for others
+var timeout = null;  
+$('searchNotes').onkeyup=function(e){
+// track last key pressed
+//lastKeyPressCode = e.keyCode;
+switch(e.keyCode) {
+// escape
+ case 27:
+  //prompter();
+ default:
+  if (timeout) clearTimeout(timeout);
+  timeout = setTimeout(function(){
+   queryBoxCallback(); // in commonNote
+  }, 400);
+  break;
+ }
+}
+
+function url_domain(data) {
+  var a = document.createElement('a');
+  a.href = data;
+  var link = a.hostname;
+  if(link.indexOf("www.") == 0){
+   link=link.substring(4);
+  }
+  return link;
+}
+function generateNoteViewWin8Tile(nItem){
+ return "<a style='text-decoration:none;' href='" + nItem.link+"'><div style=\"position:relative;text-align:center;font-family:'Segoe UI','Segoe WP','Helvetica Neue','RobotoRegular', 'sans-serif';padding:3px;color:#fff;background-color:#e51400;width:130px;height:130px\">"
+ +"<div style='height:110px;overflow:hidden'>"+nItem.desc+"</div>"
+ //+'<img width="48" src="data:image/x-icon;base64,AAABAAEAEBAQAAAAAAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAD/tWYAAAAAAP+EAAD/vXUA/5ouAP/NlgD/pEIA/6tSAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEREREREREREiIiIhEiIiIiIiIiESIiIiREREQRREREREQREREREURGZhERERERZmZmERERERFmZ3cREREREXd3dxERERERd3AAEREREREAAAAREREREQADMxERERERMzMzMzMRMzMzNVVVVRFVVVVVVVVVEVVVVVERERERERERH//wAAAYAAAAGAAAABgAAAH/gAAB/4AAAf+AAAH/gAAB/4AAAf+AAAH/gAAB/4AAABgAAAAYAAAAGAAAD//wAA" />'
+
+ +"<div style='position:absolute;bottom:0'><small>"+url_domain(nItem.link)+"</small></div>"
+ //+"<div style='position:absolute;bottom:0'><small><img src='http://"+url_domain(nItem.link)+"/favicon.ico'>"+url_domain(nItem.link)+"</small></div>"
+ +"</div></a>";
+}
+
+function generateNoteViewBasic(nItem){
+ return "<span style='height:14px;overflow:hidden'>" + nItem.desc  + " :: <a target='_blank' href='" + nItem.link + "'>" + nItem.link + "</a></span>";
+}
+function generateNoteDivView(nItem){
+ return "<div style='width:500px;height:14px;overflow:hidden'><a target='_blank' href='" + nItem.link + "'>" + nItem.resource + " :: " + nItem.desc  + " :: " + nItem.link + "</a></div>";
+}
+
+function processNote(key){  
+ var elem=$('notes'+key); 
+ if(elem.style.display != 'none'){
+  elem.style.display = 'none'
+  $('noteHdr'+key).style.color='blue';
+ }else{
+  elem.style.display = 'block'
+  $('noteHdr'+key).style.color='red';
+ }
+}
+// must implemented for all.js
+function runExtra(){ 
+  for(i in processors){ processors[i].initFn(); }
+  for(i in notes){
+    for(j in processors){
+      if(processors[j].processAndStopFn(notes[i]) == true){
+        break;
+      }
+    }
+  }
+  // loop extra too?
+  for(i in processors){ processors[i].postFn(); }
+ // for goals
+ /*goalsOut="<b>Goals</b><ul>";
+ var today=new Date();
+  // loop notes thru goals
+ for(i in notesExtra){
+  var note=notesExtra[i];
+  if(note.resource.substring(0,5)==("goals")){
+
+    goalsOut+="<li>"+note.desc+" ("+numberWithCommas(note.e2)+"/"+numberWithCommas(note.e1)+" by "+note.link+")<br/>"
+    var endDate = new Date(note.link.substring(0,4),note.link.substring(4,6)-1,note.link.substring(6,8));    
+    var daysLeft = Math.round(10*days_between(today,endDate))/10;
+    var ratePerDay=Math.round(10*(note.e1-note.e2) / daysLeft)/10;
+    if(daysLeft >= 7){
+      var ratePerWeek = Math.round(10*ratePerDay*7)/10;
+      var nextWeekTarget=numberWithCommas(1*note.e2+ratePerWeek);
+      goalsOut+="By next week: "+nextWeekTarget+" (/week: "+numberWithCommas(ratePerWeek)+", /day:"+numberWithCommas(ratePerDay)+")<br/>"
+    }else{
+    // if < 1 week, will exceed  
+     goalsOut+="<b>Jia You!</b> Finish it next week! (/day:"+numberWithCommas(ratePerDay)+")<br/>"
+    }
+     //goalsOut+=note.desc+"/"+note.link+"/"+note.e1+"/"+note.e2+"="+(note.e1-note.e2)+"/"+days_between(today,endDate)+"="+ratePerWeek;     
+  }
+ }*/
+
+ //$("goalsDiv").innerHTML=goalsOut+"</ul>"; 
+ queryBoxCallback();
+}
+
+function generateOut(notes, search){
+var out = "";
+search = search.toLowerCase();
+for(i in notes){
+ var note=notes[i];
+ if(search == "" || note.link.toLowerCase().indexOf(search) >= 0 || 
+  note.desc.toLowerCase().indexOf(search) >= 0 ||
+  note.resource.toLowerCase().indexOf(search) >= 0){
+  
+   out+= notes[i].link+"\n";
+ }
+}
+if(out==""){
+ out="No result found!";
+}
+$('out').value = out;
+}
+
+$('searchNotes').value = getParameterByName("q");
+var getAlerts=getParameterByName("alert");
+if(getAlerts){
+  document.title=getAlerts;
+  $('alertDiv').innerHTML = getAlerts +"<input type='button' value='set search' onclick=\"$('searchNotes').value='"+getAlerts+"';queryBoxCallback()\"> <small>(save to Keep since Inbox no title)</small>";
+}
+/* misc */
+function $(id){
+ return document.getElementById(id);
+}
+function getParameterByName(name){
+  name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+  var regexS = "[\\?&]" + name + "=([^&#]*)";
+  var regex = new RegExp(regexS);
+  var results = regex.exec(window.location.search);
+  if(results == null)
+    return "";
+  else
+    return decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+function days_between(date1, date2) {
+    // The number of milliseconds in one day
+    var ONE_DAY = 1000 * 60 * 60 * 24
+    // Convert both dates to milliseconds
+    var date1_ms = date1.getTime()
+    var date2_ms = date2.getTime()
+    // Calculate the difference in milliseconds
+    var difference_ms = Math.abs(date1_ms - date2_ms)
+    // Convert back to days and return
+    
+    return difference_ms/ONE_DAY
+}
+function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+</script>
+<img src="Ani_KawaiPikachu.gif">
+</body>

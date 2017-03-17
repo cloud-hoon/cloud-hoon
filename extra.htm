@@ -1,0 +1,36 @@
+<div id="extraDiv"></div>
+<pre>
+
+during a()
+if got *# at first word
+ set row=before *#
+ set col=after *#
+ 
+extra.htm
+loop 1: notes
+ // needed since each row have diff no. of cols
+ extract unique cols
+ extract arrData[row][col]
+ 
+loop 2: unique cols
+  for each col <TD>
+
+loop 3:  arrData
+ rows <TR>
+  unique col <TD>
+   <li>
+</pre>
+
+<script>
+function runExtra(){
+  var out="";
+  for(i in notesExtra){
+    var note=notesExtra[i];
+    if(note.resource.substring(0,13)==("hunny-voucher")){
+          out+=note.desc+"<br/>"
+    }
+  }
+  extraDiv.innerHTML=out+"<hr/>";
+}
+</script>
+<script src="commonNotes.js"></script>

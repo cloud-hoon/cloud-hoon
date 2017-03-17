@@ -1,0 +1,381 @@
+<head>
+<title>Conquer</title>
+<meta name="viewport" content="initial-scale=1">
+<style>
+#intervalDiv, #timeDiv{
+  font-size:xx-large;
+  text-align: center  
+}
+#planView,#whereView,#whereBtnView, #taxiView, #shopView{
+  float:left; 
+  border-left: double #ff0000;
+  border-bottom: double #ff0000;
+}
+
+#focusView, #focusItems {
+  float:left; width:60%; 
+}
+#sideView {
+  float:left; width:60%;
+}
+</style>
+</head>
+<div id="planView">
+	<b>Don't scheduled. Just plan 90mins for impt/not urgent</b>
+	<!--<div id="scheduledTodayDiv"></div>-->
+	<br/><a target="_blank" href="index.htm">index.htm (bring over scheduled btns?)</a>
+	<!--<br/>Scheduled in jsnote (bring over the buttons?)-->
+	<br/>couple calendar
+	<br/><a target="_blank" href="https://inbox.google.com/snoozed">inbox snoozed</a>
+	<br/><a target="_blank" href="https://getpocket.com/a/queue/list/1todo/">todo pocket (pick at least one non-hunny)</a>
+	<br/>goals (use web storage)
+	<br/>Safari reading list(ignore)
+</div>
+
+<div id="whereView">
+	<b>Where?</b>
+	<br/><input id="whereSearch">
+	<input type="button" value="search promo" onclick="searchPromo()">
+	<input type="button" value="Add" onclick="promptAddWhere()"> 
+	<br/>
+	<textarea style="display:none" id="whereSelectHidden"></textarea>
+	<select id="whereSelect" size="10" multiple  onchange="updateSelectedWhere()"> <!-- size don't expand in mobile browsers...-->
+	<option>400336. Home2
+	<option>410672. Tutee Damai	
+	<option>119963. Work	
+	<option>670147. Home
+	</select>
+	<br/>
+	<input type="button" value="Remove.." onclick="promptRemove(whereSelect,whereSelectHidden);">
+	<br/><input type="button" value="Goog for multiple" onclick="goMap()">
+	<br/><input type="button" value="Gothere" onclick="gothere()">
+	<br/><input type="button" value="CityMapper"> <a href="https://citymapper.com/tools/1053/launch-citymapper-for-directions">todo geo code or open app</a>	
+</div>
+
+<div id="taxiView">	
+	<b>Taxi Promo Codes</b>
+	<br/>expiry yyyyMMdd Code Grab(Car)/(Taxi)/Uber, remark 
+	<textarea style="display:none" id="taxiSelectHidden"></textarea>
+	<br/><input id="taxiNew" value="2016"><input type="button" value="add" onclick="promptAddTaxi()">	
+	<br/><select id="taxiSelect" size="10" multiple onchange="taxiNew.value=this.value">
+	</select>		
+	<br/><input type="button" value="Remove.." onclick="promptRemove(taxiSelect,taxiSelectHidden);"> <input type="button" value="clear expired">
+</div>
+
+<div id="shopView">
+	<b>Shopping List</b>
+	<br/>(use dot since easy for android and ios)	
+	<br/><input id="shopSearch"><input type="button" value="search-mart" onclick="shopMart()">
+	<br/>$<input type="tel" id="shopPrice" size="3" onkeyup="calc()">/<input type="tel" id="shopQty" size="3" onkeyup="calc()">
+	=<output id="shopOutput"></output><input type="button" value="add" onclick="promptAddShop()">
+	<br/>
+	<textarea style="display:none" id="shopSelectHidden"></textarea>
+	<select id="shopSelect" size="10" multiple onchange="updateSelectedShop()">	
+	</select>
+	
+	<!--<br/><input type="button" value="edit">-->
+	<br/><input type="button" value="remove" onclick="promptRemove(shopSelect,shopSelectHidden);">
+</div>
+
+<div id="focusItems">
+	<b>Put 6 Not Urgent but Impt (1st line will be default in prompt)</b>
+	<br/><textarea style="width:90%" rows="15" id="plans"></textarea>	
+	<br/>
+	<br/>changing habits:
+	<br/>identify routine to change
+	<br/>experiment rewards (try everything but that. at the end, write any 3 things on mind. if 5 mins later still desire the old habit means try again)
+	<br/>isolate cue Location. Time. Emotional state. Other people. Immediately preceding action
+	<br/>
+	<br/>focus 6 things at end of day
+	<br/>http://jamesclear.com/ivy-lee	
+</div>
+<script>
+//setInterval("updateClockDiv()", 1000);
+//updateTriggerDiv();
+//startFocus();
+
+////////////////// WHERE /////////////////////////////////////
+function searchPromo(){
+  var search=whereSearch.value;
+  var arrayURLs = ["http://sg.offerstation.com/googlesearch.php?q=%s",
+    "http://singpromos.com/bydate/ontoday/?s=%s",
+    "http://search.groupon.sg/search/%s"]    
+  if(search){
+    for(var i=0; i<arrayURLs.length; i++){
+      var url = arrayURLs[i];      
+      window.open(url.replace(/%s/g, search));  
+    }
+  }
+}
+function updateSelectedWhere(){
+   whereSearch.value=whereSelect.value.split(".")[0]
+}
+function goMap(){
+  var selValues = getSelectValues(whereSelect);
+  // ignore if(selValues.length != 1 || selValues.length != 2){  
+  if(selValues.length == 1){
+     window.open("https://www.google.com.sg/maps/dir/400336/"+selValues[0].split(".")[0]);
+  }else if(selValues.length > 1){
+    var urlBuilder=selValues[0].split(".")[0];
+    for(i=1;i<selValues.length;i++){
+      urlBuilder+="/"+selValues[i].split(".")[0];
+    }
+    window.open("https://www.google.com.sg/maps/dir/"+urlBuilder);
+  }else{
+    alert("Please choose only 1 or 2 places");
+  }
+}
+function gothere(){
+  var selValues = getSelectValues(whereSelect);
+  // ignore if(selValues.length != 1 || selValues.length != 2){  
+  if(selValues.length == 1){
+     window.open("https://gothere.sg/m/directions?from=400336&to="+selValues[0].split(".")[0]);
+  }else if(selValues.length == 2){
+    window.open("https://gothere.sg/m/directions?from="+selValues[0].split(".")[0]+"&to="+selValues[1].split(".")[0]);
+  }else{
+    alert("Please choose only 1 or 2 places");
+  }
+}
+
+function promptAddWhere(){
+ promptLessAdd(whereSearch.value, whereSelect, whereSelectHidden);
+}
+/////////////////// TAXI ///////////////////////////////////////
+function promptAddTaxi(){
+ input=taxiNew.value; 
+ promptLessAdd(input, taxiSelect, taxiSelectHidden);
+}
+
+/////////////////// SHOP //////////////////////////////////////
+function calc(){
+ var value=eval(shopPrice.value)/eval(shopQty.value);
+ if(value!=value){
+   shopOutput.value=""; // NaN
+ }else{
+   shopOutput.value=(value).toFixed(2);
+ }
+}
+function promptAddShop(){ 
+ input=shopSearch.value;
+ if(shopOutput.value){
+    input+=". $"+shopOutput.value;
+ }
+ promptLessAdd(input, shopSelect, shopSelectHidden);
+ // +"/ea for "+shopQty.value
+}
+function updateSelectedShop(){
+  shopSearch.value=shopSelect.value.split(".")[0]
+}
+function shopMart(){
+  /*var selValues = getSelectValues(shopSelect); 
+  for(i in selValues){      
+    var search=selValues[i].split(".")[0];
+    window.open("http://list.qoo10.sg/s/?keyword="+search);  
+    window.open("https://www.diffmarts.com/search/"+search);  
+  }*/  
+  var search=shopSearch.value;
+  var arrayURLs = ["http://list.qoo10.sg/s/?keyword=%s","https://www.diffmarts.com/search/%s","https://sg.carousell.com/search/products/?query=%s"];
+  if(search){
+    for(var i=0; i<arrayURLs.length; i++){
+      var url = arrayURLs[i];      
+      window.open(url.replace(/%s/g, search));
+      // setTimeout i*1000 don't work too
+    }
+    //window.open("http://list.qoo10.sg/s/?keyword="+search);  
+    //window.open("https://www.diffmarts.com/search/"+search);  
+    //window.open("https://sg.carousell.com/search/products/?query="+search);  
+  }
+}
+/////////////////// FOCUS TIME //////////////////////////////
+function getDelay(){
+ return txtMinsInterval.value*60*1000;
+}
+function popup(){
+   var planItem=plans.value.split("\n")[0]
+   var cont=confirm("Continue working on "+planItem+", Ok?");
+   // enable only if not continuing
+   btnFocus.disabled=(cont);
+   if(cont == false){
+      updateTimesheet(planItem);
+   }else{
+     updateTriggerDiv();
+     updateTimesheet(planItem);
+     startFocus();     
+   }  
+}
+function updateTimesheet(done){
+  var timeTaken=(getDelay()/(60*60*1000)).toFixed(2);
+  doneText.value+=timeTaken+"\t"+done+"\n";
+}
+function updateClockDiv(){
+  var timeDisplay=getNiceClock(new Date())
+  clockDiv.innerHTML = "<b>"+timeDisplay+"</b>"
+  //document.title=timeDisplay;
+}
+function updateTriggerDiv(){
+  triggerDiv.innerHTML = "/ "  + getNiceClock(new Date(new Date().getTime()+getDelay()));
+}
+function startFocus(){
+ setTimeout("popup()", getDelay());
+}
+function groupDoneText(){
+/*0.08	test
+0.08	test1
+0.08	test 
+*/
+  var lines=doneText.value.split("\n");
+  var groups=[];
+  var out="";
+  for(i in lines){
+    var line=lines[i];
+    if(line.length==0){ 
+      continue; 
+    }  
+    var data=line.split("\t");
+    var title=data[1].trim();
+    var time=Number(data[0]);
+    //alert(title+","+time);
+    if(groups[title]){      
+      groups[title]=(1.0*groups[title]+time).toFixed(2);
+    }else{
+      groups[title]=Number(time);
+    }
+  }
+  for(i in groups){
+    out+=(groups[i] + "\t" + i + "\n");
+  }
+  doneText.value=out;
+}
+function getNiceClock(date) {
+  var seconds = date.getSeconds();
+  if(seconds < 10){ seconds = "0"+seconds;}
+  var minutes = date.getMinutes();
+  if(minutes < 10){ minutes = "0"+minutes;}
+  var hour = date.getHours();
+  if(hour < 10){ hour = "0"+hour;}
+  
+  return hour+":"+minutes+":"+seconds;
+}
+//////////// MISC ////////////////////
+function getSelectValues(select) {
+  var result = [];
+  var options = select && select.options;
+  var opt;
+
+  for (var i=0, iLen=options.length; i<iLen; i++) {
+    opt = options[i];
+
+    if (opt.selected) {
+      result.push(opt.value || opt.text);
+    }
+  }
+  return result;
+}
+
+
+///////// Run Extra ///////////
+function runExtra(){
+}
+
+////////// MONGO SAVE DATA //////////
+
+// for select such as where
+function promptLessAdd(input,select,hidden){  
+	select.add(new Option(input),0);
+	hidden.value+=input+"\n";
+	saveTempData2(hidden.id,hidden.value);  
+}
+function promptAdd(promptTxt, select, hidden){
+	var input=prompt(promptTxt)
+	if(input){    
+		select.add(new Option(input),0);
+		hidden.value+=input+"\n";
+		saveTempData2(hidden.id,hidden.value);
+	}
+}
+function promptRemove(select,hidden){
+   var selValues = getSelectValues(select);
+   var opt=confirm("Confirm delete "+selValues+"?");
+   if(opt){
+     for(i in selValues){
+       var initialVal=hidden.value;
+       hidden.value=hidden.value.replace(selValues[i]+"\n","");
+       if(hidden.value==initialVal){  // to remove 1st idea which have no \n
+         hidden.value=hidden.value.replace(selValues[i],"");
+       }	        
+     }
+     while(select.selectedIndex != -1){
+       select.remove(select.selectedIndex);
+     }
+     saveTempData2(hidden.id,hidden.value);
+   }
+}
+function loadSelect(hidden,select,sorted){
+  var lines=hidden.value.split("\n");
+  if(sorted){
+    // sort string, then reverse
+    lines.sort(); 
+    lines.reverse();
+  }
+  for(i in lines){
+    if(lines[i]){ 
+      select.add(new Option(lines[i]),0);
+    }
+  }
+}
+  ///////
+var mongoDB={}
+mongoDB.getAllTempData = function(renderFnc){
+ var request = new XMLHttpRequest();
+ request.open("GET", "https://api.mongolab.com/api/1/databases/temp/collections/temp?apiKey=mB2C72WDiCx5SVlyDt5Tap6ymlnFvFas",false);
+ request.send(null);  
+ renderFnc(JSON.parse(request.responseText));
+}
+// will auto update so no need to delete
+mongoDB.saveTempData = function(id,value) {
+ var xhr = new XMLHttpRequest();
+ xhr.open("POST", "https://api.mongolab.com/api/1/databases/temp/collections/temp?apiKey=mB2C72WDiCx5SVlyDt5Tap6ymlnFvFas", true);
+ xhr.setRequestHeader("Content-Type", "application/json");
+ var json=JSON.stringify({"_id":id,"test":value});
+ xhr.send(json);
+}
+function updateTempDataView2(mongoData){
+ for (var i=0; i < mongoData.length; i++) {
+   var row= mongoData[i];    
+   var htmlElement=document.getElementById(row._id);
+   // check since might be other variable from other index
+   if(htmlElement){ htmlElement.value=row.test; }
+ }
+ finishedLoadingMongo();
+}
+function saveTempData2(id,value){ 
+ mongoDB.saveTempData(id,value);
+}
+function activateTempTextArea(e){
+// track last key pressed
+//lastKeyPressCode = e.keyCode;
+switch(e.keyCode) {
+// escape
+ case 27:
+  //prompter();
+ default:
+  if (timeout) clearTimeout(timeout);
+  timeout = setTimeout(function(){
+   var obj=e.target;
+   saveTempData2(obj.id,obj.value);
+  }, 400);
+  break;
+ }
+}
+var timeout = null; 
+var timeouts = {};
+document.getElementById("plans").onkeyup=activateTempTextArea;
+mongoDB.getAllTempData(updateTempDataView2);
+function finishedLoadingMongo(){
+  loadSelect(whereSelectHidden,whereSelect);
+  loadSelect(shopSelectHidden,shopSelect);
+  loadSelect(taxiSelectHidden,taxiSelect,true);
+}
+</script>
+<script src="GoodHabitsIndex/commonNotes.js"></script>
+<!--<iframe src="index.htm" width="100%"></iframe>-->

@@ -1,0 +1,379 @@
+<head>
+<title>Focus At Work</title>
+<meta name="viewport" content="initial-scale=1">
+<style>
+textarea { 
+  font-size: smaller; 
+}
+#timeDiv{
+  font-size:xx-large;
+  text-align: center ;
+  float:left; width:40%;
+}
+#focusView, #focusItems {
+  float:right; width:60%; 
+}
+#sideView {
+  float:left; width:40%;
+}
+</style>
+</head>
+
+<div id="timeDiv">
+<span id="clockDiv"></span>
+<span id="triggerDiv"></span>
+<span id="intervalDiv"><input style="height: 40px" size="6" type="tel" id="txtMinsInterval" value="6"></span>
+</div>
+
+<div id="focusItems">		
+	<input type="button" style="width:24%" value="+ New.." onclick="promptNew()">
+	<input type="button" style="width:24%" value="Edit.." onclick="editSelected()">
+	<input type="button" style="width:24%" value="* Done.." onclick="alert('todo');return;markDone();">
+	
+	
+	<!-- not in use <input type="button" style="width:24%" value="Top" onclick="moveToTop()">
+	<input type="button" style="width:24%" value="Open Selected (Split | [0])" onclick="searchFirstPlan
+()">
+	<input type="button" style="width:24%" value="- Del" onclick="deleteSelected()">-->	
+	
+	<br/><b>Choose What's Next</b> Support (http, mailto:, file:). Dbl-Click to open first plan
+	<br/><select style="width:90%" size="18" multiple id="selectPlans" onclick="document.title='F: '+this.value" ondblclick="searchFirstPlan();"></select>	
+	<br/>
+	<div id="templatesDiv" style="display:none"></div><!-- runExtra hide -->
+	<div id="dailyDiv">
+		<input type="button" value="Scheduled Daily" onclick="openDaily()">  
+		<span id="scheduledTodayDiv"></span><!-- runExtra -->
+	</div>
+	
+	
+	<br/><input id="searchNotes" autofocus="autofocus" style="height:40px;width:70%">			
+		<div id="notes"></div>
+		<div id="notesResult">Enter search to show results</div>
+		<div id="notesSearchDiv"></div>
+</div>
+<div id="sideView">
+	Note: Copy to add new item.<br/>	
+	<input type="button" style="width:10%" onclick="popNext();this.disabled=true" value="Start Focus" id="btnFocus">
+	<input type="button" style="width:24%" onclick="groupDoneText()" value="Group & Sort Timesheet" id="btnGroupTimesheet">		
+	<input type="button" style="width:24%" value="Extract Plans" onclick="extractPlans()">	
+	<input type="button" style="width:24%" value="Gen Next Month" onclick="alert('TODO keep outstanding only and put 0 hours')">	
+	<textarea style="width:90%" rows="20" id="doneText"></textarea>	
+</div> 
+	<br/>changing habits:
+	<br/>identify routine to change
+	<br/>experiment rewards (try everything but that. at the end, write any 3 things on mind. if 5 mins later still desire the old habit means try again)
+	<br/>isolate cue Location. Time. Emotional state. Other people. Immediately preceding action
+	<br/>
+	<br/>focus 6 things at end of day
+	<br/>http://jamesclear.com/ivy-lee
+<script>
+
+setInterval("updateClockDiv()", 1000);
+popNext();
+////////////////// search notes /////////////////////////////////////////////
+// added so can use immediately
+window.onload = function() {
+    window.onfocus = function() { 
+	//$('searchNotes').select(); 
+	// for safari but don't work
+	document.getElementById('searchNotes').setSelectionRange(0, 9999);
+  };
+  // call for first time
+  queryBoxCallback();
+};
+
+var timeout = null;  
+document.getElementById('searchNotes').onkeyup=function(e){
+// track last key pressed
+//lastKeyPressCode = e.keyCode;
+switch(e.keyCode) {
+// escape
+ case 27:
+  //prompter();
+ default:
+  if (timeout) clearTimeout(timeout);
+  timeout = setTimeout(function(){
+   queryBoxCallback();
+  }, 400);
+  break;
+ }
+}
+/////////////////////////////// PLAN ////////////////////////////////////
+function searchFirstPlan(){
+  for(i=0;i<selectPlans.options.length; i++){
+    if(selectPlans[i].selected){
+      line=selectPlans[i].value;
+      return openPlan(line);
+    }
+  }
+  // no link open
+  return false;
+}
+// return true if link open, else false
+function openPlan(line){
+  if(line){
+    document.getElementById('searchNotes').value=(line.split("\|")[0]);
+    var linkOpen=queryBoxCallback();    
+    return linkOpen;
+  }
+  return false;
+}
+function moveToTop(){
+  var selIndex=selectPlans.selectedIndex;
+  var option=selectPlans.options[selIndex];
+  selectPlans.remove(selIndex);
+  selectPlans.add(option,0);  
+  openPlan(option.value);
+}
+function deleteSelected(){
+  // reverse else index will change
+  for (i = selectPlans.length - 1; i>=0; i--) {
+    if(selectPlans[i].selected){
+        selectPlans.remove(i);
+    }
+  }
+}
+function editSelected(){
+  var origValue=selectPlans.value;
+  var newValue=prompt(origValue,origValue);
+  if(newValue){
+    editTimesheet(origValue,newValue);
+  }
+}
+function promptNew(){
+  var line=prompt("What's New?");
+  if(line){
+    doneText.value+="0\t"+line+"\n";
+  }
+}
+
+/////////////////// FOCUS TIME //////////////////////////////
+function getDelay(){
+ return txtMinsInterval.value*60*1000;
+}
+function popNext(){
+  updateTriggerDiv();
+  startFocus();     
+}
+function popup(){
+   if(!selectPlans[0]){
+     // still continue just no update
+     alert("Nothing recorded! Please choose an option");
+     popNext();
+     return;
+   }
+   var linkOpen=openPlan(selectPlans.value);   
+   var cont=linkOpen;   
+   // still need for timesheet
+   var planItem=selectPlans.value;
+   
+   if(linkOpen == false){	
+	cont=confirm("Continue working on "+planItem+", Ok?");
+   }
+   // enable only if not continuing
+   btnFocus.disabled=(cont);
+   updateTimesheet(planItem);
+   if(cont){
+      popNext();
+   }  
+}
+function updateTimesheet(done){
+  var timeTaken=(getDelay()/(60*60*1000)).toFixed(2);
+  doneText.value+=timeTaken+"\t"+done+"\n";
+}
+function editTimesheet(origValue, newValue){
+  var newText="";
+  var boolFound=false;
+  var lines=doneText.value.split("\n");  
+  for(i in lines){
+     var line=lines[i];
+     if(line.length==0){ 
+      continue; 
+    }  
+    var data=line.split("\t");    
+    if(data[1].trim() == origValue){
+      boolFound=true;    
+      newText+=data[0]+"\t"+newValue+"\n";
+    }else{
+      newText+=line+"\n";
+    }
+  } 
+  // too makeshift \n to assume it is always new line so that won't be partial match
+  // \| assume only 1. It is to prevent a|b match
+  //var newText=doneText.value.replace(new RegExp(origValue.replace("|","\|")+"\n", 'g'), newValue+"\n");
+  if(false == boolFound){
+    alert("nothing changed..")
+  }else{
+    doneText.value=newText;
+    groupDoneText(); // should not group and just make the extract keep unique (in case group useless?)
+    extractPlans(false);
+    //selectPlans.value=newValue; chrome only
+    for(var i = 0, j = selectPlans.options.length; i < j; ++i) {
+        if(selectPlans.options[i].innerHTML === newValue) {
+           selectPlans.selectedIndex = i;
+           break;
+        }
+    }
+    alert("Updated "+origValue+" to "+newValue);
+  }
+}
+function updateClockDiv(){
+  var timeDisplay=getNiceClock(new Date())
+  clockDiv.innerHTML = "<b>"+timeDisplay+"</b>"
+  //document.title=timeDisplay;
+}
+function updateTriggerDiv(){
+  triggerDiv.innerHTML = "/ "  + getNiceClock(new Date(new Date().getTime()+getDelay()));
+}
+function extractPlans(boolConfirm,optionalSelectTxtIfFound){
+  // so only run once
+  if(selectPlans.options.length){
+    if(boolConfirm && false==confirm("overwrite existing data?")){
+      return;
+    }
+  }
+
+   var titles=[];  
+	var lines=doneText.value.split("\n");
+	var out="";
+	for(i in lines){
+	    var line=lines[i];
+	    if(line.length==0){ 
+	      continue; 
+	    }  
+	    var data=line.split("\t");
+	    var title=data[1].trim();
+	    var time=Number(data[0]);
+	    if(title.charAt(0)!="*"){	     
+		titles.push(title);
+	    }
+	}	 
+	titles.sort();
+  	// clear select
+   	while (selectPlans.options.length) {
+       	 selectPlans.remove(0);
+   	}
+	for(i in titles){
+	      selectPlans.add(new Option(titles[i]));
+	}
+
+}
+function startFocus(){
+  setTimeout("popup()", getDelay());
+  btnFocus.disabled=true;
+}
+function groupDoneText(){
+/*0.08	test
+0.08	test1
+0.08	test 
+*/
+  var lines=doneText.value.split("\n");
+  var groups=[];
+  var starGroups=[];
+  var out="";
+  for(i in lines){
+    var line=lines[i];
+    if(line.length==0){ 
+      continue; 
+    }  
+    var data=line.split("\t");
+    var title=data[1].trim();    
+    var time=Number(data[0]);
+    //alert(title+","+time);
+    if(title.charAt(0)=="*"){
+      if(starGroups[title]){      
+        starGroups[title]=(1.0*starGroups[title]+time).toFixed(2);
+      }else{
+        starGroups[title]=Number(time);
+      } 
+    }else{
+      if(groups[title]){      
+        groups[title]=(1.0*groups[title]+time).toFixed(2);
+      }else{
+        groups[title]=Number(time);
+      }
+    }    
+  }
+  out+=sortAndGen(groups)+sortAndGen(starGroups);  
+  doneText.value=out;
+}
+// sort the associative array by value
+function sortAndGen(arr){
+ var out=""
+ var sortable = [];
+ for (var f in arr){ sortable.push([f, arr[f]]) }
+ sortable.sort(
+ function(a, b) {  
+  return b[1] - a[1];
+ })
+ for(i in sortable){
+    out+=(sortable[i][1] + "\t" + sortable[i][0] + "\n");
+  }
+ return out;
+}
+function getNiceClock(date) {
+  var seconds = date.getSeconds();
+  if(seconds < 10){ seconds = "0"+seconds;}
+  var minutes = date.getMinutes();
+  if(minutes < 10){ minutes = "0"+minutes;}
+  var hour = date.getHours();
+  if(hour < 10){ hour = "0"+hour;}
+  
+  return hour+":"+minutes+":"+seconds;
+}
+//////////// MISC ////////////////////
+function getSelectValues(select) {
+  var result = [];
+  var options = select && select.options;
+  var opt;
+
+  for (var i=0, iLen=options.length; i<iLen; i++) {
+    opt = options[i];
+
+    if (opt.selected) {
+      result.push(opt.value || opt.text);
+    }
+  }
+  return result;
+}
+
+
+///////// Run Extra ///////////
+function runExtra(){
+for(i in processors){ processors[i].initFn(); }
+  for(i in notes){
+    for(j in processors){
+      if(processors[j].processAndStopFn(notes[i]) == true){
+        break;
+      }
+    }
+  }
+  // loop extra too?
+  for(i in processors){ processors[i].postFn(); }
+
+
+	// extra for focus
+	var doneTextValue="";
+	for(i in notesExtra){
+	  var note=notesExtra[i];
+	  if(note.resource == "focus"){
+		// item, hours
+		doneTextValue+=note.link+"\t"+note.desc+"\n";    
+	  }
+	}
+	doneText.value=doneTextValue;
+	groupDoneText();extractPlans();
+}
+</script>
+<script src="commonNotes.js"></script>
+<script>
+loadjs('files.js');
+</script>
+<script>
+window.onbeforeunload = function(e) {
+  if(doneText.value){
+  return true;
+  }
+};
+</script>
+<!--<iframe src="index.htm" width="100%"></iframe>-->
