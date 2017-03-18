@@ -313,4 +313,4 @@ var notesExtra=[];
 // must implement runExtra()
 loadjs('all.js');
 // dirty way since can be from same folder (above), outside folder (vegmap)
-loadjs('GoodHabitsIndex/all.js'); 
+loadjs('../all.js'); 
