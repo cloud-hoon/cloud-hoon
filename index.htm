@@ -5,8 +5,11 @@
 #alertDiv{
   color: red; font-size:48px;
 }
+ #nearbyDiv{
+   float:left; width:30%
+ }
 #notesResult, #notes{ 
-  float:left; width:50%; 
+  float:left; width:30%; 
 }
 #templatesDiv, #recentDiv, #notesSearchDiv, #dailyDiv, #scheduledTodayDiv{ 
   float:right; width:40%;
@@ -20,8 +23,10 @@
 <div id="goalsDiv"></div>
  <div id="searchResultDiv"></div>
  
-<input autofocus="autofocus" style="height:40px;width:70%" placeholder="search notes" id="searchNotes">
- <div id="notes"></div>
+<input autofocus="autofocus" style="height:40px;width:90%" placeholder="search notes" id="searchNotes">
+ 
+ <div id="nearbyDiv"><iframe width="100%" src="Vegmap/vegMap.htm"></iframe></div>
+<div id="notes"></div>
   <div id="notesResult"></div>
 
 <!--<div id="recentDiv"></div>-->
@@ -29,7 +34,6 @@
   <input type="button" value="Scheduled Daily" onclick="openDaily()">  
 </div>  
 <div id="scheduledTodayDiv"></div><!-- runExtra -->
-<div id="nearbyDiv"><iframe src=".../vegMap.htm"></iframe></div>
 <div id="notesSearchDiv"></div>
 <div id="templatesDiv"></div> 
 
