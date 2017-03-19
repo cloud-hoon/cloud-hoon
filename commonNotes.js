@@ -241,8 +241,12 @@ function niceLinkDesc(link, maxLen){
   // assume last char is / and remove
   link = link.substring(6,link.length-1);
   var lastSlash = link.lastIndexOf("/");  
+  var firstWord = link.substring(0,lastSlash).replace(/%20/g," ") ;
+  if(firstWord.length >= maxLen){
+	  firstWord = firstWord.substring(0,maxLen);
+  }
   // replace %20 with space for display
-  return link.substring(0,lastSlash).replace(/%20/g," ") + " > "+ link.substring(lastSlash+1).replace(/%20/g," ");
+  return firstWord + " > "+ link.substring(lastSlash+1).replace(/%20/g," ");
  }
  
  var lastSlash = link.lastIndexOf("/");
