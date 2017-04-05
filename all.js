@@ -785,8 +785,7 @@ a("dbnotes","08/10/2013 Sure Bets - Sports Arbitrage, Sure betting | Odds Portal
 a("dbnotes","08/10/2013 SureBets | BetBrain","http://www.betbrain.com/surebets/?attempt=2");
 a("scheduled-daily","feedly","http://feedly.com");
 a("scheduled-daily","qoo10","http://www.qoo10.sg/gmkt.inc/Event/qchance.aspx");
-a("scheduled-m1,5,12,13,15,17,24,28 bills","item","https://keep.google.com/#LIST/1471094029819.035156.126727425");
-a("scheduled-m1,5,12,13,15,17,24,28 bills","money","https://keep.google.com/#label/0Money");
+a("scheduled-m1,5,12,13,15,17,20,24,28 bills","item","https://api.checklist.com/account/checklist/58da5ee0116cdd05b61bd99d");
 a("scheduled-m10","3 words goals every month? think of tasks missing for roles: hunny-health, hunny-money, son-health, son-money, self-health, self-money");
 a("scheduled-m10","tradingeconomics","http://www.tradingeconomics.com/singapore/stock-market/forecast");
 a("scheduled-m10","all about android","http://wiki.twit.tv/wiki/All_About_Android_Apps");
@@ -802,13 +801,6 @@ a("scheduled-m10","blogs-weeklysg.htm","http://www.commercialguru.com.sg/find-co
 a("scheduled-m10","Euromonitor","https://www.google.com.sg/search?q=euromonitor&cr=countrySG&safe=off&tbs=ctr:countrySG,qdr:m&tbm=nws&ei=ND3fWNfdNcqX0gSbtZ64BQ&start=20&sa=N&biw=1242&bih=535&dpr=1.1");
 a("scheduled-m12","pay ocbc, citibank & anz bill / redeem (by sep 2019)");
 a("scheduled-m12","ztraffic offense reminder to drive slowly and traffic light");
-a("scheduled-m1","Check voucher due for month");
-a("scheduled-m1","measure bp 195/100 (jun), 200/100+ (may), 160/100 (april), 200/97 dad bp (mar) (2014)");
-a("scheduled-m1","awanavacation.com user is dad ic, pass z1...");
-a("scheduled-m1","github","https://github.com/explore?since=monthly");
-a("scheduled-m1","Builtwith","http://trends.builtwith.com/");
-a("scheduled-m1","IFTTT","https://ifttt.com/recipes/");
-a("scheduled-m1","monthly commerical rental","https://www.hbiz.com.sg/webapp/place2lease/p2l/public/index/pld/index.jspa");
 a("scheduled-m20","find business?","http://www.businessforsale.sg/");
 a("scheduled-m20","Under 30s","https://www.techinasia.com/promising-southeast-asia-tech-entrepreneurs-30");
 a("scheduled-m20","Moolah Showing F&B lowest interests rate?","https://www.moolahsense.com/statistics.php");
@@ -832,6 +824,13 @@ a("scheduled-m28 laptop","Relist item in carousell","https://carousell.com/conte
 a("scheduled-m28 laptop","Spending reflection","https://docs.google.com/spreadsheets/d/14_mCNIBGPO1NIHnx7Qh_HFomvqS0w3eeiE4vTI7b5uo/edit#gid=37");
 a("scheduled-m28 laptop","ring in 3 tier cabinet bottom with cards");
 a("scheduled-m28 laptop","rcc root cert check","https://www.trustprobe.com/fs1/apps.html");
+a("scheduled-m2","Check voucher due for month");
+a("scheduled-m2","measure bp 195/100 (jun), 200/100+ (may), 160/100 (april), 200/97 dad bp (mar) (2014)");
+a("scheduled-m2","awanavacation.com user is dad ic, pass z1...");
+a("scheduled-m2","github","https://github.com/explore?since=monthly");
+a("scheduled-m2","Builtwith","http://trends.builtwith.com/");
+a("scheduled-m2","IFTTT","https://ifttt.com/recipes/");
+a("scheduled-m2","monthly commerical rental","https://www.hbiz.com.sg/webapp/place2lease/p2l/public/index/pld/index.jspa");
 a("scheduled-m4","business traveller","http://www.businesstraveller.asia/competitions");
 a("scheduled-m4","magazine (herworld, cleo)","http://eresources.nlb.gov.sg/browse.aspx?browse_by=Type&filter1=13");
 a("scheduled-m4","Cleo","http://www.cleo.com.sg/category/win-and-events/");
