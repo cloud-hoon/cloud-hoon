@@ -25,9 +25,11 @@
  
 <input autofocus="autofocus" style="height:40px;width:90%" placeholder="search notes" id="searchNotes">
  
- <div id="nearbyDiv"><iframe style="display:block" height="100%" width="100%" src="Vegmap/vegMap.htm"></iframe></div>
+ <div id="nearbyDiv">
+   <input type="button" value="Load Map" onclick="mapFrame.src='Vegmap/vegMap.htm'">
+   <iframe id="mapFrame" style="display:block" height="100%" width="100%"></iframe></div>
 <div id="notes"></div>
-  <div id="notesResult"></div>
+<div id="notesResult"></div>
 
 <!--<div id="recentDiv"></div>-->
 <div id="dailyDiv">

@@ -788,6 +788,7 @@ a("scheduled-daily","qoo10","http://www.qoo10.sg/gmkt.inc/Event/qchance.aspx");
 a("scheduled-m1,5,12,13,15,17,20,24,28 bills","item","https://api.checklist.com/account/checklist/58da5ee0116cdd05b61bd99d");
 a("scheduled-m10","3 words goals every month? think of tasks missing for roles: hunny-health, hunny-money, son-health, son-money, self-health, self-money");
 a("scheduled-m10","tradingeconomics","http://www.tradingeconomics.com/singapore/stock-market/forecast");
+a("scheduled-m10","lifehacker","http://lifehacker.com/tag/download-roundup");
 a("scheduled-m10","all about android","http://wiki.twit.tv/wiki/All_About_Android_Apps");
 a("scheduled-m10","VC Rebecca","https://mobile.twitter.com/vcrebecca");
 a("scheduled-m10","Jobs Bank","https://www.jobsbank.gov.sg/ICMSPortal/portlets/JobBankHandler/SearchResult.do");
