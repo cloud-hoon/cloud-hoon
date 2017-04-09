@@ -52,7 +52,7 @@ the list or on hover */
  <script>
  let searchInput = new AmazonAutocomplete("#searchNotes");
  searchInput.onSelectedWord(word => updateWord(word));
- searchInput.onNewWords(words => document.getElementsByClassName("ac__container--hide-on-blur")[0].style.display="block");
+ searchInput.onNewWords(words => document.getElementsByClassName("ac__container--hide-on-blur")[0].style.display="block")	;
  function updateWord(word){
   searchNotes.value=word;
   console.log("searching "+word);
