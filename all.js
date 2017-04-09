@@ -856,7 +856,7 @@ a("scheduled-w7 laptop","weekly sg blog","file:///C:/Users/ThienRong/Dropbox/Pub
 a("scheduled-w7 laptop","quora answer","https://www.quora.com/answer");
 a("scheduled-y0927","2013 first date movie my lucky star / Chatted, dabao soggy fries veganburg, taxi to watch movie at shaws century sq, taxi wait urgently outside to home and i continue home");
 a("scheduled-y1001","Fighting spirit/full moon. emart credits use by nov (dun keep more than $226)","http://forums.hardwarezone.com.sg/national-service-knowledge-base-162/emart-credit-questions-3146593.html");
-a("searches-buysell2","datalab","http://datalabs.ebay.com/popular.html#/items?interval=weekly&siteid=0&activity=sold&query=%s");
+a("searches-buysell2","datalab","http://datalabs.ebay.com/worth.html#/srp?keywords=%s");
 a("searches-buysell2","qoo10","http://list.qoo10.sg/s/%s?keyword=%s&keyword_auto_change=");
 a("searches-buysell2","carousell","https://sg.carousell.com/search/products/?query=%s");
 a("searches-buysell2","camelcamelcamel","http://camelcamelcamel.com/search?sq=%s");
@@ -864,6 +864,7 @@ a("searches-buysell","airfrov completed","https://www.airfrov.com/search?type=Re
 a("searches-buysell","what-to-sell","http://www.what-to-sell.com/ebay-us/?s=0#%s");
 a("searches-buysell","Title Builder","http://title-builder.com/title-builder/#%s");
 a("searches-buysell","Google Global Market ","https://translate.google.com/globalmarketfinder/g/index.html?locale=en#ren_SG%s");
+a("searches-buysell","datalab popular items","http://datalabs.ebay.com/popular.html#/items?interval=weekly&siteid=0&activity=sold&query=%s");
 a("searches-comments","yt search","https://www.youtube.com/results?sp=CAI%253D&q=%s");
 a("searches-comments","fb search","https://www.facebook.com/search/latest/?q=%s");
 a("searches-domain","Keywords Ideas","http://www.ideachampions.com/cgi-bin/idea_lottery.pl");
