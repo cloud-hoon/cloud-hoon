@@ -23,8 +23,42 @@
 <div id="goalsDiv"></div>
  <div id="searchResultDiv"></div>
  
-<input autofocus="autofocus" style="height:40px;width:90%" placeholder="search notes" id="searchNotes">
+ <!-- https://github.com/caroso1222/amazon-autocomplete/tree/master/dist nov 2017 -->
  
+ 
+<input autofocus="autofocus" style="height:40px;width:90%" placeholder="search notes" id="searchNotes">
+ <style>.ac__inner{
+    background: #f6f6f6;
+}
+
+/* Individual word element */
+.ac__word{
+    margin: 0;
+    padding: 5px;
+}
+
+/* Word prefix style. It’s the span containing the
+search keyword within the word. */
+.ac__prefix{
+    font-weight: bold;
+}
+
+/* Style applied to each words while navigating through
+the list or on hover */
+.ac__word--selected, .ac__word:hover{
+    background-color: #e3e3e3;
+}</style>
+ <script type="text/javascript" src="amazon-autocomplete.min.js"></script>
+ <script>
+ let searchInput = new AmazonAutocomplete("#searchNotes");
+ searchInput.onSelectedWord(word => updateWord(word));
+ searchInput.onNewWords(words => document.getElementsByClassName("ac__container--hide-on-blur")[0].style.display="block");
+ function updateWord(word){
+  searchNotes.value=word;
+  console.log("searching "+word);
+  document.getElementsByClassName("ac__container--hide-on-blur")[0].style.display="none"
+ }
+ </script>
  <div id="nearbyDiv">
    <input type="button" value="Load Map" onclick="mapFrame.src='Vegmap/vegMap.htm'">
    <iframe id="mapFrame" style="display:block" height="100%" width="100%"></iframe></div>
