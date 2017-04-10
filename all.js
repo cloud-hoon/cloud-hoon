@@ -854,6 +854,8 @@ a("scheduled-w7 laptop","anything for our parent","https://www.groupon.sg/browse
 a("scheduled-w7 laptop","pocket","https://getpocket.com/a/queue/list/_untagged_/");
 a("scheduled-w7 laptop","weekly sg blog","file:///C:/Users/ThienRong/Dropbox/Public/blogs-weeklysg.htm");
 a("scheduled-w7 laptop","quora answer","https://www.quora.com/answer");
+a("scheduled-w7 laptop","record","https://docs.google.com/spreadsheets/d/19rYxyr4vbZCLy_6cuHjGaUrSDEAVdB7TA6VukWupReI/edit#gid=750511353");
+a("scheduled-w7 laptop","mic","http://list.qoo10.sg/item/GUARANTEED-CHEAPEST-LOCAL-WARRANTY-WIRELESS-BLUETOOTH-KARAOKE/493649586");
 a("scheduled-y0927","2013 first date movie my lucky star / Chatted, dabao soggy fries veganburg, taxi to watch movie at shaws century sq, taxi wait urgently outside to home and i continue home");
 a("scheduled-y1001","Fighting spirit/full moon. emart credits use by nov (dun keep more than $226)","http://forums.hardwarezone.com.sg/national-service-knowledge-base-162/emart-credit-questions-3146593.html");
 a("searches-buysell2","datalab","http://datalabs.ebay.com/worth.html#/srp?keywords=%s");
