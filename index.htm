@@ -55,7 +55,7 @@ the list or on hover */
  searchInput.onNewWords(words => document.getElementsByClassName("ac__container--hide-on-blur")[0].style.display="block")	;
  function updateWord(word){
   searchNotes.value=word;
-  console.log("searching "+word);
+  queryBoxCallback();  
   document.getElementsByClassName("ac__container--hide-on-blur")[0].style.display="none"
  }
  </script>
