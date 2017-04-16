@@ -94,7 +94,8 @@ function(search){
     var outScheduled="";
     for(i in this.arrToday){      
       var n=this.arrToday[i];
-      outScheduled+="<input type='button' value='"+n+"' onclick=\"openAll('"+n+"')\">"  
+      outScheduled+="<input type='button' style='background:yellow' value='"+n+"' onclick=\"openAll('"+n+"')\">"  
+      outScheduled+="<input type='button' value='email' onclick=\"window.open('mailto:?subject="+n+"')\"><br/>"  
     }
     document.getElementById('scheduledTodayDiv').innerHTML=outScheduled;
   }
