@@ -807,6 +807,7 @@ a("scheduled-m20","Under 30s","https://www.techinasia.com/promising-southeast-as
 a("scheduled-m20","Moolah Showing F&B lowest interests rate?","https://www.moolahsense.com/statistics.php");
 a("scheduled-m22 retire","CPF_hwz_v3 TR (goal to 40).xlsx","file:/C:/Users/ThienRong/Dropbox/Public/CPF_hwz_v3%20TR%20(goal%20to%2040).xlsx");
 a("scheduled-m22 retire","how to get to 40 with max chance to get 2nd home?");
+a("scheduled-m22 retire","Lake Life 30 mins (changes after regional line?)","https://www.99.co/singapore/sale?completed_after=2016&listing_type=sale&main_category=condo%2Clanded&map_bounds=1.267587%2C103.709636%2C1.431992%2C103.967471&marker_query_type=google&name=Jurong%20East&page_num=1&page_size=20&price_max=1500000&query_coords=1.349791%2C103.838554&query_limit=commute&query_type=cluster&radius_max=1000&rental_type=unit&rooms=3%2C4&search_commute=1.3321283680600278%3A103.72426549874649%3Atransit%3A60&show_future_mrts=true%2Ctrue&sub_categories=bungalow%2Cclusterhouse%2Ccondo_apartment%2Cconservationhouse%2Ccorner_terrace%2Cexecutive_condo%2Cgeneric_condo%2Cgoodclass_bungalow%2Clandonly%2Csemi_detached%2Cservice_apartment%2Cshophouse%2Cterraced_house%2Ctownhouse%2Cwalkup&zoom=12");
 a("scheduled-m24 home","check and remove all expired food and items");
 a("scheduled-m24 home","check electrical breaker work");
 a("scheduled-m26 loans","@goog home loan comparison");
@@ -821,7 +822,6 @@ a("scheduled-m28 laptop","Her World","http://www.herworldplus.com/promotions");
 a("scheduled-m28 laptop","youth","https://www.youth.sg/Our-Voice");
 a("scheduled-m28 laptop","timeout","http://www.timeout.com/singapore/contests");
 a("scheduled-m28 laptop","shopback cashback","https://www.shopback.sg/cashback");
-a("scheduled-m28 laptop","Relist item in carousell","https://carousell.com/contest/");
 a("scheduled-m28 laptop","Spending reflection","https://docs.google.com/spreadsheets/d/14_mCNIBGPO1NIHnx7Qh_HFomvqS0w3eeiE4vTI7b5uo/edit#gid=37");
 a("scheduled-m28 laptop","ring in 3 tier cabinet bottom with cards");
 a("scheduled-m28 laptop","rcc root cert check","https://www.trustprobe.com/fs1/apps.html");

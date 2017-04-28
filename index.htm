@@ -271,7 +271,7 @@ $('searchNotes').value = getParameterByName("q");
 var getAlerts=getParameterByName("alert");
 if(getAlerts){
   document.title=getAlerts;
-  $('alertDiv').innerHTML = getAlerts +"<input type='button' value='set search' onclick=\"$('searchNotes').value='"+getAlerts+"';queryBoxCallback()\"> <small>(save to Keep since Inbox no title)</small>";
+  $('alertDiv').innerHTML = getAlerts +"<input type='button' value='set search' onclick=\"$('searchNotes').value='"+getAlerts+"';queryBoxCallback()\">";
 }
 /* misc */
 function $(id){
