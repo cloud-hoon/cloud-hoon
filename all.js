@@ -802,6 +802,8 @@ a("scheduled-m10","blogs-weeklysg.htm","http://www.commercialguru.com.sg/find-co
 a("scheduled-m10","Euromonitor","https://www.google.com.sg/search?q=euromonitor&cr=countrySG&safe=off&tbs=ctr:countrySG,qdr:m&tbm=nws&ei=ND3fWNfdNcqX0gSbtZ64BQ&start=20&sa=N&biw=1242&bih=535&dpr=1.1");
 a("scheduled-m12","pay ocbc, citibank & anz bill / redeem (by sep 2019)");
 a("scheduled-m12","ztraffic offense reminder to drive slowly and traffic light");
+a("scheduled-m12","Check Hunny Got Vit B");
+a("scheduled-m12","get weekly. maybe monthly","www.qoo10.sg/mamego");
 a("scheduled-m20","find business?","http://www.businessforsale.sg/");
 a("scheduled-m20","Under 30s","https://www.techinasia.com/promising-southeast-asia-tech-entrepreneurs-30");
 a("scheduled-m20","Moolah Showing F&B lowest interests rate?","https://www.moolahsense.com/statistics.php");
@@ -844,7 +846,6 @@ a("scheduled-w5 plan events","volunteer","https://www.google.com.sg/search?cr=co
 a("scheduled-w5 plan events","finlit for hunny","http://finlit.sg/public-events/");
 a("scheduled-w5 plan events","giving","https://www.giving.sg/volunteer");
 a("scheduled-w5 plan events","families for life","https://www.familiesforlife.sg/unite-at-an-event/Pages/default.aspx");
-a("scheduled-w6,7","Drink and Remind Hunny Vit B");
 a("scheduled-w7 laptop","books","https://www.goodreads.com/review/list/47578144?utm_campaign=mybooksnav&utm_content=mybooks_cta&utm_medium=web&utm_source=homepage");
 a("scheduled-w7 laptop","tnp contest","http://www.tnp.sg/tag/m-contest");
 a("scheduled-w7 laptop","Invest","http://www.straitstimes.com/business/invest");
