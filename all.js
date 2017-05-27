@@ -846,6 +846,7 @@ a("scheduled-w5 plan events","volunteer","https://www.google.com.sg/search?cr=co
 a("scheduled-w5 plan events","finlit for hunny","http://finlit.sg/public-events/");
 a("scheduled-w5 plan events","giving","https://www.giving.sg/volunteer");
 a("scheduled-w5 plan events","families for life","https://www.familiesforlife.sg/unite-at-an-event/Pages/default.aspx");
+a("scheduled-w7 laptop","contest for last week","https://www.facebook.com/irisogl");
 a("scheduled-w7 laptop","books","https://www.goodreads.com/review/list/47578144?utm_campaign=mybooksnav&utm_content=mybooks_cta&utm_medium=web&utm_source=homepage");
 a("scheduled-w7 laptop","tnp contest","http://www.tnp.sg/tag/m-contest");
 a("scheduled-w7 laptop","Invest","http://www.straitstimes.com/business/invest");
