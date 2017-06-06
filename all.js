@@ -837,6 +837,8 @@ a("scheduled-m28 laptop","vegan recipes","https://www.facebook.com/search/posts/
 a("scheduled-m28 laptop","scheduled posts","https://www.facebook.com/HappyVeganRecipes/publishing_tools/?section=scheduled_posts&refSource=scheduled_timeline_pagelet");
 a("scheduled-m28 laptop","shopback cashback","https://www.shopback.sg/cashback");
 a("scheduled-m28 laptop","Spending reflection","https://docs.google.com/spreadsheets/d/14_mCNIBGPO1NIHnx7Qh_HFomvqS0w3eeiE4vTI7b5uo/edit#gid=37");
+a("scheduled-m28 laptop","magazine (herworld, cleo)","http://eresources.nlb.gov.sg/browse.aspx?browse_by=Type&filter1=13");
+a("scheduled-m28 laptop","Cleo","http://www.cleo.com.sg/category/win-and-events/");
 a("scheduled-m2","Check voucher due for month");
 a("scheduled-m2","measure bp 195/100 (jun), 200/100+ (may), 160/100 (april), 200/97 dad bp (mar) (2014)");
 a("scheduled-m2","awanavacation.com user is dad ic, pass z1...");
@@ -845,8 +847,6 @@ a("scheduled-m2","Builtwith","http://trends.builtwith.com/");
 a("scheduled-m2","IFTTT","https://ifttt.com/recipes/");
 a("scheduled-m2","monthly commerical rental","https://www.hbiz.com.sg/webapp/place2lease/p2l/public/index/pld/index.jspa");
 a("scheduled-m4","business traveller","http://www.businesstraveller.asia/competitions");
-a("scheduled-m4","magazine (herworld, cleo)","http://eresources.nlb.gov.sg/browse.aspx?browse_by=Type&filter1=13");
-a("scheduled-m4","Cleo","http://www.cleo.com.sg/category/win-and-events/");
 a("scheduled-w3","mastercard","http://list.qoo10.sg/mastercard");
 a("scheduled-w3","shave weekly");
 a("scheduled-w4","bring shoe and cloth brisk walk and water bottle");
