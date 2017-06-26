@@ -813,7 +813,6 @@ a("scheduled-m22 retire","Lake Life 30 mins (changes after regional line?)","htt
 a("scheduled-m24 home","check and remove all expired food and items");
 a("scheduled-m24 home","check electrical breaker work");
 a("scheduled-m26 loans","@goog home loan comparison");
-a("scheduled-m26 loans","change ANZ to Combi +0.65% when completed and better than current by 50%?");
 a("scheduled-m26 loans","lake life","https://www.99.co/singapore/condos-apartments/lake-life#priceTrends");
 a("scheduled-m26 loans","icompareloan","https://www.icompareloan.com/refinance-home-loan");
 a("scheduled-m26 loans","MoneySmart","http://www.moneysmart.sg/refinancing/wizard?property_type=Executive%20Condo");
@@ -859,7 +858,6 @@ a("scheduled-w5 plan events","families for life","https://www.familiesforlife.sg
 a("scheduled-w7 laptop","contest for last week","https://www.facebook.com/irisogl");
 a("scheduled-y0927","2013 first date movie my lucky star / Chatted, dabao soggy fries veganburg, taxi to watch movie at shaws century sq, taxi wait urgently outside to home and i continue home");
 a("scheduled-y1001","Fighting spirit/full moon. emart credits use by nov (dun keep more than $226)","http://forums.hardwarezone.com.sg/national-service-knowledge-base-162/emart-credit-questions-3146593.html");
-a("searches-buysell2","datalab","http://datalabs.ebay.com/worth.html#/srp?keywords=%s");
 a("searches-buysell2","qoo10","http://list.qoo10.sg/s/%s?keyword=%s&keyword_auto_change=");
 a("searches-buysell2","carousell","https://sg.carousell.com/search/products/?query=%s");
 a("searches-buysell2","camelcamelcamel","http://camelcamelcamel.com/search?sq=%s");
@@ -868,6 +866,7 @@ a("searches-buysell","what-to-sell","http://www.what-to-sell.com/ebay-us/?s=0#%s
 a("searches-buysell","Title Builder","http://title-builder.com/title-builder/#%s");
 a("searches-buysell","Google Global Market ","https://translate.google.com/globalmarketfinder/g/index.html?locale=en#ren_SG%s");
 a("searches-buysell","datalab popular items","http://datalabs.ebay.com/popular.html#/items?interval=weekly&siteid=0&activity=sold&query=%s");
+a("searches-buysell","datalab","http://datalabs.ebay.com/worth.html#/srp?keywords=%s");
 a("searches-comments","yt search","https://www.youtube.com/results?sp=CAI%253D&q=%s");
 a("searches-comments","fb search","https://www.facebook.com/search/latest/?q=%s");
 a("searches-domain","Keywords Ideas","http://www.ideachampions.com/cgi-bin/idea_lottery.pl");
