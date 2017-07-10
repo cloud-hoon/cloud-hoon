@@ -822,16 +822,13 @@ a("scheduled-m26 loans","YourSGMap","https://yoursingaporemap.com/property/2-Tao
 a("scheduled-m28 ipad","Her World","http://www.herworldplus.com/promotions");
 a("scheduled-m28 ipad","youth","https://www.youth.sg/Our-Voice");
 a("scheduled-m28 ipad","timeout","http://www.timeout.com/singapore/contests");
-a("scheduled-m28 ipad","ring in 3 tier cabinet bottom with cards");
-a("scheduled-m28 ipad","rcc root cert check","https://www.trustprobe.com/fs1/apps.html");
+a("scheduled-m28 ipad","ring in 3 tier cabinet top with cards");
 a("scheduled-m28 ipad","anything for our parent","https://myfave.com/singapore/fit?query=&category_type=fit");
-a("scheduled-m28 ipad","record","https://docs.google.com/spreadsheets/d/19rYxyr4vbZCLy_6cuHjGaUrSDEAVdB7TA6VukWupReI/edit#gid=750511353");
-a("scheduled-m28 ipad","mic","http://list.qoo10.sg/item/GUARANTEED-CHEAPEST-LOCAL-WARRANTY-WIRELESS-BLUETOOTH-KARAOKE/493649586");
+a("scheduled-m28 ipad","record sales","https://docs.google.com/spreadsheets/d/19rYxyr4vbZCLy_6cuHjGaUrSDEAVdB7TA6VukWupReI/edit#gid=866923589");
 a("scheduled-m28 ipad","quora answer","https://www.quora.com/answer");
 a("scheduled-m28 ipad","books","https://www.goodreads.com/review/list/47578144?utm_campaign=mybooksnav&utm_content=mybooks_cta&utm_medium=web&utm_source=homepage");
 a("scheduled-m28 ipad","tnp contest","http://www.tnp.sg/tag/m-contest");
 a("scheduled-m28 ipad","Invest","http://www.straitstimes.com/business/invest");
-a("scheduled-m28 ipad","conquer","file:///K:/Public/GoodHabitsIndex/conquer.htm");
 a("scheduled-m28 laptop","vegan recipes","https://www.facebook.com/search/posts/?q=vegan%20recipes");
 a("scheduled-m28 laptop","scheduled posts","https://www.facebook.com/HappyVeganRecipes/publishing_tools/?section=scheduled_posts&refSource=scheduled_timeline_pagelet");
 a("scheduled-m28 laptop","shopback cashback","https://www.shopback.sg/cashback");
