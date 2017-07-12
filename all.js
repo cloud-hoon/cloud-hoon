@@ -785,7 +785,7 @@ a("dbnotes","08/10/2013 Sure Bets - Sports Arbitrage, Sure betting | Odds Portal
 a("dbnotes","08/10/2013 SureBets | BetBrain","http://www.betbrain.com/surebets/?attempt=2");
 a("scheduled-daily","feedly","http://feedly.com");
 a("scheduled-daily","qoo10","http://www.qoo10.sg/gmkt.inc/Event/qchance.aspx");
-a("scheduled-m1,5,12,13,15,17,20,24,28 bills","item","https://api.checklist.com/account/checklist/58da5ee0116cdd05b61bd99d");
+a("scheduled-m1,5,12,13,15,17,20,24,28 bills","item","https://api.checklist.com/account/checklist/592b6b72116cdd05bef6c8b2");
 a("scheduled-m10","3 words goals every month? think of tasks missing for roles: hunny-health, hunny-money, son-health, son-money, self-health, self-money");
 a("scheduled-m10","tradingeconomics","http://www.tradingeconomics.com/singapore/stock-market/forecast");
 a("scheduled-m10","lifehacker","http://lifehacker.com/tag/download-roundup");
@@ -803,7 +803,7 @@ a("scheduled-m10","Euromonitor","https://www.google.com.sg/search?q=euromonitor&
 a("scheduled-m12","pay ocbc, citibank & anz bill / redeem (by sep 2019)");
 a("scheduled-m12","ztraffic offense reminder to drive slowly and traffic light");
 a("scheduled-m12","Check Hunny Got Vit B");
-a("scheduled-m12","get weekly. maybe monthly","www.qoo10.sg/mamego");
+a("scheduled-m12","get weekly. maybe monthly","http://www.qoo10.sg/gmkt.inc/Mobile/MameGo/MameGoMap.aspx");
 a("scheduled-m20","find business?","http://www.businessforsale.sg/");
 a("scheduled-m20","Under 30s","https://www.techinasia.com/promising-southeast-asia-tech-entrepreneurs-30");
 a("scheduled-m20","Moolah Showing F&B lowest interests rate?","https://www.moolahsense.com/statistics.php");
