@@ -905,6 +905,8 @@ a("searches-events","Events","http://www.wherevent.com/search/Singapore");
 a("searches-mart","diffmarts","https://www.diffmarts.com/search/%s");
 a("searches-people","fb people name or phone number","https://www.facebook.com/search/str/%s/keywords_users");
 a("searches-people","pipl","https://pipl.com/search/?q=%s&l=&sloc=&in=5");
+a("searches-people","fb people name or phone number","https://www.facebook.com/search/str/%s/keywords_users");
+a("searches-people","pipl","https://pipl.com/search/?q=%s&l=&sloc=&in=5");
 a("searches-properties","yoursgmap","https://yoursingaporemap.com/property/%s");
 a("searches-travel","Just Best Rates Guaranteed ","https://justbrg.com/");
 a("searches-travel","https://en.hellowings.com/SIN/BKK-DMK/2016-07-25/2016-08-01#eyJmcm9tRGF0ZSI6MTQ2OTQwNDgwMDAwMCwidG9EYXRlIjoxNDcwMDA5NjAwMDAwLCJmIjp7fSwidCI6eyJwYWdlIjowfSwidG9EYXRlTWluIjoxNDY4NzEzNjAwMDAwLCJ0b0RhdGVNYXgiOjE0NzEzMDU2MDAwMDB9");
