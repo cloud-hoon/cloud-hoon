@@ -1,4 +1,5 @@
 <input id="search" />
+<input type="button" id="voiceSearch" onclick="recognition.start()">
 <script>
 var recognition = new webkitSpeechRecognition();
 recognition.continuous = false;
@@ -13,4 +14,6 @@ recognition.onresult = function(e) {
  
 recognition.onerror = function(e) {
         recognition.stop();}
+
+
 </script>
