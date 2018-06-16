@@ -13,7 +13,9 @@ recognition.onresult = function(e) {
       };
  
 recognition.onerror = function(e) {
-        recognition.stop();}
+        recognition.stop();
+        console.log(e);
+}
 
 
 </script>
