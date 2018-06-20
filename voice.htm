@@ -1,21 +1,36 @@
 <input id="search" />
 <input value="Voice" type="button" id="voiceSearch" onclick="recognition.start()">
 <script>
-var recognition = new webkitSpeechRecognition();
+var grammar = '#JSGF V1.0; grammar colors; public <color> = aqua | azure | beige | bisque | black | blue | brown | chocolate | coral | crimson | cyan | fuchsia | ghostwhite | gold | goldenrod | gray | green | indigo | ivory | khaki | lavender | lime | linen | magenta | maroon | moccasin | navy | olive | orange | orchid | peru | pink | plum | purple | red | salmon | sienna | silver | snow | tan | teal | thistle | tomato | turquoise | violet | white | yellow ;'
+var recognition = new webkitSpeechRecognition()
+var grammarList = new webkitSpeechGrammarList()
 recognition.continuous = false;
 recognition.interimResults = false;
+grammarList.addFromString(grammar , 1);
+recognition.grammars = grammarList;
+
 //recognition.start();
 recognition.onresult = function(e) {
-        document.getElementById('search').value = e.results[0][0].transcript;
-        recognition.stop();
-        alert("Done"+e.results[0][0].transcript);
+	result=e.results[0][0].transcript
+        document.getElementById('search').value = result;
+	var msg = new SpeechSynthesisUtterance(result);
+	window.speechSynthesis.speak(msg);
+        setTimeout(function (){recognition.start()},1000)
+	//recognition.stop();
+        
+	//alert("Done"+e.results[0][0].transcript);
         //document.getElementById('labnol').submit();
       };
  
 recognition.onerror = function(e) {
-        recognition.stop();
-        console.log(e);
+        //recognition.stop();
+        var msg = new SpeechSynthesisUtterance("Error:" + e.error);
+	window.speechSynthesis.speak(msg);
+        setTimeout(function (){recognition.start()},1000)
+	
+	console.log(e);
 }
 recognition.start();
+
 
 </script>
