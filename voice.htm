@@ -22,15 +22,15 @@ recognition.onresult = function(e) {
 	//alert("Done"+e.results[0][0].transcript);
         //document.getElementById('labnol').submit();
       };
- 
-recognition.onspeechend = function(e) {
-        recognition.stop();
-        console.log(e);
-	var msg = new SpeechSynthesisUtterance("Try again");
-	window.speechSynthesis.speak(msg);
+/*recognition.onspeechend=function(e){
+	recognition.stop();
+};*/
+recognition.onend = function(e) {
+	recognition.abort()
+        //console.log(e);
+	//var msg = new SpeechSynthesisUtterance("Error:"+e.error);
+	//window.speechSynthesis.speak(msg);
         setTimeout(function (){recognition.start()},1000)
-	
-	
-}
+};
 recognition.start();
 </script>
