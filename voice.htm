@@ -1,3 +1,7 @@
+<input id="search" />
+<input value="Voice" type="button" id="voiceSearch" onclick="recognition.start()">
+<script>
+
 var grammar = '#JSGF V1.0; grammar colors; public <color> = aqua | azure | beige | bisque | black | blue | brown | chocolate | coral | crimson | cyan | fuchsia | ghostwhite | gold | goldenrod | gray | green | indigo | ivory | khaki | lavender | lime | linen | magenta | maroon | moccasin | navy | olive | orange | orchid | peru | pink | plum | purple | red | salmon | sienna | silver | snow | tan | teal | thistle | tomato | turquoise | violet | white | yellow ;'
 var recognition = new webkitSpeechRecognition()
 var grammarList = new webkitSpeechGrammarList()
@@ -19,13 +23,14 @@ recognition.onresult = function(e) {
         //document.getElementById('labnol').submit();
       };
  
-recognition.onerror = function(e) {
+recognition.onspeechend = function(e) {
         recognition.stop();
         console.log(e);
-	var msg = new SpeechSynthesisUtterance("Error:" + e.error);
+	var msg = new SpeechSynthesisUtterance("Try again");
 	window.speechSynthesis.speak(msg);
         setTimeout(function (){recognition.start()},1000)
 	
 	
 }
 recognition.start();
+</script>
