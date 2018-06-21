@@ -15,7 +15,7 @@ recognition.grammars = grammarList;
 
 function stopListening(){
 	reallyStop=true;
-	recognition.abort();
+	recognition.stop();
 }
 function processResult(result){
 	var data=result.split(" ")
@@ -41,15 +41,14 @@ recognition.onresult = function(e) {
 	result=processResult(result);
 	var msg = new SpeechSynthesisUtterance(result);
 	window.speechSynthesis.speak(msg);
-        recognition.abort();
-	recognition.stop();
+        recognition.stop();
         //setTimeout(function (){recognition.start()},1000)
       };
 /*recognition.onspeechend=function(e){
 	recognition.stop();
 };*/
 recognition.onend = function(e) {
-	recognition.abort()
+	recognition.stop()
         //console.log(e);
 	//var msg = new SpeechSynthesisUtterance("Error:"+e.error);
 	//window.speechSynthesis.speak(msg);
