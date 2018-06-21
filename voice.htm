@@ -14,12 +14,14 @@ grammarList.addFromString(grammars, 1);
 recognition.grammars = grammarList;
 
 function stopListening(){
-	reallyStop=true;recognition.abort();
+	reallyStop=true;
+	recognition.abort();
 }
 function processResult(result){
 	var data=result.split(" ")
 	index = actions.indexOf(data[0]);
 	if(result=='stop listening'){
+		result="I will stop listening"
 		stopListening();
 	}else if(index >= 0){
 		if(data[0] == 'open'){
