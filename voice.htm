@@ -28,6 +28,7 @@ function processResult(result){
 		if(data[0] == 'open'){
 			
 		}else if(data[0] == 'find' || data[0] = 'map'){
+			result = "finding "+payload
 			window.open("https://www.google.com.sg/search?q="+payload);
 		}
 	}else{
