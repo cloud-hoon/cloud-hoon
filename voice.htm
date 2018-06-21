@@ -60,10 +60,10 @@ recognition.onresult = function(e) {
       };
 /*recognition.onspeechend=function(e){
 	recognition.stop();
-};*/
+*/};
 recognition.onend = function(e) {
 	//recognition.stop()
-        console.log(e);
+        //console.log(e);
 	//var msg = new SpeechSynthesisUtterance("Error:"+e.error);
 	//window.speechSynthesis.speak(msg);
         if(!reallyStop){
