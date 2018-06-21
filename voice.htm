@@ -40,6 +40,7 @@ recognition.onresult = function(e) {
 	var msg = new SpeechSynthesisUtterance(result);
 	window.speechSynthesis.speak(msg);
         recognition.abort();
+	recognition.stop();
         //setTimeout(function (){recognition.start()},1000)
       };
 /*recognition.onspeechend=function(e){
