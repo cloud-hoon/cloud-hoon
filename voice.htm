@@ -1,10 +1,10 @@
 <input id="search" style="height:50px"/>
 <input value="Voice" type="button" id="voiceSearch" onclick="reallyStop=false;recognition.start()" style="height:50px">
 <input value="Abort" type="button" id="voiceAbort" onclick="stopListening()" style="height:50px">
-<u>Recent History</u>
-....finding ...
-xyz
-ppp
+<br/><u>Recent History</u>
+<br/>....finding ...
+<br/>xyz
+<br/>ppp
 <script>
 var reallyStop=false;
 var actions=['open','youtube','call','map','find','finding'];
@@ -30,7 +30,7 @@ function processResult(result){
 	}else if(index >= 0){
 		if(data[0] == 'open'){
 			result="opening "+payload
-		}else if(data[0] == 'find' || data[0] == 'finding' || data[0] = 'map'){
+		}else if(data[0] == 'find' || data[0] == 'finding' || data[0] == 'map'){
 			result = "finding "+payload
 			window.open("https://www.google.com.sg/search?q="+payload);
 		}
