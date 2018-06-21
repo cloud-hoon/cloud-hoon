@@ -7,7 +7,7 @@ xyz
 ppp
 <script>
 var reallyStop=false;
-var actions=['open','youtube','call','map','find'];
+var actions=['open','youtube','call','map','find','finding'];
 var grammars = '#JSGF V1.0; grammar colors; public <actions> = '+actions.join(' | ');
 var recognition = new webkitSpeechRecognition()
 var grammarList = new webkitSpeechGrammarList()
@@ -30,7 +30,7 @@ function processResult(result){
 	}else if(index >= 0){
 		if(data[0] == 'open'){
 			result="opening "+payload
-		}else if(data[0] == 'find' || data[0] = 'map'){
+		}else if(data[0] == 'find' || data[0] == 'finding' || data[0] = 'map'){
 			result = "finding "+payload
 			window.open("https://www.google.com.sg/search?q="+payload);
 		}
@@ -48,10 +48,10 @@ recognition.onresult = function(e) {
 	document.getElementById('search').value = result;
 	result=processResult(result);
 	speech= new SpeechSynthesisUtterance(result);
-	speech.onend=function(){
+	/*speech.onend=function(){
 		if(!reallyStop){
-			recognition.start()
 		}
+	recognition.start()
 	}
 	window.speechSynthesis.speak(speech);
         recognition.stop();
@@ -61,13 +61,13 @@ recognition.onresult = function(e) {
 /*recognition.onspeechend=function(e){
 	recognition.stop();
 };*/
-recognition.onerror = function(e) {
+recognition.onend = function(e) {
 	//recognition.stop()
         console.log(e);
 	//var msg = new SpeechSynthesisUtterance("Error:"+e.error);
 	//window.speechSynthesis.speak(msg);
         if(!reallyStop){
-		setTimeout(function (){recognition.start()},1000)
+		setTimeout(function (){recognition.start()},1500)
 	}
 };
 recognition.start();
