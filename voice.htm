@@ -1,5 +1,7 @@
 <input id="search" height="50px"/>
 <input value="Voice" type="button" id="voiceSearch" onclick="recognition.start()" height="50px">
+<input value="Abort" type="button" id="voiceAbort" onclick="recognition.abort()" height="50px">
+
 <script>
 
 var actions=['open','call'];
@@ -11,22 +13,27 @@ recognition.interimResults = false;
 grammarList.addFromString(grammars, 1);
 recognition.grammars = grammarList;
 
-//recognition.start();
-recognition.onresult = function(e) {
-	//console.log(e.results);
-	//if(e.results[0][0].confidence < 0.7) return;
-	result=e.results[0][0].transcript
-	document.getElementById('search').value = result;
+function processResult(result){
 	index = actions.indexOf(result.split(" ")[0]);
 	if(index >= 0){
 		
 	}else{
 		result="Don't Understand "+result
 	}
+	
+	return result;
+}
+//recognition.start();
+recognition.onresult = function(e) {
+	//console.log(e.results);
+	//if(e.results[0][0].confidence < 0.7) return;
+	result=e.results[0][0].transcript
+	document.getElementById('search').value = result;
+	result=processResult(result);
 	var msg = new SpeechSynthesisUtterance(result);
 	window.speechSynthesis.speak(msg);
         recognition.abort();
-        setTimeout(function (){recognition.start()},1000)
+        //setTimeout(function (){recognition.start()},1000)
       };
 /*recognition.onspeechend=function(e){
 	recognition.stop();
