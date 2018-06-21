@@ -1,6 +1,6 @@
-<input id="search" height="50px"/>
-<input value="Voice" type="button" id="voiceSearch" onclick="reallyStop=false;recognition.start()" height="50px">
-<input value="Abort" type="button" id="voiceAbort" onclick="stopListening()" height="50px">
+<input id="search" style="height:50px"/>
+<input value="Voice" type="button" id="voiceSearch" onclick="reallyStop=false;recognition.start()" style="height:50px">
+<input value="Abort" type="button" id="voiceAbort" onclick="stopListening()" style="height:50px">
 
 <script>
 var reallyStop=false;
@@ -20,9 +20,10 @@ function processResult(result){
 	var data=result.split(" ")
 	index = actions.indexOf(data[0]);
 	if(result=='stop listening'){
-		stopListening()
+		stopListening();
 	}else if(index >= 0){
-		if(data[0] == 'open')
+		if(data[0] == 'open'){
+		}
 	}else{
 		result="Don't Understand "+result
 	}
