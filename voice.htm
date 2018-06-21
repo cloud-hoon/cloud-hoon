@@ -1,10 +1,10 @@
 <input id="search" height="50px"/>
 <input value="Voice" type="button" id="voiceSearch" onclick="reallyStop=false;recognition.start()" height="50px">
-<input value="Abort" type="button" id="voiceAbort" onclick="reallyStop=true;recognition.abort()" height="50px">
+<input value="Abort" type="button" id="voiceAbort" onclick="stopListening()" height="50px">
 
 <script>
 var reallyStop=false;
-var actions=['open','call'];
+var actions=['open','youtube','call'];
 var grammars = '#JSGF V1.0; grammar colors; public <actions> = '+actions.join(' | ');
 var recognition = new webkitSpeechRecognition()
 var grammarList = new webkitSpeechGrammarList()
@@ -13,10 +13,16 @@ recognition.interimResults = false;
 grammarList.addFromString(grammars, 1);
 recognition.grammars = grammarList;
 
+function stopListening(){
+	reallyStop=true;recognition.abort();
+}
 function processResult(result){
-	index = actions.indexOf(result.split(" ")[0]);
-	if(index >= 0){
-		
+	var data=result.split(" ")
+	index = actions.indexOf(data[0]);
+	if(result=='stop listening'){
+		stopListening()
+	}else if(index >= 0){
+		if(data[0] == 'open')
 	}else{
 		result="Don't Understand "+result
 	}
