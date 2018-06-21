@@ -1,26 +1,32 @@
-<input id="search" />
-<input value="Voice" type="button" id="voiceSearch" onclick="recognition.start()">
+<input id="search" height="50px"/>
+<input value="Voice" type="button" id="voiceSearch" onclick="recognition.start()" height="50px">
 <script>
 
-var grammar = '#JSGF V1.0; grammar colors; public <color> = aqua | azure | beige | bisque | black | blue | brown | chocolate | coral | crimson | cyan | fuchsia | ghostwhite | gold | goldenrod | gray | green | indigo | ivory | khaki | lavender | lime | linen | magenta | maroon | moccasin | navy | olive | orange | orchid | peru | pink | plum | purple | red | salmon | sienna | silver | snow | tan | teal | thistle | tomato | turquoise | violet | white | yellow ;'
+var actions=['open','call'];
+var grammars = '#JSGF V1.0; grammar colors; public <actions> = '+actions.join(' | ');
 var recognition = new webkitSpeechRecognition()
 var grammarList = new webkitSpeechGrammarList()
 recognition.continuous = false;
 recognition.interimResults = false;
-grammarList.addFromString(grammar , 1);
+grammarList.addFromString(grammars, 1);
 recognition.grammars = grammarList;
 
 //recognition.start();
 recognition.onresult = function(e) {
+	//console.log(e.results);
+	//if(e.results[0][0].confidence < 0.7) return;
 	result=e.results[0][0].transcript
-        document.getElementById('search').value = result;
+	document.getElementById('search').value = result;
+	index = actions.indexOf(result.split(" ")[0]);
+	if(index >= 0){
+		
+	}else{
+		result="Don't Understand "+result
+	}
 	var msg = new SpeechSynthesisUtterance(result);
 	window.speechSynthesis.speak(msg);
-        recognition.stop();
+        recognition.abort();
         setTimeout(function (){recognition.start()},1000)
-	
-	//alert("Done"+e.results[0][0].transcript);
-        //document.getElementById('labnol').submit();
       };
 /*recognition.onspeechend=function(e){
 	recognition.stop();
