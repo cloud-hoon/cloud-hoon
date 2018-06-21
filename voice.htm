@@ -1,9 +1,9 @@
 <input id="search" height="50px"/>
 <input value="Voice" type="button" id="voiceSearch" onclick="recognition.start()" height="50px">
-<input value="Abort" type="button" id="voiceAbort" onclick="recognition.abort()" height="50px">
+<input value="Abort" type="button" id="voiceAbort" onclick="reallyStop=true;recognition.abort()" height="50px">
 
 <script>
-
+var reallyStop=false;
 var actions=['open','call'];
 var grammars = '#JSGF V1.0; grammar colors; public <actions> = '+actions.join(' | ');
 var recognition = new webkitSpeechRecognition()
@@ -43,7 +43,9 @@ recognition.onend = function(e) {
         //console.log(e);
 	//var msg = new SpeechSynthesisUtterance("Error:"+e.error);
 	//window.speechSynthesis.speak(msg);
-        setTimeout(function (){recognition.start()},1000)
+        if(!reallyStop){
+		setTimeout(function (){recognition.start()},1000)
+	}
 };
 recognition.start();
 </script>
