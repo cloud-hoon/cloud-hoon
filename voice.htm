@@ -17,6 +17,7 @@ recognition.grammars = grammarList;
 
 function updateHistory(){
 	if(history = localStorage.getItem("history")){
+		history=JSON.parse(history)
 		out=""
 		for(i of history){
 			out+="<br/>"+i
@@ -62,6 +63,7 @@ function processResult(result){
 			history.pop();
 		}
 		history.unshift(result)
+		localStorage.setItem("history",JSON.stringify(history));
 	}
 	
 	
