@@ -25,7 +25,7 @@ function updateHistory(){
 		searchHistory=JSON.parse(searchHistory)
 		out=""
 		for(i of searchHistory){
-			out+="<br/><a onclick=\"triggerResult('"+i+"')\">"+i+"</a>"
+			out+="<br/><a href='#' onclick=\"triggerResult('"+i+"')\">"+i+"</a>"
 		}
 		document.getElementById("history").innerHTML = out;
 	}
