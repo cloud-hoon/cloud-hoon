@@ -58,6 +58,8 @@ function processResult(result){
 		var searchHistory=localStorage.getItem("history");
 		if(!searchHistory)	
 			searchHistory=[]
+		else
+			searchHistory=JSON.parse(searchHistory)
 		
 		if(searchHistory.length>=5){
 			searchHistory.pop();
