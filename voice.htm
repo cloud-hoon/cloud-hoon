@@ -31,7 +31,9 @@ function processResult(result){
 	}else if(index >= 0){
 		if(data[0] == 'open'){
 			result="opening "+payload
-		}else if(data[0] == 'find' || data[0] == 'finding' || data[0] == 'map'){
+		}else if(data[0] == 'map'){
+			window.open("https://www.google.com.sg/search?q="+result);
+		}else if(data[0] == 'find' || data[0] == 'finding' ){
 			result = "finding "+payload
 			window.open("https://www.google.com.sg/search?q="+payload);
 		}
@@ -71,6 +73,5 @@ recognition.onend = function(e) {
 		setTimeout(function (){recognition.start()},1500)
 	}
 };
-<!-- maybe still do -->
 recognition.start();
 </script>
