@@ -66,12 +66,21 @@ function processResult(result){
 		else
 			searchHistory=JSON.parse(searchHistory)
 		
+		// can do nothing if latest item but never mind just do.
 		if(searchHistory.length>=5){
-			searchHistory.pop();
+			foundIndex=searchHistory.indexOf(result)
+			if(foundIndex < 0){
+				searchHistory.pop();
+			}else{
+				// remove 
+				searchHistory.splice(foundIndex,1)
+			}
 		}
+		
 		searchHistory.unshift(result)
 		localStorage.setItem("history",JSON.stringify(searchHistory));
 		updateHistory();
+		
 	}
 	
 	
