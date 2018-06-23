@@ -3,9 +3,7 @@
 <input value="Voice" type="button" id="voiceSearch" onclick="reallyStop=false;recognition.start()" style="height:50px">
 <input value="Abort" type="button" id="voiceAbort" onclick="stopListening()" style="height:50px">
 <br/><u>Recent History</u>
-<br/>....finding ...
-<br/>xyz
-<br/>ppp
+<br/><div id="history"></div>
 <script>
 var reallyStop=false;
 var actions=['open','youtube','call','map','find','finding'];
@@ -17,6 +15,15 @@ recognition.interimResults = false;
 grammarList.addFromString(grammars, 1);
 recognition.grammars = grammarList;
 
+function updateHistory(){
+	if(history = localStorage.getItem("history")){
+		out=""
+		for(i of history){
+			out+="<br/>"+i
+		}
+		document.getElementById("history").innerHTML = out;
+	}
+}
 function stopListening(){
 	reallyStop=true;
 	recognition.stop();
@@ -48,12 +55,13 @@ function processResult(result){
 	
 	if(saveHistory){
 		var history=localStorage.getItem("history");
-		if(history == null)
+		if(history == null)	
 			history=[]
 		
-
-		
-		
+		if(history.length>=5){
+			history.pop();
+		}
+		history.unshift(result)
 	}
 	
 	
