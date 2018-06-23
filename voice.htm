@@ -22,24 +22,40 @@ function stopListening(){
 	recognition.stop();
 }
 function processResult(result){
+	
 	var data=result.split(" ")
-	index = actions.indexOf(data[0]);
-	payload=result.substring(data[0].length+1)
+	keyword=data[0].toLowerCase();
+	index = actions.indexOf(keyword);
+	payload=result.substring(keyword.length+1)
+	saveHistory = true;
 	if(result=='stop listening' || result=='keep quiet' || result=='shut up'){
 		result="I will stop listening"
+		saveHistory=false;
 		stopListening();
 	}else if(index >= 0){
-		if(data[0] == 'open'){
+		if(keyword == 'open'){
 			result="opening "+payload
-		}else if(data[0] == 'map'){
+		}else if(keyword == 'map'){
 			window.open("https://www.google.com.sg/search?q="+result);
-		}else if(data[0] == 'find' || data[0] == 'finding' ){
+		}else if(keyword == 'find' || keyword == 'finding' ){
 			result = "finding "+payload
 			window.open("https://www.google.com.sg/search?q="+payload);
 		}
 	}else{
+		saveHistory=false;
 		result="What's "+result+"?"
 	}
+	
+	if(saveHistory){
+		var history=localStorage.getItem("history");
+		if(history == null)
+			history=[]
+		
+
+		
+		
+	}
+	
 	
 	return result;
 }
