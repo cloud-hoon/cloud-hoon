@@ -17,7 +17,7 @@ recognition.grammars = grammarList;
 
 function updateHistory(){
 	if(searchHistory = localStorage.getItem("history")){
-		searchHistory=JSON.parse(history)
+		searchHistory=JSON.parse(searchHistory)
 		out=""
 		for(i of searchHistory){
 			out+="<br/>"+i
