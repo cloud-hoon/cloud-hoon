@@ -1,3 +1,4 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <input id="search" style="height:50px"/>
 <input value="Voice" type="button" id="voiceSearch" onclick="reallyStop=false;recognition.start()" style="height:50px">
 <input value="Abort" type="button" id="voiceAbort" onclick="stopListening()" style="height:50px">
@@ -70,5 +71,6 @@ recognition.onend = function(e) {
 		setTimeout(function (){recognition.start()},1500)
 	}
 };
+<!-- maybe still do -->
 recognition.start();
 </script>
