@@ -56,7 +56,7 @@ function processResult(result){
 	
 	if(saveHistory){
 		var searchHistory=localStorage.getItem("history");
-		if(searchHistory == null)	
+		if(!searchHistory)	
 			searchHistory=[]
 		
 		if(searchHistory.length>=5){
