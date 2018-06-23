@@ -16,10 +16,10 @@ grammarList.addFromString(grammars, 1);
 recognition.grammars = grammarList;
 
 function updateHistory(){
-	if(history = localStorage.getItem("history")){
-		history=JSON.parse(history)
+	if(searchHistory = localStorage.getItem("history")){
+		searchHistory=JSON.parse(history)
 		out=""
-		for(i of history){
+		for(i of searchHistory){
 			out+="<br/>"+i
 		}
 		document.getElementById("history").innerHTML = out;
@@ -55,15 +55,15 @@ function processResult(result){
 	}
 	
 	if(saveHistory){
-		var history=localStorage.getItem("history");
-		if(history == null)	
-			history=[]
+		var searchHistory=localStorage.getItem("history");
+		if(searchHistory == null)	
+			searchHistory=[]
 		
-		if(history.length>=5){
-			history.pop();
+		if(searchHistory.length>=5){
+			searchHistory.pop();
 		}
-		history.unshift(result)
-		localStorage.setItem("history",JSON.stringify(history));
+		searchHistory.unshift(result)
+		localStorage.setItem("history",JSON.stringify(searchHistory));
 	}
 	
 	
