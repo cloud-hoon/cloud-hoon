@@ -1,5 +1,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <input id="search" style="height:50px"/>
+<input value=">" type="button" id="trigger" onclick="triggerResult(search.value)" style="height:50px">
 <input value="Voice" type="button" id="voiceSearch" onclick="reallyStop=false;recognition.start()" style="height:50px">
 <input value="Abort" type="button" id="voiceAbort" onclick="stopListening()" style="height:50px">
 <br/><u>Recent History</u>
@@ -47,6 +48,7 @@ function processResult(result){
 		stopListening();
 	}else if(index >= 0){
 		if(keyword == 'open'){
+			saveHistory=false
 			result="opening "+payload
 		}else if(keyword == 'map'){
 			window.open("https://www.google.com.sg/search?q="+result);
