@@ -15,12 +15,17 @@ recognition.interimResults = false;
 grammarList.addFromString(grammars, 1);
 recognition.grammars = grammarList;
 
+function triggerResult(result){
+	document.getElementById("search").value=result;
+	processResult(result);
+}
+
 function updateHistory(){
 	if(searchHistory = localStorage.getItem("history")){
 		searchHistory=JSON.parse(searchHistory)
 		out=""
 		for(i of searchHistory){
-			out+="<br/>"+i
+			out+="<br/><a onclick=\"triggerResult('"+i+"')\">"+i+"</a>"
 		}
 		document.getElementById("history").innerHTML = out;
 	}
@@ -66,6 +71,7 @@ function processResult(result){
 		}
 		searchHistory.unshift(result)
 		localStorage.setItem("history",JSON.stringify(searchHistory));
+		updateHistory();
 	}
 	
 	
