@@ -48,8 +48,11 @@ function processResult(result){
 		stopListening();
 	}else if(index >= 0){
 		if(keyword == 'open'){
-			saveHistory=false
-			result="opening "+payload
+			if(payload=="carousel"){
+					window.open("https://sg.carousell.com/inbox/");
+			}else{
+				saveHistory=false
+			}
 		}else if(keyword == 'map'){
 			window.open("https://www.google.com.sg/search?q="+result);
 		}else if(keyword == 'find' || keyword == 'finding' ){
