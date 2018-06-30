@@ -100,7 +100,7 @@ function receivingMessage(message){
 }
 
 /**
- * @return expected delay
+ * @return expected delay. added extra 50 for buffer as clearing interval when 2 Me at the same time.
  */
 var timerAnimateNewId;
 function animateNewMessage(message){
@@ -108,7 +108,7 @@ function animateNewMessage(message){
 	timerAnimateNewId=setInterval(function(){
 		addCharacter(message,index++);
 	}, 50);
-	return 50*message.length;
+	return 50*message.length+50;
 }
 
 var timerStoryId;
