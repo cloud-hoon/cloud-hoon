@@ -100,15 +100,17 @@ function receivingMessage(message){
 }
 
 /**
- * @return expected delay. added extra 100 for buffer as clearing interval when 2 Me at the same time.
+ * @return expected delay. added 1000 as typing really fast + extra 100 for buffer as clearing interval when 2 Me at the same time.
  */
 var timerAnimateNewId;
 function animateNewMessage(message){
 	var index=0;
-	timerAnimateNewId=setInterval(function(){
-		addCharacter(message,index++);
-	}, 50);
-	return 50*message.length+100;
+	setTimeout(function(){
+		timerAnimateNewId=setInterval(function(){
+			addCharacter(message,index++);
+		}, 50);
+	}, 1000);
+	return 1000+50*message.length+100;
 }
 
 var timerStoryId;
