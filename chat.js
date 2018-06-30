@@ -144,5 +144,4 @@ function parseStory(){
 	setTimeout(function(){
 		nextStoryLine(storyLines, 0);
 	}, 1000);
-	document.getElementById("outerJSBox").style.display="none";
 }
