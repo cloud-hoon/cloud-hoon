@@ -85,16 +85,17 @@ function addCharacter(message,index){
 }
 
 function receivingMessage(message){
-	youStatus.innerText="typing..."
-	delay= message.length*100;
+	delay=message.length*100+500;
 	
 	setTimeout(function(){
-		var msg=buildMessage(message,'received');
-		conversation.appendChild(msg);
-		youStatus.innerText="online";
-		conversation.scrollTop = conversation.scrollHeight;
-
-	}, delay);
+		youStatus.innerText="typing..."
+		setTimeout(function(){
+			var msg=buildMessage(message,'received');
+			conversation.appendChild(msg);
+			youStatus.innerText="online";
+			conversation.scrollTop = conversation.scrollHeight;
+		}, message.length*100)
+	}, 500);
 	return delay;
 }
 
@@ -141,5 +142,4 @@ function parseStory(){
 	setTimeout(function(){
 		nextStoryLine(storyLines, 0);
 	}, 1000);
-	document.getElementById("outerJSBox").style.display="none";
 }
