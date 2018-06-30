@@ -85,7 +85,7 @@ function addCharacter(message,index){
 }
 
 function receivingMessage(message){
-	delay=message.length*100+500;
+	delay=message.length*100+1000;
 	
 	setTimeout(function(){
 		youStatus.innerText="typing..."
@@ -95,7 +95,7 @@ function receivingMessage(message){
 			youStatus.innerText="online";
 			conversation.scrollTop = conversation.scrollHeight;
 		}, message.length*100)
-	}, 500);
+	}, 1000);
 	return delay;
 }
 
