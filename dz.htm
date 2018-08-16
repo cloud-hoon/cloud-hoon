@@ -45,8 +45,8 @@ const links=[
 ,"https://www.qoo10.sg/gmkt.inc/Bestsellers/?gender=Female"  // change to women
 // start from 5-9
 ,"https://www.qoo10.sg/gmkt.inc/Bestsellers/?gender=Male" // change to men
-,"https://www.zalora.sg/women/just-for-you/" 
-,"https://www.zalora.sg/men/just-for-you/"
+,"*https://www.zalora.sg/women/just-for-you/" 
+,"*https://www.zalora.sg/men/just-for-you/"
 ,"Amazon mover/shaker"
 
 ,"http://www.watchcount.com/?cc=SG&uqsrc=catl&uqkw=&uqcat=625#serp"
@@ -58,8 +58,18 @@ const links=[
 
 lastAction="b1"
 function load(l1,l2,id){
-	f1.src=links[l1].replace("%s",text.value.trim().replace(/%s/gi,"+"))
-	f2.src=links[l2].replace("%s",text.value.trim().replace(/%s/gi,"+"))
+	finalL1 = links[l1].replace("%s",text.value.trim().replace(/%s/gi,"+"))
+	if(finalL1.startsWith("*")){
+		window.open(finalL1);
+	}else{
+		f1.src=finalL1
+	}
+	finalL2=links[l2].replace("%s",text.value.trim().replace(/%s/gi,"+"))
+	if(finalL2.startsWith("*")){
+		window.open(finalL2);
+	}else{
+	  	f2.src=finalL2;
+	}
 	lastAction=id;
 	console.log("last action updated to:"+id);
 }
