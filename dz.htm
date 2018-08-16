@@ -1,0 +1,73 @@
+<head><style>
+iframe { 
+	width: 49%;
+	height: 90%;
+}
+body {
+	margin: 0;
+}
+#text {
+	height: 40px;
+	float: left;
+}
+#btnX {
+    position: fixed;
+    right: 0px;
+    top: 0px;
+    height: 40px
+}
+</style>
+<title>Dz</title>
+</head>
+<input type="search" size="10" autofocus id="text">
+<input type="button" id="b1" value="buy" onclick="load(0,1, this.id)">
+<input type="button" id="b2" value="q10Laz" onclick="load(2,3, this.id)">
+<br/><input type="button" id="b3" value="srcQ10Best" onclick="load(4,5, this.id)">
+<input type="button" id="b4" value="srcZaloraBest" onclick="load(6,7, this.id)">
+<a target="_blank" href="dzSeller.htm">Seller (Desktop)</a>
+
+<input type="button" id="btnX" value="X" onclick="text.value='';text.focus()">
+<br/>
+<iframe id="f1">
+</iframe>
+
+<iframe id="f2">
+</iframe>
+
+
+<script>
+const links=[
+// start from 0-4 don't delete and will spoil the sequences
+"https://shopee.sg/search/?keyword=%s&page=0&sortBy=sales"
+,"https://mobile.carousell.com/search/%s"
+,"https://www.qoo10.sg/gmkt.inc/Mobile/Search/Default.aspx?keyword=%s&__ar=Y"
+,"https://www.lazada.sg/catalog/?q=%s&_keyori=ss&from=input&spm=a2o42.home.search.go.654346b5ZwiEyX"
+,"https://www.qoo10.sg/gmkt.inc/Bestsellers/?gender=Female"  // change to women
+// start from 5-9
+,"https://www.qoo10.sg/gmkt.inc/Bestsellers/?gender=Male" // change to men
+,"https://www.zalora.sg/women/just-for-you/" 
+,"https://www.zalora.sg/men/just-for-you/"
+,"Amazon mover/shaker"
+
+,"http://www.watchcount.com/?cc=SG&uqsrc=catl&uqkw=&uqcat=625#serp"
+,"https://www.watsons.com.sg/c/bestSeller"
+,"https://shopee.sg/user/purchase/"
+// 10
+,"https://keepa.com/#!search/1-%s"
+]
+
+lastAction="b1"
+function load(l1,l2,id){
+	f1.src=links[l1].replace("%s",text.value.trim().replace(/%s/gi,"+"))
+	f2.src=links[l2].replace("%s",text.value.trim().replace(/%s/gi,"+"))
+	lastAction=id;
+	console.log("last action updated to:"+id);
+}
+var elem = document.getElementById('text');
+elem.addEventListener('keypress', function(e){
+  if (e.keyCode == 13) {
+    console.log('lastAction '+lastAction+' will be pressed');   
+    document.getElementById(lastAction).click()
+  }
+});
+</script>
