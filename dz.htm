@@ -60,13 +60,13 @@ lastAction="b1"
 function load(l1,l2,id){
 	finalL1 = links[l1].replace("%s",text.value.trim().replace(/%s/gi,"+"))
 	if(finalL1.startsWith("*")){
-		window.open(finalL1);
+		window.open(finalL1.substring(1));
 	}else{
 		f1.src=finalL1
 	}
 	finalL2=links[l2].replace("%s",text.value.trim().replace(/%s/gi,"+"))
 	if(finalL2.startsWith("*")){
-		window.open(finalL2);
+		window.open(finalL2.substring(1));
 	}else{
 	  	f2.src=finalL2;
 	}
