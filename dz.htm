@@ -80,4 +80,10 @@ elem.addEventListener('keypress', function(e){
     document.getElementById(lastAction).click()
   }
 });
+	
+var s=prompt("Search?")
+if(s){
+	document.getElementById('text').value=(s);
+	document.getElementById(lastAction).click();
+}
 </script>
