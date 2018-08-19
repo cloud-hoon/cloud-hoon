@@ -11,22 +11,20 @@ body {
 	float: left;
 }
 #btnX {
-    position: fixed;
-    right: 0px;
-    top: 0px;
+    float:left;
     height: 40px
 }
 </style>
 <title>Dz</title>
 </head>
 <input type="search" size="10" autofocus id="text">
+<input type="button" id="btnX" value="X" onclick="text.value='';text.focus()">
 <input type="button" id="b1" value="buy" onclick="load(0,1, this.id)">
 <input type="button" id="b2" value="q10Laz" onclick="load(2,3, this.id)">
-<br/><input type="button" id="b3" value="srcQ10Best" onclick="load(4,5, this.id)">
-<input type="button" id="b4" value="srcZaloraBest" onclick="load(6,7, this.id)">
+<br/>
+<div id="optionsDiv"></div>
+<!--<select id="options" onchange="clickOption(this.value)"></select>-->
 <a target="_blank" href="dzSeller.htm">Seller (Desktop)</a>
-
-<input type="button" id="btnX" value="X" onclick="text.value='';text.focus()">
 <br/>
 <iframe id="f1">
 </iframe>
@@ -47,14 +45,49 @@ const links=[
 ,"https://www.qoo10.sg/gmkt.inc/Bestsellers/?gender=Male" // change to men
 ,"*https://www.zalora.sg/women/just-for-you/" 
 ,"*https://www.zalora.sg/men/just-for-you/"
+,"https://index.woorank.com/en/reviews?countries=SG"
+,"http://xpareto.com/"
+
+// 10
+,"*https://www.theaffiliategateway.sg/directory/category"
 ,"Amazon mover/shaker"
 
 ,"http://www.watchcount.com/?cc=SG&uqsrc=catl&uqkw=&uqcat=625#serp"
 ,"https://www.watsons.com.sg/c/bestSeller"
 ,"https://shopee.sg/user/purchase/"
-// 10
 ,"https://keepa.com/#!search/1-%s"
 ]
+const dropdownOptions={
+	//"buy" : [0, 1]
+	//,"q10Laz" : [2,3]
+	"srcQ10Best" : [4,5]
+	,"srcZaloraBest" : [6,7]
+	,"srcSites" : [8,9]
+}
+createOptions(); 
+function createOptions(){
+	for(i in dropdownOptions){
+		var opt=document.createElement("button");
+		opt.id=i;
+		opt.innerText=i;
+		opt.onclick=function(){load(dropdownOptions[this.id][0], dropdownOptions[this.id][1], this.id)};
+		optionsDiv.appendChild(opt);
+	}
+	
+	
+	//(consider if too many?)
+	/*for(i in dropdownOptions){
+		var opt=new Option(i)
+		opt.id=i;
+		options.add(opt)
+	}
+	*/
+	
+	
+}
+function clickOption(i){
+	console.log(i);
+}
 
 lastAction="b1"
 function load(l1,l2,id){
