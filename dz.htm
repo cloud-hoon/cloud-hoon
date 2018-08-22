@@ -12,7 +12,13 @@ body {
 }
 #btnX {
     float:left;
-    height: 40px
+    height: 40px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+button {
+    margin-left: 5px;
+    margin-right: 5px;
 }
 </style>
 <title>Dz</title>
@@ -21,11 +27,10 @@ body {
 <input type="button" id="btnX" value="X" onclick="text.value='';text.focus()">
 <input type="button" id="b1" value="buy" onclick="load(0,1, this.id)">
 <input type="button" id="b2" value="q10Laz" onclick="load(2,3, this.id)">
+<a target="_blank" href="dzSeller.htm">Seller (Desktop)</a>
 <br/>
 <div id="optionsDiv"></div>
 <!--<select id="options" onchange="clickOption(this.value)"></select>-->
-<a target="_blank" href="dzSeller.htm">Seller (Desktop)</a>
-<br/>
 <iframe id="f1">
 </iframe>
 
