@@ -21,12 +21,11 @@ button {
     margin-right: 5px;
 }
 </style>
-<title>Dz</title>
 </head>
-<input type="search" size="10" autofocus id="text">
+<input type="search" size="10" autofocus id="text" onchange="document.title=this.value">
 <input type="button" id="btnX" value="X" onclick="text.value='';text.focus()">
-<input type="button" id="b1" value="buy" onclick="load(0,1, this.id)">
-<input type="button" id="b2" value="q10Laz" onclick="load(2,3, this.id)">
+<input type="button" id="b1" value="buy" onclick="load(0,3, this.id)">
+<input type="button" id="b2" value="q10Laz" onclick="load(1,2, this.id)">
 <a target="_blank" href="dzSeller.htm">Seller (Desktop)</a>
 <br/>
 <div id="optionsDiv"></div>
