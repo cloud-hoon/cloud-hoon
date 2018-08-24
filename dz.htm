@@ -58,7 +58,8 @@ body {
 	<input type="button" id="btnX" value="X" onclick="text.value='';text.focus()">
 	<select id="modesOptions" onchange="createOptions()">
 		<option>Products
-		<option>Process Order (shift from desktop)
+		<option>Process Sales (shift from desktop)
+		<option>Bills (if privatised)
 		<option>Shops
 		<option>Books
 		<option>T-shirt
@@ -90,9 +91,21 @@ const links=[
 ,"https://exchangemarketplace.com/shops?business_types=21"
 ,"http://xpareto.com/"
 
-// 10
-,"https://index.woorank.com/en/reviews?countries=SG"
-,"*https://www.theaffiliategateway.sg/directory/category"
+// 10 - 14
+,"https://shopee.sg/shop/64472211/search/?page=0&sortBy=sales"
+,"https://www.lazada.sg/minihelpers/?langFlag=en&q=All-Products&from=wangpu&pageTypeId=2"
+,"https://www.qoo10.sg/shop/MiniHelperssg?search_mode=basic"
+
+,"https://shopee.sg/shop/140266/search/?page=0&sortBy=sales"
+,"https://www.lazada.sg/passion-gadgets/?langFlag=en&q=All-Products&from=wangpu&pageTypeId=2"
+
+// 15 - 19
+,"https://www.qoo10.sg/shop/PasssionGadgets?search_mode=basic"
+,"*http://www.google.com.sg/search?q=shopee.com+%s"
+,"*http://www.google.com.sg/search?q=lazada.com+%s"
+,"*http://www.google.com.sg/search?q=qoo10.sg+%s"
+//,"https://index.woorank.com/en/reviews?countries=SG"
+//,"*https://www.theaffiliategateway.sg/directory/category"
 ,"Amazon mover/shaker"
 
 ,"http://www.watchcount.com/?cc=SG&uqsrc=catl&uqkw=&uqcat=625#serp"
@@ -111,11 +124,11 @@ dropdownOptions["Products"]={
 	,"srcSites" : [8,9]
 }
 dropdownOptions["Shops"]={
-	"buy" : [0, 1]
-	,"q10Laz" : [2,3]
-	,"all" : [0, 1, 2, 3]
-	,"srcQ10Best" : [4,5]
-	,"srcZaloraBest" : [6,7]
+	"search Shops" : [16, 17, 18]
+	,"minihelpers" : [10, 11,12]
+	,"PasssionGadgets" : [13,14,15]	
+	,"Bosch (Todo)" : [4,5]
+	,"JML (todo, not in shopee)" : [6,7]
 	,"srcSites" : [8,9]
 }
 createOptions(); 
