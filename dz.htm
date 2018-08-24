@@ -7,27 +7,50 @@ body {
 	margin: 0;
 }
 #text {
-	height: 40px;
-	float: left;
+	height: 100%;
+	
+	width:50%
 }
 #btnX {
-    float:left;
-    height: 40px;
-    margin-left: 5px;
-    margin-right: 5px;
+   height: 100%;
+   margin-left: 5px;
 }
-button {
+.btnOptions {
     margin-left: 5px;
-    margin-right: 5px;
 }
+#optionsDiv {
+    background: grey;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 25px;
+    height: 25px;
+}  
+#footer {
+    background: darkgrey;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 25px;
+}  
 </style>
 </head>
-<input type="search" size="10" autofocus id="text" onchange="document.title=this.value">
-<input type="button" id="btnX" value="X" onclick="text.value='';text.focus()">
-<input type="button" id="b1" value="buy" onclick="load(0,3, this.id)">
+<div id="footer">
+	<input type="search" size="10" autofocus id="text" onchange="document.title=this.value">
+	<input type="button" id="btnX" value="X" onclick="text.value='';text.focus()">
+	<select id="modesOptions" onchange="loadModes()">
+		<option>Products
+		<option>Books
+		<option>Shops
+		<option>Marketing
+	</select>
+</div>
+
+<!--<input type="button" id="b1" value="buy" onclick="load(0,3, this.id)">
 <input type="button" id="b2" value="q10Laz" onclick="load(1,2, this.id)">
-<a target="_blank" href="dzSeller.htm">Seller (Desktop)</a>
-<br/>
+<a target="_blank" href="dzSeller.htm">Seller (Desktop)</a>-->
+
 <div id="optionsDiv"></div>
 <!--<select id="options" onchange="clickOption(this.value)"></select>-->
 <iframe id="f1">
@@ -63,9 +86,9 @@ const links=[
 ,"https://keepa.com/#!search/1-%s"
 ]
 const dropdownOptions={
-	//"buy" : [0, 1]
-	//,"q10Laz" : [2,3]
-	"srcQ10Best" : [4,5]
+	"buy" : [0, 1]
+	,"q10Laz" : [2,3]
+	,"srcQ10Best" : [4,5]
 	,"srcZaloraBest" : [6,7]
 	,"srcSites" : [8,9]
 }
@@ -73,6 +96,7 @@ createOptions();
 function createOptions(){
 	for(i in dropdownOptions){
 		var opt=document.createElement("button");
+		opt.className="btnOptions"
 		opt.id=i;
 		opt.innerText=i;
 		opt.onclick=function(){load(dropdownOptions[this.id][0], dropdownOptions[this.id][1], this.id)};
@@ -119,9 +143,9 @@ elem.addEventListener('keypress', function(e){
   }
 });
 	
-var s=prompt("Search?")
+/*var s=prompt("Search?")
 if(s){
 	document.getElementById('text').value=(s);
 	document.getElementById(lastAction).click();
-}
+}*/
 </script>
