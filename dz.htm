@@ -8,8 +8,7 @@ body {
 }
 #text {
 	height: 100%;
-	
-	width:50%
+	width: 30%
 }
 #btnX {
    height: 100%;
@@ -42,8 +41,15 @@ body {
     white-space: nowrap;
     overflow-x: scroll;
 }  
+::-webkit-scrollbar {
+    height: 1px;  /* remove scrollbar space */
+    background: transparent;  /* optional: just make scrollbar invisible */
+}
+::-webkit-scrollbar-thumb {
+    background: #FF0000;
+}
 </style>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <div id="footer">
 	<input type="search" size="10" autofocus id="text" onchange="document.title=this.value">
