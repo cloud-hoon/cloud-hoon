@@ -56,11 +56,12 @@ body {
 <div id="footer">
 	<input type="search" size="10" autofocus id="text" onchange="document.title=this.value">
 	<input type="button" id="btnX" value="X" onclick="text.value='';text.focus()">
-	<select id="modesOptions" onchange="loadModes()">
+	<select id="modesOptions" onchange="createOptions()">
 		<option>Products
-		<option>Seller (shift from desktop)
-		<option>Books
+		<option>Process Order (shift from desktop)
 		<option>Shops
+		<option>Books
+		<option>T-shirt
 		<option>Marketing
 	</select>
 </div>
@@ -74,9 +75,10 @@ body {
 
 
 <script>
+
 const links=[
 // start from 0-4 don't delete and will spoil the sequences
-"https://shopee.sg/search/?keyword=%s&page=0&sortBy=sales"
+"https://shopee.sg/search?keyword=%s&page=0&sortBy=sales"
 ,"https://mobile.carousell.com/search/%s"
 ,"https://www.qoo10.sg/gmkt.inc/Mobile/Search/Default.aspx?keyword=%s&__ar=Y"
 ,"https://www.lazada.sg/catalog/?q=%s&_keyori=ss&from=input&spm=a2o42.home.search.go.654346b5ZwiEyX"
@@ -98,21 +100,37 @@ const links=[
 ,"https://shopee.sg/user/purchase/"
 ,"https://keepa.com/#!search/1-%s"
 ]
-const dropdownOptions={
+
+var dropdownOptions={}
+dropdownOptions["Products"]={
 	"buy" : [0, 1]
 	,"q10Laz" : [2,3]
+	,"all" : [0, 1, 2, 3]
+	,"srcQ10Best" : [4,5]
+	,"srcZaloraBest" : [6,7]
+	,"srcSites" : [8,9]
+}
+dropdownOptions["Shops"]={
+	"buy" : [0, 1]
+	,"q10Laz" : [2,3]
+	,"all" : [0, 1, 2, 3]
 	,"srcQ10Best" : [4,5]
 	,"srcZaloraBest" : [6,7]
 	,"srcSites" : [8,9]
 }
 createOptions(); 
 function createOptions(){
-	for(i in dropdownOptions){
+	optionsDiv.innerHTML=""
+	for(i in dropdownOptions[modesOptions.value]){
 		var opt=document.createElement("button");
 		opt.className="btnOptions"
 		opt.id=i;
 		opt.innerText=i;
-		opt.onclick=function(){load(dropdownOptions[this.id][0], dropdownOptions[this.id][1], this.id)};
+		opt.onclick=function(){load(this.id, dropdownOptions[modesOptions.value][this.id][0], 
+			dropdownOptions[modesOptions.value][this.id][1], 
+			dropdownOptions[modesOptions.value][this.id][2],
+			dropdownOptions[modesOptions.value][this.id][3])
+		};
 		optionsDiv.appendChild(opt);
 	}
 	
@@ -131,20 +149,26 @@ function clickOption(i){
 	console.log(i);
 }
 
+// to auto search last on press, default to first
 lastAction="buy"
-function load(l1,l2,id){
-	finalL1 = links[l1].replace("%s",text.value.trim().replace(/%s/gi,"+"))
-	if(finalL1.startsWith("*")){
-		window.open(finalL1.substring(1));
-	}else{
-		f1.src=finalL1
+
+function openInFrame(linkIndex,i){
+	if(!linkIndex){
+		return;
 	}
-	finalL2=links[l2].replace("%s",text.value.trim().replace(/%s/gi,"+"))
-	if(finalL2.startsWith("*")){
-		window.open(finalL2.substring(1));
+	
+	finalLink = links[linkIndex].replace("%s",text.value.trim().replace(/%s/gi,"+"))
+	if(finalLink.startsWith("*")){
+		window.open(finalLink.substring(1));
 	}else{
-	  	f2.src=finalL2;
+		document.getElementById("f"+i).src=finalLink
 	}
+}
+function load(id,l1,l2,l3,l4){
+	openInFrame(l1, 1);
+	openInFrame(l2, 2);	
+	openInFrame(l3, 3);
+	openInFrame(l4, 4);
 	lastAction=id;
 	console.log("last action updated to:"+id);
 }
@@ -156,9 +180,4 @@ elem.addEventListener('keypress', function(e){
   }
 });
 	
-/*var s=prompt("Search?")
-if(s){
-	document.getElementById('text').value=(s);
-	document.getElementById(lastAction).click();
-}*/
 </script>
