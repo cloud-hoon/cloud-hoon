@@ -51,19 +51,20 @@ body {
     background: #FF0000;
 }
 </style>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=0.5">
 </head>
 <div id="footer">
 	<input type="search" size="10" autofocus id="text" onchange="document.title=this.value">
 	<input type="button" id="btnX" value="X" onclick="text.value='';text.focus()">
 	<select id="modesOptions" onchange="createOptions()">
 		<option>Products
-		<option>Process Sales (shift from desktop)
+		<option>Orders
 		<option>Bills (if privatised)
 		<option>Shops
 		<option>Books
 		<option>T-shirt
 		<option>Marketing
+		<option>Automation
 	</select>
 </div>
 <div id="optionsDiv"></div>
@@ -83,9 +84,9 @@ const links=[
 ,"https://mobile.carousell.com/search/%s"
 ,"https://www.qoo10.sg/gmkt.inc/Mobile/Search/Default.aspx?keyword=%s&__ar=Y"
 ,"https://www.lazada.sg/catalog/?q=%s&_keyori=ss&from=input&spm=a2o42.home.search.go.654346b5ZwiEyX"
-,"https://www.qoo10.sg/gmkt.inc/Bestsellers/?gender=Female"  // change to women
-// start from 5-9
-,"https://www.qoo10.sg/gmkt.inc/Bestsellers/?gender=Male" // change to men
+,"https://www.qoo10.sg/gmkt.inc/Bestsellers/?gender=Female"  
+// 5-9
+,"https://www.qoo10.sg/gmkt.inc/Bestsellers/?gender=Male" 
 ,"*https://www.zalora.sg/women/just-for-you/" 
 ,"*https://www.zalora.sg/men/just-for-you/"
 ,"https://exchangemarketplace.com/shops?business_types=21"
@@ -104,14 +105,30 @@ const links=[
 ,"*http://www.google.com.sg/search?q=shopee.com+%s"
 ,"*http://www.google.com.sg/search?q=lazada.com+%s"
 ,"*http://www.google.com.sg/search?q=qoo10.sg+%s"
-//,"https://index.woorank.com/en/reviews?countries=SG"
-//,"*https://www.theaffiliategateway.sg/directory/category"
-,"Amazon mover/shaker"
+,"*https://sg.carousell.com/inbox/"
+
+// 20 - 24
+,"https://shopee.sg/user/purchase/list/?type=7"
+,"https://shopee.sg/user/purchase/"
+,"https://www.qoo10.sg/gmkt.inc/My/OrderContractList.aspx"
+,"https://docs.google.com/spreadsheets/d/1tMthV-SuOGieL2DikEePZhfaaa1LDoLnXNYFmwss4zw/edit"
+,"https://sellercenter.lazada.sg/"
+
+// 25 - 29
+,"https://sellercenter.lazada.sg/im/window?isWindowOpen=true&version=1.0.6"
+,"https://www.minifier.org/"
+,"http://jsbeautifier.org/"
 
 ,"http://www.watchcount.com/?cc=SG&uqsrc=catl&uqkw=&uqcat=625#serp"
-,"https://www.watsons.com.sg/c/bestSeller"
 ,"https://shopee.sg/user/purchase/"
 ,"https://keepa.com/#!search/1-%s"
+
+
+
+//,"https://www.watsons.com.sg/c/bestSeller"
+//,"Amazon mover/shaker"
+//,"https://index.woorank.com/en/reviews?countries=SG"
+//,"*https://www.theaffiliategateway.sg/directory/category"
 ]
 
 var dropdownOptions={}
@@ -123,6 +140,10 @@ dropdownOptions["Products"]={
 	,"srcZaloraBest" : [6,7]
 	,"srcSites" : [8,9]
 }
+dropdownOptions["Orders"]={
+	"orders" : [20,21,22,19]
+	,"toShip" : [23,24,25]
+}
 dropdownOptions["Shops"]={
 	"search Shops" : [16, 17, 18]
 	,"minihelpers" : [10, 11,12]
@@ -131,6 +152,11 @@ dropdownOptions["Shops"]={
 	,"JML (todo, not in shopee)" : [6,7]
 	,"srcSites" : [8,9]
 }
+dropdownOptions["automation"]={
+	"js mini+beau": [26,27]
+
+}
+
 createOptions(); 
 function createOptions(){
 	optionsDiv.innerHTML=""
@@ -153,20 +179,15 @@ function createOptions(){
 		var opt=new Option(i)
 		opt.id=i;
 		options.add(opt)
-	}
-	*/
+	}	*/
 	
 	
-}
-function clickOption(i){
-	console.log(i);
 }
 
 // to auto search last on press, default to first
 lastAction="buy"
-
 function openInFrame(linkIndex,i){
-	if(!linkIndex){
+	if(linkIndex==null){
 		return;
 	}
 	
