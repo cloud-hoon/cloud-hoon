@@ -187,4 +187,44 @@ function createOptions(){
 		opt.onclick=function(){load(this.id, dropdownOptions[modesOptions.value][this.id][0], 
 			dropdownOptions[modesOptions.value][this.id][1], 
 			dropdownOptions[modesOptions.value][this.id][2],
-			dropdownOptions
+			dropdownOptions[modesOptions.value][this.id][3])
+		};
+		optionsDiv.appendChild(opt);
+	}
+	if(firstModeOption){
+		lastAction=firstModeOption;
+	}
+}
+
+// to auto search last on press, will auto populate
+lastAction=""
+createOptions();
+function openInFrame(linkIndex,i){
+	if(linkIndex==null){
+		return;
+	}
+	
+	finalLink = links[linkIndex].replace("%s",text.value.trim().replace(/%s/gi,"+"))
+	if(finalLink.startsWith("*")){
+		window.open(finalLink.substring(1));
+	}else{
+		document.getElementById("f"+i).src=finalLink
+	}
+}
+function load(id,l1,l2,l3,l4){
+	openInFrame(l1, 1);
+	openInFrame(l2, 2);	
+	openInFrame(l3, 3);
+	openInFrame(l4, 4);
+	lastAction=id;
+	console.log("last action updated to:"+id);
+}
+var elem = document.getElementById('text');
+elem.addEventListener('keypress', function(e){
+  if (e.keyCode == 13) {
+    console.log('lastAction '+lastAction+' will be pressed');   
+    document.getElementById(lastAction).click()
+  }
+});
+	
+</script>
