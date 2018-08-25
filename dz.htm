@@ -84,7 +84,7 @@ body {
 
 const links=[
 // start from 0-4 don't delete and will spoil the sequences
-"https://shopee.sg/search?keyword=%s&page=0&sortBy=sales"
+"https://shopee.sg/search?keyword=%s&locations=-1&page=0&sortBy=sales" // domestic only
 ,"https://mobile.carousell.com/search/%s"
 ,"https://www.qoo10.sg/gmkt.inc/Mobile/Search/Default.aspx?keyword=%s&__ar=Y"
 ,"https://www.lazada.sg/catalog/?q=%s&_keyori=ss&from=input&spm=a2o42.home.search.go.654346b5ZwiEyX"
@@ -191,13 +191,13 @@ function createOptions(){
 		};
 		optionsDiv.appendChild(opt);
 	}
-	if(firstAction){
+	if(firstModeOption){
 		lastAction=firstModeOption;
 	}
 }
 
-// to auto search last on press, default to first
-lastAction="buy"
+// to auto search last on press, will auto populate
+lastAction=""
 function openInFrame(linkIndex,i){
 	if(linkIndex==null){
 		return;
