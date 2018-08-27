@@ -8,12 +8,14 @@ body {
 }
 #text {
 	height: 100%;
-	width: 30%
+	width: 25%
 }
-#btnX {
+#btnX, #btnStar {
    height: 100%;
-   margin-left: 5px;
-   margin-right: 5px;
+   margin-left: 7px;
+   margin-right: 7px;
+   padding-left: 10px;
+   padding-right: 10px;
 }
 .btnOptions {
     margin-left: 5px;
@@ -28,8 +30,8 @@ body {
     position: fixed;
     left: 0;
     right: 0;
-    bottom: 50px;
-    height: 50px;
+    bottom: 40px;
+    height: 40px;
     white-space: nowrap;
     overflow-x: scroll;
 }  
@@ -39,7 +41,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    height: 50px;
+    height: 40px;
     white-space: nowrap;
     overflow-x: scroll;
     z-index: 999;
@@ -58,6 +60,7 @@ body {
 <div id="footer">
 	<input type="search" size="10" autofocus id="text" onchange="document.title=this.value">
 	<input type="button" id="btnX" value="X" onclick="text.value='';text.focus()">
+	<input type="button" id="btnStar" value="*" onclick="promptSearch();">
 	<select id="modesOptions" onchange="createOptions()">
 		<option>Products
 		<option>Car Meetup
@@ -65,6 +68,9 @@ body {
 		<option>Bills (if privatised)
 		<option>Shops
 		<option>Books
+		<option>Amazon
+		<option>Domains
+		<option>Dropship
 		<option>Merch
 		<option>Marketing
 		<option>Automation
@@ -130,11 +136,21 @@ const links=[
 ,"https://sellercenter.lazada.sg/campaign#/"
 ,"https://www.facebook.com/marketplace/singapore/search?query=free&minPrice=0&maxPrice=0"
 ,"http://singapore.craigslist.com.sg/search/zip"
+,"*https://m.facebook.com/groups/1469394679963320?view=permalink&id=2095284560707659&__tn__=R"
 //,"http://www.watchcount.com/?cc=SG&uqsrc=catl&uqkw=&uqcat=625#serp"
 //,"https://keepa.com/#!search/1-%s"
 
+// 35-39
+,"https://docs.google.com/spreadsheets/d/1jyd1FrUwWZJeZ76vcMmKBP_yhEiYlAprlvAfYDe42wg/edit#gid=489484342"
+,"https://youtu.be/QAPUrkF_8c0"
+,"https://apps.shopify.com/ali-reviews"
+,"https://adespresso.com/ads-examples/"
+,"http://www.shareasale.com/popular-merchants.cfm"
 
-
+// 40 - 44
+,"40"
+,"https://app.buzzsumo.com/research/content?type=articles&result_type=total&num_days=365&general_article&infographic&video&how_to_article&list&what_post&why_post&q=%s&page=1&tab=0"
+,"42"
 //,"https://www.watsons.com.sg/c/bestSeller"
 //,"Amazon mover/shaker"
 //,"https://index.woorank.com/en/reviews?countries=SG"
@@ -149,7 +165,10 @@ dropdownOptions["Products"]={
 	,"campaign": [31]
 	,"srcQ10Best" : [4,5]
 	,"srcZaloraBest" : [6,7]
-	,"srcSites" : [8,9]
+	,"srcSites" : [8,9,39]
+}
+dropdownOptions["Dropship"]={
+	"starting" : [36,37]
 }
 dropdownOptions["Car Meetup"]={
 	"find free" : [32,33]
@@ -167,11 +186,21 @@ dropdownOptions["Shops"]={
 	,"JML (todo, not in shopee)" : [6,7]
 	,"srcSites" : [8,9]
 }
+dropdownOptions["Amazon"]={
+	"-ve reviews" : [34]
+}
 dropdownOptions["Automation"]={
 	"js mini+beau": [26,27]
 }
+dropdownOptions["Others"]={
+	"course sell": [35]
+	,"monitoring" : [42]
+}
+dropdownOptions["Marketing"]={
+	"other ads" : [38,40,41]
+}
 dropdownOptions["Merch"]={
-	"merchinformer" : [30]
+	"merchinformer" : [30,41]
 }
 
 createOptions(); 
@@ -218,6 +247,22 @@ function load(id,l1,l2,l3,l4){
 	openInFrame(l4, 4);
 	lastAction=id;
 	console.log("last action updated to:"+id);
+}
+function promptSearch(){
+	var s=prompt('search all');
+	if(!s){
+		return;
+	}
+	s=s.toLowerCase();
+	//todo open new windows with all related links
+	out="";
+	for(i in links){
+		if(links[i].toLowerCase().indexOf(s) >= 0){
+			out+="<a href='"+links[i]+"'>"+links[i]+"</a><br/>"
+		}
+	}
+	win=window.open();
+	win.document.write(out);
 }
 var elem = document.getElementById('text');
 elem.addEventListener('keypress', function(e){
