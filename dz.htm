@@ -90,7 +90,7 @@ body {
 
 const links=[
 // start from 0-4 don't delete and will spoil the sequences
-"https://shopee.sg/search?keyword=%s&locations=-1&page=0&sortBy=sales" // domestic only
+"https://shopee.sg/search?keyword=%s&page=0&sortBy=sales" //  &locations=-1 and domestic only
 ,"https://mobile.carousell.com/search/%s"
 ,"https://www.qoo10.sg/gmkt.inc/Mobile/Search/Default.aspx?keyword=%s&__ar=Y"
 ,"https://www.lazada.sg/catalog/?q=%s&_keyori=ss&from=input&spm=a2o42.home.search.go.654346b5ZwiEyX"
@@ -133,9 +133,9 @@ const links=[
 
 // 30 - 34
 ,"https://merchinformer.com/merch-amazon-listings/"
-,"https://sellercenter.lazada.sg/campaign#/"
-,"https://www.facebook.com/marketplace/singapore/search?query=free&minPrice=0&maxPrice=0"
-,"http://singapore.craigslist.com.sg/search/zip"
+,"*https://sellercenter.lazada.sg/campaign#/"
+,"*https://www.facebook.com/marketplace/singapore/search?query=free&minPrice=0&maxPrice=0"
+,"*http://singapore.craigslist.com.sg/search/zip"
 ,"*https://m.facebook.com/groups/1469394679963320?view=permalink&id=2095284560707659&__tn__=R"
 //,"http://www.watchcount.com/?cc=SG&uqsrc=catl&uqkw=&uqcat=625#serp"
 //,"https://keepa.com/#!search/1-%s"
@@ -148,9 +148,17 @@ const links=[
 ,"http://www.shareasale.com/popular-merchants.cfm"
 
 // 40 - 44
-,"40"
+,"https://octatools.com/free-seo-tools/free-research-tools/amazon-sales-rank-checker/"
 ,"https://app.buzzsumo.com/research/content?type=articles&result_type=total&num_days=365&general_article&infographic&video&how_to_article&list&what_post&why_post&q=%s&page=1&tab=0"
-,"42"
+,"https://app.jumpsend.com/deals/"
+,"https://www.jasontayonline.com/amazon-fba-101.html"
+,"https://sellercentral.amazon.com/early-reviewer-program/enroll?ref_=xx_zebraenr_dnav_mkt"
+
+// 45 - 49
+,"*https://www.amazon.com/s?url=search-alias%3Daps&field-keywords=%s"
+,"https://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20180827172536&SearchText=%s"
+,"http://sonar-tool.com/us"
+,"https://phlanx.com/engagement-calculator"
 //,"https://www.watsons.com.sg/c/bestSeller"
 //,"Amazon mover/shaker"
 //,"https://index.woorank.com/en/reviews?countries=SG"
@@ -169,6 +177,7 @@ dropdownOptions["Products"]={
 }
 dropdownOptions["Dropship"]={
 	"starting" : [36,37]
+	,"alixpress+amazon" : [47,46,45]
 }
 dropdownOptions["Car Meetup"]={
 	"find free" : [32,33]
@@ -188,6 +197,7 @@ dropdownOptions["Shops"]={
 }
 dropdownOptions["Amazon"]={
 	"-ve reviews" : [34]
+	,"search" : [40,42,43,44]
 }
 dropdownOptions["Automation"]={
 	"js mini+beau": [26,27]
@@ -197,7 +207,7 @@ dropdownOptions["Others"]={
 	,"monitoring" : [42]
 }
 dropdownOptions["Marketing"]={
-	"other ads" : [38,40,41]
+	"other ads" : [38,35,41,48]
 }
 dropdownOptions["Merch"]={
 	"merchinformer" : [30,41]
