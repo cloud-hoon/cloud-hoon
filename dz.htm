@@ -9,6 +9,7 @@ body {
 #text {
 	height: 100%;
 	width: 25%
+    z-index: 999; // to try fix issue of chrome mobile interfering with overlap underneath page 
 }
 #btnX, #btnStar {
    height: 100%;
@@ -16,10 +17,12 @@ body {
    margin-right: 7px;
    padding-left: 10px;
    padding-right: 10px;
+    z-index: 999;
 }
 .btnOptions {
     margin-left: 5px;
     height: 90%;
+    z-index: 999;
 }
 #framesDiv {
 	white-space: nowrap;
@@ -44,7 +47,6 @@ body {
     height: 40px;
     white-space: nowrap;
     overflow-x: scroll;
-    z-index: 999;
 }  
 ::-webkit-scrollbar {
     height: 2px;  /* remove scrollbar space */
@@ -87,6 +89,7 @@ body {
 
 
 <script>
+
 const links=[
 // start from 0-4 don't delete and will spoil the sequences
 "https://shopee.sg/search?keyword=%s&page=0&sortBy=sales" //  &locations=-1 and domestic only
@@ -100,30 +103,36 @@ const links=[
 ,"*https://www.zalora.sg/men/just-for-you/"
 ,"https://exchangemarketplace.com/shops?business_types=21"
 ,"http://xpareto.com/"
+
 // 10 - 14
 ,"https://shopee.sg/shop/64472211/search/?page=0&sortBy=sales"
 ,"https://www.lazada.sg/minihelpers/?langFlag=en&q=All-Products&from=wangpu&pageTypeId=2"
 ,"https://www.qoo10.sg/shop/MiniHelperssg?search_mode=basic"
+
 ,"https://shopee.sg/shop/140266/search/?page=0&sortBy=sales"
 ,"https://www.lazada.sg/passion-gadgets/?langFlag=en&q=All-Products&from=wangpu&pageTypeId=2"
+
 // 15 - 19
 ,"https://www.qoo10.sg/shop/PasssionGadgets?search_mode=basic"
 ,"*http://www.google.com.sg/search?q=shopee.com+%s"
 ,"*http://www.google.com.sg/search?q=lazada.com+%s"
 ,"*http://www.google.com.sg/search?q=qoo10.sg+%s"
 ,"*https://sg.carousell.com/inbox/"
+
 // 20 - 24
 ,"https://shopee.sg/user/purchase/list/?type=7"
-,"https://shopee.sg/user/purchase/?type=8"
+,"https://shopee.sg/user/purchase/list/?type=8"
 ,"https://www.qoo10.sg/gmkt.inc/My/OrderContractList.aspx"
 ,"https://docs.google.com/spreadsheets/d/1tMthV-SuOGieL2DikEePZhfaaa1LDoLnXNYFmwss4zw/edit"
 ,"https://sellercenter.lazada.sg/"
+
 // 25 - 29
 ,"https://sellercenter.lazada.sg/im/window?isWindowOpen=true&version=1.0.6"
 ,"https://www.minifier.org/"
 ,"http://jsbeautifier.org/"
 ,"*https://www.facebook.com/marketplace/singapore/search?query=%s"
 ,"*https://sg.carousell.com/sell/"
+
 // 30 - 34
 ,"https://merchinformer.com/merch-amazon-listings/"
 ,"*https://sellercenter.lazada.sg/campaign#/"
@@ -132,18 +141,21 @@ const links=[
 ,"*https://m.facebook.com/groups/1469394679963320?view=permalink&id=2095284560707659&__tn__=R"
 //,"http://www.watchcount.com/?cc=SG&uqsrc=catl&uqkw=&uqcat=625#serp"
 //,"https://keepa.com/#!search/1-%s"
+
 // 35-39
-,"https://docs.google.com/spreadsheets/d/1jyd1FrUwWZJeZ76vcMmKBP_yhEiYlAprlvAfYDe42wg/edit#gid=489484342"
+,"https://docs.google.com/spreadsheets/d/1tMthV-SuOGieL2DikEePZhfaaa1LDoLnXNYFmwss4zw/edit#gid=31048718"
 ,"https://youtu.be/QAPUrkF_8c0"
 ,"https://apps.shopify.com/ali-reviews"
 ,"https://adespresso.com/ads-examples/"
 ,"http://www.shareasale.com/popular-merchants.cfm"
+
 // 40 - 44
 ,"https://octatools.com/free-seo-tools/free-research-tools/amazon-sales-rank-checker/"
 ,"https://app.buzzsumo.com/research/content?type=articles&result_type=total&num_days=365&general_article&infographic&video&how_to_article&list&what_post&why_post&q=%s&page=1&tab=0"
 ,"https://app.jumpsend.com/deals/"
 ,"https://www.jasontayonline.com/amazon-fba-101.html"
 ,"https://sellercentral.amazon.com/early-reviewer-program/enroll?ref_=xx_zebraenr_dnav_mkt"
+
 // 45 - 49
 ,"*https://www.amazon.com/s?url=search-alias%3Daps&field-keywords=%s"
 ,"https://www.aliexpress.com/wholesale?catId=0&initiative_id=SB_20180827172536&SearchText=%s"
@@ -154,11 +166,15 @@ const links=[
 // 50 - 54
 ,"https://tacticalarbitrage.com/sites/"
 ,"http://www.booksamillion.com/features?cat=bargain-books3&oxid=134&oxname=bargainbest&oxpage=bargain&oxpos=top&oxdate=042417"
+,"*https://www.google.com.sg/search?q=-site%3A%22%s%22+%s&aqs=chrome..69i57.24198j0j4&sourceid=chrome&ie=UTF-8"
+,"https://builtwith.com/%s"
+,"https://app.pricefy.io/opportunities#tableProductsOpportunities_wrapper"
 //,"https://www.watsons.com.sg/c/bestSeller"
 //,"Amazon mover/shaker"
 //,"https://index.woorank.com/en/reviews?countries=SG"
 //,"*https://www.theaffiliategateway.sg/directory/category"
 ]
+
 var dropdownOptions={}
 dropdownOptions["Products"]={
 	"buy" : [0, 1]
@@ -171,14 +187,17 @@ dropdownOptions["Products"]={
 }
 dropdownOptions["Dropship"]={
 	"starting" : [36,37,50]
-	,"alixpress+amazon" : [47,46,45]
+	,"alixpress+amazon" : [47,46,45,54]
+	
 }
 dropdownOptions["Books"]={
 	"books resell" : [51,40]
 }
 dropdownOptions["Domains"]={
-	"massalexa" : [49]
+	"related" : [52,53]
+	,"massalexa" : [49]
 }
+
 dropdownOptions["Car Meetup"]={
 	"find free" : [32,33]
 	,"sell meetup" : [28,29]
@@ -210,8 +229,9 @@ dropdownOptions["Marketing"]={
 	"other ads" : [38,35,41,48]
 }
 dropdownOptions["Merch"]={
-	"merchinformer" : [30,41,47]
+	"merchinformer" : [30,41]
 }
+
 createOptions(); 
 function createOptions(){
 	optionsDiv.innerHTML=""
@@ -233,6 +253,7 @@ function createOptions(){
 		lastAction=firstModeOption;
 	}
 }
+
 // to auto search last on press, will auto populate
 lastAction=""
 createOptions();
@@ -241,7 +262,7 @@ function openInFrame(linkIndex,i){
 		return;
 	}
 	
-	finalLink = links[linkIndex].replace("%s",text.value.trim().replace(/%s/gi,"+"))
+	finalLink = links[linkIndex].replace(new RegExp("%s",'g'),text.value.trim().replace(/%s/gi,"+"))
 	if(finalLink.startsWith("*")){
 		window.open(finalLink.substring(1));
 	}else{
