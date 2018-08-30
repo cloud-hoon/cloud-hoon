@@ -166,13 +166,16 @@ const links=[
 // 50 - 54
 ,"https://tacticalarbitrage.com/sites/"
 ,"http://www.booksamillion.com/features?cat=bargain-books3&oxid=134&oxname=bargainbest&oxpage=bargain&oxpos=top&oxdate=042417"
-,"*https://www.google.com.sg/search?q=-site%3A%22%s%22+%s&aqs=chrome..69i57.24198j0j4&sourceid=chrome&ie=UTF-8"
+,"*https://www.google.com.sg/search?q=-site%3A%22%s%22+%22%s%22&aqs=chrome..69i57.24198j0j4&sourceid=chrome&ie=UTF-8"
 ,"https://builtwith.com/%s"
 ,"https://app.pricefy.io/opportunities#tableProductsOpportunities_wrapper"
 
 // 55 - 59
 ,"https://merchtitans.com/tools/merch-by-amazon-research"
-,"https://www.similarweb.com/website/bookoutlet.com#similarSites"
+,"*https://www.similarweb.com/website/%s#similarSites"
+,"https://mxtoolbox.com/SuperTool.aspx?action=whois%3a%s&run=toolpage"
+,"https://myip.ms/browse/sites/1/url/%s"
+,"https://builtwith.com/meta/%s"
 //,"https://www.watsons.com.sg/c/bestSeller"
 //,"Amazon mover/shaker"
 //,"https://index.woorank.com/en/reviews?countries=SG"
@@ -198,7 +201,8 @@ dropdownOptions["Books"]={
 	"books resell" : [51,40]
 }
 dropdownOptions["Domains"]={
-	"related" : [56,53,52]
+	"owner & tech" : [53,59,57,58]
+	,"related" : [52,56]
 	,"massalexa" : [49]
 }
 
@@ -305,4 +309,9 @@ elem.addEventListener('keypress', function(e){
   }
 });
 	
+window.onfocus=function(event){
+    if(event.explicitOriginalTarget===window){
+        console.log('switched from tab');
+    }
+}
 </script>
