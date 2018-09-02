@@ -60,7 +60,7 @@ body {
 <meta name="viewport" content="width=device-width, maximum-scale=0.5, initial-scale=0.5">
 </head>
 <div id="footer">
-	<input type="search" size="10" autofocus id="text" onchange="document.title=this.value">
+	<input type="search" size="10" autofocus id="text" onclick="this.select()" onchange="document.title='dz: '+this.value">
 	<input type="button" id="btnX" value="X" onclick="text.value='';text.focus()">
 	<input type="button" id="btnStar" value="*" onclick="promptSearch();">
 	<select id="modesOptions" onchange="createOptions()">
@@ -105,18 +105,18 @@ const links=[
 ,"http://xpareto.com/"
 
 // 10 - 14
-,"https://shopee.sg/shop/64472211/search/?page=0&sortBy=sales"
-,"https://www.lazada.sg/minihelpers/?langFlag=en&q=All-Products&from=wangpu&pageTypeId=2"
-,"https://www.qoo10.sg/shop/MiniHelperssg?search_mode=basic"
+,genShopLink("64472211","MiniHelperssg","minihelpers",0)
+,genShopLink("64472211","MiniHelperssg","minihelpers",1)
+,genShopLink("64472211","MiniHelperssg","minihelpers",2)
 
-,"https://shopee.sg/shop/140266/search/?page=0&sortBy=sales"
-,"https://www.lazada.sg/passion-gadgets/?langFlag=en&q=All-Products&from=wangpu&pageTypeId=2"
+,genShopLink("140266","PasssionGadgets","passion-gadgets",0)
+,genShopLink("140266","PasssionGadgets","passion-gadgets",1)
 
 // 15 - 19
-,"https://www.qoo10.sg/shop/PasssionGadgets?search_mode=basic"
-,"*http://www.google.com.sg/search?q=shopee.com+%s"
-,"*http://www.google.com.sg/search?q=lazada.com+%s"
+,genShopLink("140266","PasssionGadgets","passion-gadgets",2)
+,"*http://www.google.com.sg/search?q=shopee.sg+%s"
 ,"*http://www.google.com.sg/search?q=qoo10.sg+%s"
+,"*http://www.google.com.sg/search?q=lazada.sg+%s"
 ,"*https://sg.carousell.com/inbox/"
 
 // 20 - 24
@@ -180,6 +180,15 @@ const links=[
 // 60 - 64
 ,"https://hyprbrands.com/discover"
 ,"https://www.facebook.com/ads/audience_insights?ref=fbiq_ai"
+,genShopLink("60315503","acer","acer-official-store-",0)
+,genShopLink("60315503","acer","acer-official-store-",1)
+,genShopLink("60315503","acer","acer-official-store-",2)
+
+// 65 - 69
+,"https://w3techs.com/technologies/details/cm-shopify/all/all"
+,genShopLink(null,"1stshop",null,1)
+,genShopLink(null,"parisilk","parisilk-electronics-computers-pte-ltd",1)
+,genShopLink(null,"parisilk","parisilk-electronics-computers-pte-ltd",2)
 //,"https://www.watsons.com.sg/c/bestSeller"
 //,"Amazon mover/shaker"
 //,"https://index.woorank.com/en/reviews?countries=SG"
@@ -208,6 +217,7 @@ dropdownOptions["Domains"]={
 	"owner & tech" : [53,59,57,58]
 	,"related" : [52,56]
 	,"massalexa" : [49]
+	,"sites to sell to" : [65]
 }
 
 dropdownOptions["Car Meetup"]={
@@ -221,10 +231,12 @@ dropdownOptions["Orders"]={
 dropdownOptions["Shops"]={
 	"search Shops" : [16, 17, 18]
 	,"minihelpers" : [10, 11,12]
-	,"PasssionGadgets" : [13,14,15]	
-	,"Bosch (Todo)" : [4,5]
+	,"PasssionGadgets" : [13,14,15]
+	,"Acer" : [62,63,64]
+	,"Parisilk" : [67,68]
+	,"consider showing all in q10 not in shopee, in shopee not in q10" : [4,5]
 	,"JML (todo, not in shopee)" : [6,7]
-	,"srcSites" : [8,9]
+	,"buy cheap" : [11,14,66,63]
 }
 dropdownOptions["Amazon"]={
 	"-ve reviews" : [34]
@@ -243,6 +255,20 @@ dropdownOptions["Marketing"]={
 }
 dropdownOptions["Merch"]={
 	"merchinformer" : [55,47,30]
+}
+
+function genShopLink(shopee,qoo10,lazada,index){
+	if(index == 0){
+		// eg 60315503
+		return "https://shopee.sg/shop/"+shopee+"/search/?page=0&sortBy=sales";
+	}else if(index == 1){
+		// acer
+		return "https://www.qoo10.sg/shop/"+qoo10+"?search_mode=basic#sch_keyword_display_section"
+	}else if(index == 2){
+		// eg acer-official-store-
+		return "https://www.lazada.sg/"+lazada+"/?langFlag=en&q=All-Products&from=wangpu&pageTypeId=2#products"
+	}
+	return null;
 }
 
 createOptions(); 
