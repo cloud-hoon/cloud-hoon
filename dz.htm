@@ -64,6 +64,7 @@ body {
 	<input type="button" id="btnX" value="X" onclick="text.value='';text.focus()">
 	<input type="button" id="btnStar" value="*" onclick="promptSearch();">
 	<select id="modesOptions" onchange="createOptions()">
+		<option>Recent
 		<option>Products
 		<option>Car Meetup
 		<option>Orders
@@ -128,7 +129,8 @@ const links=[
 
 // 25 - 29
 ,"https://sellercenter.lazada.sg/im/window?isWindowOpen=true&version=1.0.6"
-,"https://mrcoles.com/bookmarklet/"
+,"https://ted.mielczarek.org/code/mozilla/bookmarklet.html"
+//,"https://mrcoles.com/bookmarklet/" created unreversable code so changed
 ,"http://jsbeautifier.org/"
 ,"*https://www.facebook.com/marketplace/singapore/search?query=%s"
 ,"*https://sg.carousell.com/sell/"
@@ -189,8 +191,26 @@ const links=[
 ,genShopLink(null,"1stshop",null,1)
 ,genShopLink(null,"parisilk","parisilk-electronics-computers-pte-ltd",1)
 ,genShopLink(null,"parisilk","parisilk-electronics-computers-pte-ltd",2)
-//,"https://www.watsons.com.sg/c/bestSeller"
-//,"Amazon mover/shaker"
+,"https://explore.ebay.com/worth?keywords=%s&activity=sold&siteId=EBAY-US&trend=all&catid=139971&lcf=11&level=1&interval=weekly"
+
+// 70 - 74
+,"http://www.amazon-asin.com/asincheck/?product_id=%s"
+,"http://www.salesrankexpress.com/"
+,genQoo10Link("100000048")
+,genQoo10Link("100000018")
+,genQoo10Link("100000041")
+
+// 75- 79
+,genQoo10Link("100000049")
+,genQoo10Link("100000009")
+,genQoo10Link("100000040")
+,genQoo10Link("100000050")
+,genQoo10Link("100000016")
+
+// 80 - 84
+,genQoo10Link("100000015")
+,"http://amtestapps.com/facebook"
+,"http://amtestapps.com/aliexpress"
 //,"https://index.woorank.com/en/reviews?countries=SG"
 //,"*https://www.theaffiliategateway.sg/directory/category"
 ]
@@ -208,10 +228,10 @@ dropdownOptions["Products"]={
 dropdownOptions["Dropship"]={
 	"starting" : [36,37,50]
 	,"alixpress+amazon" : [47,46,45,54]
-	
+	,"others" : [81,82,69]
 }
 dropdownOptions["Books"]={
-	"books resell" : [51,40]
+	"books resell" : [51,40,71]
 }
 dropdownOptions["Domains"]={
 	"owner & tech" : [53,59,57,58]
@@ -223,6 +243,10 @@ dropdownOptions["Domains"]={
 dropdownOptions["Car Meetup"]={
 	"find free" : [32,33]
 	,"sell meetup" : [28,29]
+	,"q10 p1" : [72,73,74,75]
+	,"q10 p2" : [76,77,78,79]
+	,"q10 p3" : [80]
+	
 }
 dropdownOptions["Orders"]={
 	"orders" : [23,21,22]
@@ -240,7 +264,8 @@ dropdownOptions["Shops"]={
 }
 dropdownOptions["Amazon"]={
 	"-ve reviews" : [34]
-	,"search" : [40,42,43,44]
+	,"asin" : [70]
+	,"101" : [40,42,43,44]
 }
 dropdownOptions["Automation"]={
 	"js mini+beau": [26,27]
@@ -256,7 +281,9 @@ dropdownOptions["Marketing"]={
 dropdownOptions["Merch"]={
 	"merchinformer" : [55,47,30]
 }
-
+function genQoo10Link(category){
+	return "https://www.qoo10.sg/gmkt.inc/Category/Default.aspx?gdlc_cd="+category+"&gdmc_cd=&gdsc_cd=&brand_keyword=&keyword_hist=&keyword=&sortType=SORT_RANK_POINT&dispType=LIST&flt_pri_idx=5%2C15&filterDelivery=NNNNNANNNN&search_global_yn=&basis=&shipFromNation=SG&shipto=&brandnm=&SearchNationCode=&is_research_yn=Y&hid_keyword=&quick_delivery_yn=&qprime_yn=&shipping_avg_dt=&video_goods_yn=&coupon_filter_no=&gd_type=&drugs_type=&relation_group_no=&priceMin=50&priceMax=&category_specific_kw_nos=&curPage=1&pageSize=120&partial=on&brandno=#anchor_detail_top"
+}
 function genShopLink(shopee,qoo10,lazada,index){
 	if(index == 0){
 		// eg 60315503
@@ -275,6 +302,23 @@ createOptions();
 function createOptions(){
 	optionsDiv.innerHTML=""
 	firstModeOption=null;
+	
+	if(modesOptions.value=="Recent"){
+		var mru=getMRU(MRU_OPTIONS);
+		for(i in mru){
+			var opt=document.createElement("button");
+			opt.className="btnOptions"
+			val=mru[i]
+			opt.id=val;
+			if(!firstModeOption){ firstModeOption=val; }
+			opt.innerText=val;
+			//TODO onclick, also edit the load function to update MRU
+			opt.onclick=function(){getLoadFunction(val)};
+			optionsDiv.appendChild(opt);
+		}
+		return;
+	}
+	
 	for(i in dropdownOptions[modesOptions.value]){
 		var opt=document.createElement("button");
 		opt.className="btnOptions"
@@ -308,12 +352,17 @@ function openInFrame(linkIndex,i){
 		document.getElementById("f"+i).src=finalLink
 	}
 }
+function getLoadFunction(id){
+
+	return load(id,l1,l2,l3,l4);
+}
 function load(id,l1,l2,l3,l4){
 	openInFrame(l1, 1);
 	openInFrame(l2, 2);	
 	openInFrame(l3, 3);
 	openInFrame(l4, 4);
 	lastAction=id;
+	updateMRU(MRU_OPTIONS,10,id);
 	console.log("last action updated to:"+id);
 }
 function promptSearch(){
@@ -339,10 +388,39 @@ elem.addEventListener('keypress', function(e){
     document.getElementById(lastAction).click()
   }
 });
+
+
+// bigger index is most recent. 0 - oldest
+var MRU_OPTIONS="dz-mru-options";
+function updateMRU(key,maxSize,value){
+	var mru=getMRU(key);
+	// remove if exist
+	var currIndex=mru.indexOf(value);
+	if(currIndex >= 0){
+		mru.splice(currIndex,1);
+	}
+	if(mru.length>=maxSize){
+		mru.shift();
+	}
 	
+	mru.push(value);
+	localStorage.setItem(key,JSON.stringify(mru));
+	return mru;
+}
+function getMRU(key){
+	var mru=localStorage.getItem(key);
+	if(mru == null){
+		mru=[];
+	}else{
+		mru=JSON.parse(mru);
+	}
+	return mru;
+}
+
 window.onfocus=function(event){
     if(event.explicitOriginalTarget===window){
         console.log('switched from tab');
+	text.focus();text.select();	
     }
 }
 </script>
