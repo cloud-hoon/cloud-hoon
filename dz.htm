@@ -297,14 +297,13 @@ function genShopLink(shopee,qoo10,lazada,index){
 	}
 	return null;
 }
-
-createOptions(); 
+ 
 function createOptions(){
 	optionsDiv.innerHTML=""
 	firstModeOption=null;
-	
 	if(modesOptions.value=="Recent"){
 		var mru=getMRU(MRU_OPTIONS);
+		
 		for(i in mru){
 			var opt=document.createElement("button");
 			opt.className="btnOptions"
@@ -313,7 +312,7 @@ function createOptions(){
 			if(!firstModeOption){ firstModeOption=val; }
 			opt.innerText=val;
 			//TODO onclick, also edit the load function to update MRU
-			opt.onclick=function(){getLoadFunction(val)};
+			//opt.onclick=function(){getLoadFunction(val)};
 			optionsDiv.appendChild(opt);
 		}
 		return;
@@ -337,9 +336,6 @@ function createOptions(){
 	}
 }
 
-// to auto search last on press, will auto populate
-lastAction=""
-createOptions();
 function openInFrame(linkIndex,i){
 	if(linkIndex==null){
 		return;
@@ -423,4 +419,9 @@ window.onfocus=function(event){
 	text.focus();text.select();	
     }
 }
+
+// to auto search last on press, will auto populate
+lastAction=""
+createOptions();
+
 </script>
