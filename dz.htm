@@ -20,7 +20,7 @@ body {
     z-index: 999;
 }
 .btnOptions {
-    margin-left: 5px;
+    margin-left: 7px;
     height: 90%;
     z-index: 999;
 }
@@ -61,7 +61,7 @@ body {
 </head>
 <div id="footer">
 	<input type="search" size="10" autofocus id="text" onclick="this.select()" onchange="document.title='dz: '+this.value">
-	<input type="button" id="btnX" value="X" onclick="text.value='';text.focus()">
+	<!--<input type="button" id="btnX" value="X" onclick="text.value='';text.focus()">-->
 	<input type="button" id="btnStar" value="*" onclick="promptSearch();">
 	<select id="modesOptions" onchange="createOptions()">
 		<option>Recent
@@ -129,7 +129,7 @@ const links=[
 
 // 25 - 29
 ,"https://sellercenter.lazada.sg/im/window?isWindowOpen=true&version=1.0.6"
-,"https://ted.mielczarek.org/code/mozilla/bookmarklet.html"
+,"http://bookmarklets.org/maker/"
 //,"https://mrcoles.com/bookmarklet/" created unreversable code so changed
 ,"http://jsbeautifier.org/"
 ,"*https://www.facebook.com/marketplace/singapore/search?query=%s"
@@ -211,6 +211,14 @@ const links=[
 ,genQoo10Link("100000015")
 ,"http://amtestapps.com/facebook"
 ,"http://amtestapps.com/aliexpress"
+,"https://www.jasontayonline.com/amazon-seller-faq.html"
+,"https://dropship-spy.com/winning-products/"
+
+// 85 - 89
+,"https://app.oberlo.com/explore?selling_to=US&keywords=%s&sort=volumeDown"
+
+
+
 //,"https://index.woorank.com/en/reviews?countries=SG"
 //,"*https://www.theaffiliategateway.sg/directory/category"
 ]
@@ -229,6 +237,7 @@ dropdownOptions["Dropship"]={
 	"starting" : [36,37,50]
 	,"alixpress+amazon" : [47,46,45,54]
 	,"others" : [81,82,69]
+	,"spy+oberlo" : [84,85]
 }
 dropdownOptions["Books"]={
 	"books resell" : [51,40,71]
@@ -266,6 +275,7 @@ dropdownOptions["Amazon"]={
 	"-ve reviews" : [34]
 	,"asin" : [70]
 	,"101" : [40,42,43,44]
+	,"101 p2" : [83] 
 }
 dropdownOptions["Automation"]={
 	"js mini+beau": [26,27]
@@ -283,6 +293,8 @@ dropdownOptions["Merch"]={
 }
 function genQoo10Link(category){
 	return "https://www.qoo10.sg/gmkt.inc/Category/Default.aspx?gdlc_cd="+category+"&gdmc_cd=&gdsc_cd=&brand_keyword=&keyword_hist=&keyword=&sortType=SORT_RANK_POINT&dispType=LIST&flt_pri_idx=5%2C15&filterDelivery=NNNNNANNNN&search_global_yn=&basis=&shipFromNation=SG&shipto=&brandnm=&SearchNationCode=&is_research_yn=Y&hid_keyword=&quick_delivery_yn=&qprime_yn=&shipping_avg_dt=&video_goods_yn=&coupon_filter_no=&gd_type=&drugs_type=&relation_group_no=&priceMin=50&priceMax=&category_specific_kw_nos=&curPage=1&pageSize=120&partial=on&brandno=#anchor_detail_top"
+	// mobile keep reverting to this without filter. even filtered
+	//return "https://www.qoo10.sg/gmkt.inc/Mobile/Category/Default.aspx?gdlc_cd="+category+"&g=5&priceMin=50"
 }
 function genShopLink(shopee,qoo10,lazada,index){
 	if(index == 0){
@@ -311,8 +323,7 @@ function createOptions(){
 			opt.id=val;
 			if(!firstModeOption){ firstModeOption=val; }
 			opt.innerText=val;
-			//TODO onclick, also edit the load function to update MRU
-			//opt.onclick=function(){getLoadFunction(val)};
+			opt.onclick=function(){getLoadFunction(this.id)};
 			optionsDiv.appendChild(opt);
 		}
 		return;
@@ -324,11 +335,7 @@ function createOptions(){
 		opt.id=i;
 		if(!firstModeOption){ firstModeOption=i;}
 		opt.innerText=i;
-		opt.onclick=function(){load(this.id, dropdownOptions[modesOptions.value][this.id][0], 
-			dropdownOptions[modesOptions.value][this.id][1], 
-			dropdownOptions[modesOptions.value][this.id][2],
-			dropdownOptions[modesOptions.value][this.id][3])
-		};
+		opt.onclick=function(){getLoadFunction(this.id);};
 		optionsDiv.appendChild(opt);
 	}
 	if(firstModeOption){
@@ -349,8 +356,23 @@ function openInFrame(linkIndex,i){
 	}
 }
 function getLoadFunction(id){
-
-	return load(id,l1,l2,l3,l4);
+	var mainOptionValue=getOptionsArray(id);
+	
+	return load(id, dropdownOptions[mainOptionValue][id][0], 
+			dropdownOptions[mainOptionValue][id][1], 
+			dropdownOptions[mainOptionValue][id][2],
+			dropdownOptions[mainOptionValue][id][3])
+}
+function getOptionsArray(btnOptionId){
+	for(i in dropdownOptions){
+		for(j in dropdownOptions[i]){
+			if(j == btnOptionId){
+				return i;
+			}
+		}
+	}
+	console.error("cannot find value for: " +btnOptionId);
+	return null;
 }
 function load(id,l1,l2,l3,l4){
 	openInFrame(l1, 1);
