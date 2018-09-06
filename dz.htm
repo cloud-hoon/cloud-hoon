@@ -8,7 +8,7 @@ body {
 }
 #text {
 	height: 100%;
-	width: 25%
+	width: 100%;
     z-index: 999; // to try fix issue of chrome mobile interfering with overlap underneath page 
 }
 #btnX, #btnStar {
@@ -17,7 +17,14 @@ body {
    margin-right: 7px;
    padding-left: 10px;
    padding-right: 10px;
-    z-index: 999;
+   
+}
+#overlayText{
+    position: fixed;
+    height: 40px;
+   right: 50%;
+   display: inline;
+    z-index: 1000;
 }
 .btnOptions {
     margin-left: 7px;
@@ -62,23 +69,25 @@ body {
 <div id="footer">
 	<input type="search" size="10" autofocus id="text" onclick="this.select()" onchange="document.title='dz: '+this.value">
 	<!--<input type="button" id="btnX" value="X" onclick="text.value='';text.focus()">-->
-	<input type="button" id="btnStar" value="*" onclick="promptSearch();">
-	<select id="modesOptions" onchange="createOptions()">
-		<option>Recent
-		<option>Products
-		<option>Car Meetup
-		<option>Orders
-		<option>Bills (if privatised)
-		<option>Shops
-		<option>Books
-		<option>Amazon
-		<option>Domains
-		<option>Dropship
-		<option>Merch
-		<option>Marketing
-		<option>Automation
-		<option>Coaching</option> <!-- https://www.coach.me/open_coaching#/_=_ -->
-	</select>
+	<div id="overlayText">
+		<input type="button" id="btnStar" value="*" onclick="promptSearch();">
+		<select id="modesOptions" onchange="createOptions()">
+			<option>Recent
+			<option>Products
+			<option>Car Meetup
+			<option>Orders
+			<option>Bills (if privatised)
+			<option>Shops
+			<option>Books
+			<option>Amazon
+			<option>Domains
+			<option>Dropship
+			<option>Merch
+			<option>Marketing
+			<option>Automation
+			<option>Coaching</option> <!-- https://www.coach.me/open_coaching#/_=_ -->
+		</select>
+	</div>
 </div>
 <div id="optionsDiv"></div>
 <!--<div id="framesDiv">-->
@@ -408,7 +417,7 @@ elem.addEventListener('keypress', function(e){
 });
 
 
-// bigger index is most recent. 0 - oldest
+// smallest index is most recent. 0 - newest (so left to right)
 var MRU_OPTIONS="dz-mru-options";
 function updateMRU(key,maxSize,value){
 	var mru=getMRU(key);
@@ -418,10 +427,10 @@ function updateMRU(key,maxSize,value){
 		mru.splice(currIndex,1);
 	}
 	if(mru.length>=maxSize){
-		mru.shift();
+		mru.pop();
 	}
 	
-	mru.push(value);
+	mru.unshift(value);
 	localStorage.setItem(key,JSON.stringify(mru));
 	return mru;
 }
@@ -434,6 +443,12 @@ function getMRU(key){
 	}
 	return mru;
 }
+function getUrlParameter(name) {
+    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+    var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+    var results = regex.exec(location.search);
+    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+};
 
 window.onfocus=function(event){
     if(event.explicitOriginalTarget===window){
@@ -441,6 +456,10 @@ window.onfocus=function(event){
 	text.focus();text.select();	
     }
 }
+
+var opt=getUrlParameter("option");
+var searchTxt=getUrlParameter("searchTxt");
+// do search if got
 
 // to auto search last on press, will auto populate
 lastAction=""
