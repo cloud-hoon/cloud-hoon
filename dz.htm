@@ -11,13 +11,12 @@ body {
 	width: 100%;
     z-index: 999; // to try fix issue of chrome mobile interfering with overlap underneath page 
 }
-#btnX, #btnStar {
+#btnX, #btnStar, #btnDomain {
    height: 100%;
    margin-left: 7px;
    margin-right: 7px;
    padding-left: 10px;
    padding-right: 10px;
-   
 }
 #overlayText{
     position: fixed;
@@ -71,6 +70,7 @@ body {
 	<!--<input type="button" id="btnX" value="X" onclick="text.value='';text.focus()">-->
 	<div id="overlayText">
 		<input type="button" id="btnStar" value="*" onclick="promptSearch();">
+		<input type="button" id="btnDomain" value="domain" onclick="text.value=extractRootDomain(text.value);">
 		<select id="modesOptions" onchange="createOptions()">
 			<option>Recent
 			<option>Products
@@ -449,7 +449,42 @@ function getUrlParameter(name) {
     var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
     var results = regex.exec(location.search);
     return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-};
+}
+function extractHostname(url) {
+    var hostname;
+    //find & remove protocol (http, ftp, etc.) and get hostname
+
+    if (url.indexOf("//") > -1) {
+        hostname = url.split('/')[2];
+    }
+    else {
+        hostname = url.split('/')[0];
+    }
+
+    //find & remove port number
+    hostname = hostname.split(':')[0];
+    //find & remove "?"
+    hostname = hostname.split('?')[0];
+
+    return hostname;
+}
+function extractRootDomain(url) {
+    var domain = extractHostname(url),
+        splitArr = domain.split('.'),
+        arrLen = splitArr.length;
+
+    //extracting the root domain here
+    //if there is a subdomain 
+    if (arrLen > 2) {
+        domain = splitArr[arrLen - 2] + '.' + splitArr[arrLen - 1];
+        //check to see if it's using a Country Code Top Level Domain (ccTLD) (i.e. ".me.uk")
+        if (splitArr[arrLen - 2].length == 2 && splitArr[arrLen - 1].length == 2) {
+            //this is using a ccTLD
+            domain = splitArr[arrLen - 3] + '.' + domain;
+        }
+    }
+    return domain;
+}
 
 window.onfocus=function(event){
     if(event.explicitOriginalTarget===window){
