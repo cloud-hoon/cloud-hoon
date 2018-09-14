@@ -70,7 +70,7 @@ body {
 	<!--<input type="button" id="btnX" value="X" onclick="text.value='';text.focus()">-->
 	<div id="overlayText">
 		<input type="button" id="btnStar" value="*" onclick="promptSearch();">
-		<input type="button" id="btnDomain" value="domain" onclick="text.value=extractRootDomain(text.value);">
+		<input type="button" id="btnDomain" value="domain" onclick="text.value=extractHostname(text.value);">
 		<select id="modesOptions" onchange="createOptions()">
 			<option>Recent
 			<option>Products
@@ -227,8 +227,9 @@ const links=[
 // 85 - 89
 ,"https://app.oberlo.com/explore?selling_to=US&keywords=%s&sort=volumeDown"
 ,"http://www.bookfinder4u.com/multi_isbns.html"
-
-
+,"*https://www.facebook.com/search/str/%s+/stories-keyword/intersect"
+,"*https://%s/collections/all?sort_by=best-selling"
+,"*https://serpstat.com/domains/search/?query=%s&se=g_us"
 //,"https://index.woorank.com/en/reviews?countries=SG"
 //,"*https://www.theaffiliategateway.sg/directory/category"
 ]
@@ -244,7 +245,8 @@ dropdownOptions["Products"]={
 	,"srcSites" : [8,9,39]
 }
 dropdownOptions["Dropship"]={
-	"starting" : [36,37,50]
+	"spy shopify" : [87,88,89]
+	,"starting" : [36,37,50]
 	,"alixpress+amazon" : [47,46,45,54]
 	,"others" : [81,82,69]
 	,"spy+oberlo" : [84,85]
