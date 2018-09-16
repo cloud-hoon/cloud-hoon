@@ -369,7 +369,6 @@ function openInFrame(linkIndex,i){
 }
 function getLoadFunction(id){
 	var mainOptionValue=getOptionsArray(id);
-	
 	return load(id, dropdownOptions[mainOptionValue][id][0], 
 			dropdownOptions[mainOptionValue][id][1], 
 			dropdownOptions[mainOptionValue][id][2],
@@ -498,6 +497,16 @@ window.onfocus=function(event){
 var opt=getUrlParameter("option");
 var searchTxt=getUrlParameter("searchTxt");
 // do search if got
+if(searchTxt || opt){
+	if(searchTxt != null){
+		text.value=searchTxt
+	}
+	if(opt){
+		getLoadFunction(opt);
+	}else{
+		getLoadFunction("all");
+	}
+}
 
 // to auto search last on press, will auto populate
 lastAction=""
