@@ -342,9 +342,13 @@ function createOptions(){
 			opt.onclick=function(){getLoadFunction(this.id)};
 			optionsDiv.appendChild(opt);
 		}
+		if(firstModeOption){
+			lastAction=firstModeOption;
+		}
+
 		return;
 	}
-	
+	//else
 	for(i in dropdownOptions[modesOptions.value]){
 		var opt=document.createElement("button");
 		opt.className="btnOptions"
