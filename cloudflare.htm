@@ -1,0 +1,23 @@
+<script>
+function saveLocal(name, array){ localStorage.setItem(name, JSON.stringify(array)); }
+function getLocal(name){  arr=localStorage.getItem(name); if(arr==null){return null;} return JSON.parse(arr); }
+
+// "handle({results,statusCode,statusText}}"
+let xhr = new XMLHttpRequest();
+xhr.open('GET', 'https://cool-truth-0edf.donkey.workers.dev');
+xhr.send();
+xhr.onload = function() {
+  if (xhr.status != 200) { // analyze HTTP status of the response
+    alert(`Error ${xhr.status}: ${xhr.statusText}`); // e.g. 404: Not Found
+  } else { // show the result
+    alert(`Done, got ${xhr.response.length} bytes`); // response is the server
+  }
+};
+xhr.onerror = function() {
+  alert("Request failed");
+};
+function handle(output){
+	a=output;
+	consoloe.log(output);
+}
+</script>
