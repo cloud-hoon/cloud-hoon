@@ -1,0 +1,117 @@
+  <!DOCTYPE html>
+
+<html>
+
+<body>
+
+ 
+
+<link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css?family=Bungee" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css?family=Bungee Outline" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css?family=Bungee Shade" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css?family=Audiowide" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css?family=Calligraffitti" rel="stylesheet"/>
+
+ 
+
+https://safe.menlosecurity.com/https://fonts.google.com/?category=Handwriting&subset=latin
+
+<div style="font-family:Calligraffitti">
+
+1/10 for speed. OnChange to redraw
+
+</div>
+
+<br/><select id='font' size=4 onchange='draw()'>
+
+<option>Pacifico
+
+<option selected>Comic Sans MS
+
+<option>Audiowide
+
+<option>Bungee
+
+<option>Bungee Outline
+
+<option>Bungee Shade
+
+<option>Calligraffitti
+
+</select>
+
+<textarea onchange='draw()' id='txt' rows=4>HODL
+
+To
+
+The
+
+Moon</textarea>
+
+<hr/>
+
+<canvas id="myCanvas" width="225" height="270" style="width:225px;height:270px">
+
+Your browser does not support the HTML canvas tag.
+
+</canvas>
+
+<img id='out'>
+
+<script>
+
+var canvas = document.getElementById("myCanvas");
+
+var ctx= canvas.getContext("2d");
+
+draw();
+
+ 
+
+function draw(){
+
+var lines=txt.value.split("\n");
+
+var lineHgt=(canvas.height*.9)/lines.length;
+
+ 
+
+ctx.fillStyle = "black";
+
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+ctx.fillStyle = "white";
+
+ctx.textAlign = "center";
+
+ctx.textBaseline="top";
+
+ctx.font = canvas.height/lines.length+"px "+font.value; // use the max width to restraint?
+
+var lineheight=canvas.height*.05;
+
+for(line of lines){
+
+      ctx.fillText(line, canvas.width/2, lineheight, canvas.width*.85);
+
+      lineheight+=lineHgt;
+
+}
+
+ 
+
+out.src = canvas.toDataURL();
+
+}
+
+</script>
+
+</body>
+
+</html>
