@@ -54,9 +54,7 @@ Moon</textarea>
 <hr/>
 
 <canvas id="myCanvas" width="4500" height="5400" style="width:225px;height:270px">
-
 Your browser does not support the HTML canvas tag.
-
 </canvas>
 
 <img id='out'>
@@ -92,9 +90,7 @@ ctx.textBaseline="top";
 ctx.font = canvas.height/lines.length+"px "+font.value; // use the max width to restraint?
 
 var lineheight=canvas.height*.05;
-
 for(line of lines){
-
       ctx.fillText(line, canvas.width/2, lineheight, canvas.width*.85);
 
       lineheight+=lineHgt;
@@ -103,12 +99,24 @@ for(line of lines){
 
  
 
-out.src = canvas.toDataURL();
+
 
 }
 
 </script>
 
+<script>
+btn=document.createElement('input');
+btn.type='button';
+btn.value='Download Image';
+btn.addEventListener('click',function(e){
+  var link = document.createElement('a');
+  link.download = 'filename.png';
+  link.href = document.getElementById('myCanvas').toDataURL()
+  link.click();
+});
+document.body.append(btn);
+</script>
 </body>
 
 </html>
