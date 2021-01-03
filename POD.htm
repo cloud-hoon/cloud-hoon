@@ -20,22 +20,21 @@ function loadFont(font) {
 
 <div style="font-family:Comic Sans MS;color:white">
 https://fonts.google.com/?category=Handwriting&subset=latin
-<br/>Up to 4500x5400 when ready. Now 1/10 for speed. OnChange to redraw
-Maybe embed default adjustment in font if keep changing same amount?
+<br/>Maybe embed default adjustment in font if keep changing same amount?
 </div>
-<br/><select id='font' size=4 onchange='draw()'>
-<option>Pacifico
-<option selected>Comic Sans MS
-<option>Audiowide
-<option>Bungee
-<option>Bungee Outline
-<option>Bungee Shade
-<option>Calligraffitti
-</select>
 <textarea onchange='draw()' id='txt' rows=4>HODL
 To
 The
 Moon</textarea>
+<br/><input type='search' list='fonts' id="font" onchange='draw()' value='Comic Sans MS'>
+<datalist id='fonts'>
+<option>Comic Sans MS
+<option>Pacifico
+<option>Audiowide
+<option>Bungee
+<option>Bungee Shade
+<option>Calligraffitti
+</datalist>
 <br/><input onchange='draw()' id='startLineHgt' value='0.05'>
 <br/><input onchange='draw()' id='imgURL' placeholder='image' value=''>
 <hr/>
