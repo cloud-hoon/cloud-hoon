@@ -73,9 +73,9 @@ for(line of lines){
 	  image.width=canvas.width*.9; 
 	  image.onload=function(){
 	     x=canvas.width/2-this.width/2;
-	     y=canvas.height*(1-imgHgt);
+	     y=canvas.height*(1-imgHgt)-10; // some buffer at bottom
 	     imgWidth=this.width;
-	     imgHeight=this.height;
+	     imgHeight=this.height-10; // for buffer at bottom
 	     console.log(x+","+y+","+imgWidth+","+imgHeight);
 	     ctx.drawImage(this, x,y,imgWidth,imgHeight);
 	  }
