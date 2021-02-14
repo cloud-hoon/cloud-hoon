@@ -38,6 +38,7 @@ Moon</textarea>
 </datalist>
 <br/><input onchange='draw()' id='startLineHgt' value='0.05' type="number" step="0.01">
 <br/><input onchange='draw()' id='imgURL' placeholder='image' value=''>
+<br/><input onchange='draw()' id='imgMaxHeight' placeholder='image' value='0.2'>
 <hr/>
 <canvas id="myCanvas" width="4500" height="5400" style="width:225px;height:270px;border:1px white solid">
 Your browser does not support the HTML canvas tag.
@@ -49,7 +50,8 @@ draw();
 
 function draw(){
 var lines=txt.value.split("\n");
-var textHeight=(imgURL.value)?canvas.height*.8:canvas.height; // 80/20 else quite small?
+var imgHgt=1.0*imgMaxHeight.value;
+var textHeight=(imgURL.value)?canvas.height*(1-imgHgt):canvas.height; // 80/20 else quite small?
 var lineHgt=(textHeight*.9)/lines.length;
 
 ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -67,12 +69,13 @@ for(line of lines){
 	if(imgURL.value){
 	  const image=new Image();
 	  image.src=imgURL.value;
-	  image.height=canvas.height*.18;
+	  image.height=canvas.height*imgHgt;
 	  image.width=canvas.width*.9; 
 	  image.onload=function(){
 	     x=canvas.width/2-this.width/2;
-	     y=canvas.height*.8;
-	     imgWidth=this.width;imgHeight=this.height;
+	     y=canvas.height*(1-imgHgt);
+	     imgWidth=this.width;
+	     imgHeight=this.height;
 	     console.log(x+","+y+","+imgWidth+","+imgHeight);
 	     ctx.drawImage(this, x,y,imgWidth,imgHeight);
 	  }
