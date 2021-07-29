@@ -68,6 +68,7 @@ for(line of lines){
 }
 	if(imgURL.value){
 	  const image=new Image();
+	  image.crossOrigin ="*";
 	  image.src=imgURL.value;
 	  image.height=canvas.height*imgHgt;
 	  image.width=canvas.width*.9; 
