@@ -1,26 +1,23 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <script src="http://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js"></script> 
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Pacifico&display=swap">
+</head>
 <body>
-<style>
-
-</style>
 
 
 <div>
 <a href='https://google-webfonts-helper.herokuapp.com/fonts/gowun-batang?subsets=latin'>https://google-webfonts-helper.herokuapp.com/fonts/gowun-batang?subsets=latin</a>
 <br/><a href="https://redbubble.dabu.ro/redbubble-popular-tags">Popular Redbubble Tags</a>
+<br/>
+<br/><a href="https://merch.amazon.com/dashboard">Merch Dashboard (change to new if quota increased)</a>
 <br/>Also upload in <a href="https://www.redbubble.com/portfolio/manage_works?ref=account-nav-dropdown" target=_blank>RedBubble</a>
 <br/>Use <a href="https://automation.merchtitans.com/tools/redbubble-tag-generator" target=_blank>Redubble Tag Generator</a>
 
 </div>
-<textarea onchange='draw()' id='txt' rows=4>HODL
-To
-The
-Moon</textarea>
-<br/><input type='search' list='fonts' id="font" onchange='draw()' value=''>
-<datalist id='fonts'>
-<option>Comic Sans MS
-</datalist>
+<textarea onchange='draw()' id='txt' rows=4>HODL</textarea>
+<br/><select list='fonts' id="font" onchange='draw()' value=''></select>
 <br/><input onchange='draw()' id='startLineHgt' value='0.05' type="number" step="0.01">
 <br/><input onchange='draw()' id='imgURL' placeholder='image' value=''> (upload to <a href="https://github.com/cloud-hoon/cloud-hoon" target=_blank>Github</a> and paste https://cloud-hoon.github.io/cloud-hoon/<filename>
 <br/><input onchange='draw()' id='imgMaxHeight' placeholder='image' value='0.2'>
@@ -32,22 +29,18 @@ Your browser does not support the HTML canvas tag.
 
 // load fonts
 loadedFonts=new Set();
-loadedFonts.add("Comic Sans MS")
+loadedFonts.add("Comic Sans MS");
+
 function loadFont(font) {
     if(loadedFonts.has(font) || !font) return false;
     console.log('loading '+font);
-
-    var cssFa = document.createElement('link');
-    cssFa.href = 'https://fonts.googleapis.com/css?family='+font;
-    cssFa.rel = 'stylesheet';
-    cssFa.type = 'text/css';
-    document.getElementsByTagName('head')[0].appendChild(cssFa);
+   WebFont.load({google: { families: [font] } }); 
+    //var cssFa = document.createElement('link');
+    //cssFa.href = 'https://fonts.googleapis.com/css?family='+font+"&display=swap";
+    //cssFa.rel = 'stylesheet';        
+    //document.getElementsByTagName('head')[0].appendChild(cssFa);
     loadedFonts.add(font);
-    fonts.appendChild(new Option(font));
-    // not sure how to make it load
-    //ctx.font = "50px "+font;
-    //console.log(ctx.font);
-    //ctx.fillText('123r21ork1p2rk21',5,5,555);
+    document.getElementById('font').append(new Option(font));
     
     return true;
 }
@@ -55,10 +48,10 @@ function loadFont(font) {
 var canvas = document.getElementById("myCanvas");
 var ctx= canvas.getContext("2d");
 // load fonts after ctx to prefetch it first
-loadFont('Pacifico');
+loadFont('Neucha');
 loadFont('Architects Daughter');
 loadFont('Permanent Marker');
-draw();
+//draw();
 
 function draw(){
 var lines=txt.value.split("\n");
@@ -109,4 +102,4 @@ btn.addEventListener('click',function(e){
 document.body.append(btn);
 </script>
 </body>
-</html>
+</html>    
