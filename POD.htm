@@ -1,12 +1,41 @@
 <!DOCTYPE html>
 <html>
-<body style='background:black'>
+<body>
+<style>
 
+</style>
+
+
+<div>
+<a href='https://google-webfonts-helper.herokuapp.com/fonts/gowun-batang?subsets=latin'>https://google-webfonts-helper.herokuapp.com/fonts/gowun-batang?subsets=latin</a>
+<br/><a href="https://redbubble.dabu.ro/redbubble-popular-tags">Popular Redbubble Tags</a>
+<br/>Also upload in <a href="https://www.redbubble.com/portfolio/manage_works?ref=account-nav-dropdown" target=_blank>RedBubble</a>
+<br/>Use <a href="https://automation.merchtitans.com/tools/redbubble-tag-generator" target=_blank>Redubble Tag Generator</a>
+
+</div>
+<textarea onchange='draw()' id='txt' rows=4>HODL
+To
+The
+Moon</textarea>
+<br/><input type='search' list='fonts' id="font" onchange='draw()' value=''>
+<datalist id='fonts'>
+<option>Comic Sans MS
+</datalist>
+<br/><input onchange='draw()' id='startLineHgt' value='0.05' type="number" step="0.01">
+<br/><input onchange='draw()' id='imgURL' placeholder='image' value=''> (upload to <a href="https://github.com/cloud-hoon/cloud-hoon" target=_blank>Github</a> and paste https://cloud-hoon.github.io/cloud-hoon/<filename>
+<br/><input onchange='draw()' id='imgMaxHeight' placeholder='image' value='0.2'>
+<hr/>
+<canvas id="myCanvas" width="4500" height="5400" style="width:225px;height:270px;border:1px white solid;background:black">
+Your browser does not support the HTML canvas tag.
+</canvas>
 <script>
+
+// load fonts
 loadedFonts=new Set();
 loadedFonts.add("Comic Sans MS")
 function loadFont(font) {
-    if(loadedFonts.has(font)) return false;
+    if(loadedFonts.has(font) || !font) return false;
+    console.log('loading '+font);
 
     var cssFa = document.createElement('link');
     cssFa.href = 'https://fonts.googleapis.com/css?family='+font;
@@ -14,41 +43,21 @@ function loadFont(font) {
     cssFa.type = 'text/css';
     document.getElementsByTagName('head')[0].appendChild(cssFa);
     loadedFonts.add(font);
+    fonts.appendChild(new Option(font));
+    // not sure how to make it load
+    //ctx.font = "50px "+font;
+    //console.log(ctx.font);
+    //ctx.fillText('123r21ork1p2rk21',5,5,555);
+    
     return true;
 }
-</script>
 
-<div style="font-family:Comic Sans MS;color:white">
-https://fonts.google.com/?category=Handwriting&subset=latin
-<br/>Maybe embed default adjustment in font if keep changing same amount?
-<br/><a href="https://redbubble.dabu.ro/redbubble-popular-tags">Popular Redbubble Tags</a>
-</div>
-<textarea onchange='draw()' id='txt' rows=4>HODL
-To
-The
-Moon</textarea>
-<br/><input type='search' list='fonts' id="font" onchange='draw()' value='Comic Sans MS'>
-<datalist id='fonts'>
-<option>Comic Sans MS
-<option>Pacifico
-<option>Audiowide
-<option>Bungee
-<option>Bungee Shade
-<option>Calligraffitti
-<option>Raleway Dots
-</datalist>
-<br/><input onchange='draw()' id='startLineHgt' value='0.05' type="number" step="0.01">
-<br/><input onchange='draw()' id='imgURL' placeholder='image' value=''> (upload to <a href="https://github.com/cloud-hoon/cloud-hoon" target=_blank>Github</a> and paste https://cloud-hoon.github.io/cloud-hoon/<filename>
-<br/><input onchange='draw()' id='imgMaxHeight' placeholder='image' value='0.2'>
-<hr/>
-<canvas id="myCanvas" width="4500" height="5400" style="width:225px;height:270px;border:1px white solid">
-Your browser does not support the HTML canvas tag.
-</canvas>
-Also upload in <a href="https://www.redbubble.com/portfolio/manage_works?ref=account-nav-dropdown" target=_blank>RedBubble</a>
-Use <a href="https://automation.merchtitans.com/tools/redbubble-tag-generator" target_blank>Redubble Tag Generator</a>
-<script>
 var canvas = document.getElementById("myCanvas");
 var ctx= canvas.getContext("2d");
+// load fonts after ctx to prefetch it first
+loadFont('Pacifico');
+loadFont('Architects Daughter');
+loadFont('Permanent Marker');
 draw();
 
 function draw(){
@@ -69,21 +78,21 @@ for(line of lines){
       ctx.fillText(line, canvas.width/2, lineheight, canvas.width*.85);
       lineheight+=lineHgt;
 }
-	if(imgURL.value){
-	  const image=new Image();
-	  image.crossOrigin ="*";
-	  image.src=imgURL.value;
-	  image.height=canvas.height*imgHgt;
-	  image.width=canvas.width*.9; 
-	  image.onload=function(){
-	     x=canvas.width/2-this.width/2;
-	     y=canvas.height*(1-imgHgt)-10; // some buffer at bottom
-	     imgWidth=this.width;
-	     imgHeight=this.height-10; // for buffer at bottom
-	     console.log(x+","+y+","+imgWidth+","+imgHeight);
-	     ctx.drawImage(this, x,y,imgWidth,imgHeight);
-	  }
-	}
+if(imgURL.value){
+  const image=new Image();
+  image.crossOrigin ="*";
+  image.src=imgURL.value;
+  image.height=canvas.height*imgHgt;
+  image.width=canvas.width*.9; 
+  image.onload=function(){
+     x=canvas.width/2-this.width/2;
+     y=canvas.height*(1-imgHgt)-10; // some buffer at bottom
+     imgWidth=this.width;
+     imgHeight=this.height-10; // for buffer at bottom
+     console.log(x+","+y+","+imgWidth+","+imgHeight);
+     ctx.drawImage(this, x,y,imgWidth,imgHeight);
+  }
+}
 }
 
 // how to make background transparent?
