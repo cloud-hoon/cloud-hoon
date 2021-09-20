@@ -141,8 +141,8 @@
       // load face detection and face expression recognition models
       // and load face landmark model for face alignment
       await changeFaceDetector(SSD_MOBILENETV1)
-      await faceapi.loadFaceLandmarkModel('/')
-      await faceapi.loadFaceExpressionModel('/')
+      await faceapi.loadFaceLandmarkModel('.')
+      await faceapi.loadFaceExpressionModel('.')
       // start processing image
       updateResults()
     }
