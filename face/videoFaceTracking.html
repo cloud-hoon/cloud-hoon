@@ -170,8 +170,8 @@
     async function run() {
       // load face detection and face landmark models
       await changeFaceDetector(TINY_FACE_DETECTOR)
-      await faceapi.loadFaceLandmarkModel('/')
-      changeInputSize(416)
+      await faceapi.loadFaceLandmarkModel('./')
+      changeInputSize(256)
 
       // start processing frames
       onPlay($('#inputVideo').get(0))
