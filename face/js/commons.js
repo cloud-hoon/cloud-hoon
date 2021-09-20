@@ -33,7 +33,7 @@ function renderNavBar(navbarId, exampleUri) {
       name: 'Face Landmark Detection'
     },
     {
-      uri: 'face_expression_recognition',
+      uri: './emo.html',
       name: 'Face Expression Recognition'
     },
     {
@@ -49,19 +49,19 @@ function renderNavBar(navbarId, exampleUri) {
       name: 'Face Extraction'
     },
     {
-      uri: 'video_face_tracking',
+      uri: './videoFaceTracking.html',
       name: 'Video Face Tracking'
     },
     {
-      uri: 'webcam_face_detection',
+      uri: './webcamFaceDetection.html',
       name: 'Webcam Face Detection'
     },
     {
-      uri: 'webcam_face_landmark_detection',
+      uri: './webcamFaceLandmarkDetection.html',
       name: 'Webcam Face Landmark Detection'
     },
     {
-      uri: 'webcam_face_expression_recognition',
+      uri: './webcamEmo.html',
       name: 'Webcam Face Expression Recognition'
     },
     {
