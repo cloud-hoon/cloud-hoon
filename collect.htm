@@ -1,6 +1,6 @@
 <body></body>
 <script>
-const baseIp = "192.168.1"; // Default base IP
+const baseIp = "192.168.68"; // Default base IP
 document.body.innerHTML = `
   <input id="ip" value="${baseIp}" size="15">
   <button onclick="scan()">Scan</button>
@@ -9,11 +9,11 @@ document.body.innerHTML = `
 `;
 
 async function scan() {
-  document.getElementById("res").innerHTML = "Scanning...";
+  document.getElementById("res").innerHTML = "Scanning..."; 
   document.getElementById("fullResults").value = "Scanning...";
-  
+
   const ips = Array.from({ length: 255 }, (_, i) => `${document.getElementById("ip").value}.${i + 1}`);
-  const timeout = 3000; // 3 seconds timeout
+  const timeout = 1000; // 1 seconds timeout
 
   const results = await Promise.all(ips.map(async (ip) => {
     const controller = new AbortController();
@@ -23,7 +23,7 @@ async function scan() {
       await fetch(`https://${ip}`, { mode: 'no-cors', method: 'HEAD', signal: controller.signal });
       return `[+] <a href="https://${ip}" target="_blank">${ip}</a>`; // Clickable link
     } catch (error) {
-      return `[-] ${ip} ? Error: ${error.name} ${error.message}`; // Show IP and error type
+      return `[-] ${ip} ? Error: ${error.name} - ${error.message} - Stack: ${error.stack || 'No stack available'}`; // Log name, message, and stack
     } finally {
       clearTimeout(timeoutId);
     }
