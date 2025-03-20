@@ -1,6 +1,6 @@
 <body></body>
 <script>
-const baseIp = "192.168.68"; // Default base IP
+const baseIp = "192.168.1"; // Default base IP
 document.body.innerHTML = `
   <input id="ip" value="${baseIp}" size="15">
   <button onclick="scan()">Scan</button>
@@ -13,28 +13,25 @@ async function scan() {
   document.getElementById("fullResults").value = "Scanning...";
   
   const ips = Array.from({ length: 255 }, (_, i) => `${document.getElementById("ip").value}.${i + 1}`);
-  const timeout = 5000; // 5 seconds timeout
+  const timeout = 3000; // 3 seconds timeout
 
   const results = await Promise.all(ips.map(async (ip) => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
     try {
-      await fetch(`https://${ip}`, { mode: 'no-cors', method: 'HEAD', signal: controller.signal });
+      await fetch(`http://${ip}`, { mode: 'no-cors', method: 'HEAD', signal: controller.signal });
       return `[+] <a href="http://${ip}" target="_blank">${ip}</a>`; // Clickable link
     } catch (error) {
-      if (error.name === "AbortError") {
-        return null; // Timeout detected, ignore this IP
-      }
-      return `[+] <a href="http://${ip}" target="_blank">${ip}</a>`; // Other errors still considered open
+      return `[-] ${ip} ? Error: ${error.name} ${error.message}`; // Show IP and error type
     } finally {
       clearTimeout(timeoutId);
     }
   }));
 
-  // Filter out nulls and update results
-  const openIps = results.filter(r => r).join("<br>") || "No open IPs found";
+  // Display results in HTML and textarea
+  const openIps = results.filter(r => r.startsWith("[+]")).join("<br>") || "No open IPs found";
   document.getElementById("res").innerHTML = openIps;
-  document.getElementById("fullResults").value = results.filter(r => r).map(r => r.replace(/<\/?a[^>]*>/g, '')).join("\n");
+  document.getElementById("fullResults").value = results.join("\n"); // Show all results
 }
 </script>
