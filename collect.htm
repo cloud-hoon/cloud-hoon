@@ -20,7 +20,7 @@ async function scan() {
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
     try {
-      await fetch(`http://${ip}`, { mode: 'no-cors', method: 'HEAD', signal: controller.signal });
+      await fetch(`https://${ip}`, { mode: 'no-cors', method: 'HEAD', signal: controller.signal });
       return `[+] <a href="http://${ip}" target="_blank">${ip}</a>`; // Clickable link
     } catch (error) {
       if (error.name === "AbortError") {
