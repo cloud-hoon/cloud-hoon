@@ -20,10 +20,10 @@ async function scan() {
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
     try {
-      await fetch(`https://${ip}`, { mode: 'no-cors', method: 'HEAD', signal: controller.signal });
-      return `[+] <a href="https://${ip}" target="_blank">${ip}</a>`; // Clickable link
+      await fetch(`http://${ip}`, { mode: 'no-cors', method: 'HEAD', signal: controller.signal });
+      return `[+] <a href="http://${ip}" target="_blank">${ip}</a>`; // Clickable link
     } catch (error) {
-      return `[-] ${ip} ? Error: ${error.name} - ${error.message} - Stack: ${error.stack || 'No stack available'}`; // Log name, message, and stack
+      return `[-] ${ip} ? Error: ${error.name} - ${error.message} `; // Log name, message
     } finally {
       clearTimeout(timeoutId);
     }
