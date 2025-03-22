@@ -73,8 +73,7 @@
       `;
       transcriptionsDiv.appendChild(remoteDiv);
 
-      // Change ws:// to wss:// to connect to the HTTPS/WSS server
-      const socket = new WebSocket(`wss://${ip}:8080`);
+      const socket = new WebSocket(`ws://${ip}:8080`);
       socket.binaryType = 'arraybuffer';
       let audioChunks = [];
       let segmentCounter = 0;
