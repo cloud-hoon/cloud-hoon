@@ -73,14 +73,31 @@
       `;
       transcriptionsDiv.appendChild(remoteDiv);
 
-      const socket = new WebSocket(`ws://${ip}:8080`);
-      socket.binaryType = 'arraybuffer';
+      let socket;
+      try {
+        socket = new WebSocket(`ws://${ip}:8080`);
+        socket.binaryType = 'arraybuffer';
+      } catch (error) {
+        console.error(`Failed to create WebSocket for ${ip}:`, error);
+        updateStatus(`${remoteId}Text`, 'error', `Failed to initialize: ${error.message}`);
+        return;
+      }
+
       let audioChunks = [];
       let segmentCounter = 0;
       let allSegments = [];
       let isRecording = true;
       let intervalId = null;
       let segmentStartTime = new Date();
+
+      // Add a connection timeout
+      const connectionTimeout = setTimeout(() => {
+        if (socket.readyState === WebSocket.CONNECTING) {
+          console.error(`WebSocket connection to ${ip} timed out`);
+          updateStatus(`${remoteId}Text`, 'error', 'Connection timed out');
+          socket.close(); // Force close if still connecting
+        }
+      }, 5000); // 5-second timeout
 
       // Live stream setup
       const liveAudio = document.getElementById(`${remoteId}Live`);
@@ -90,10 +107,15 @@
       let sourceBuffer;
 
       mediaSource.addEventListener('sourceopen', () => {
-        sourceBuffer = mediaSource.addSourceBuffer('audio/mpeg');
-        liveAudio.play().catch(error => {
-          console.error(`Error auto-playing live audio for ${remoteId}:`, error);
-        });
+        try {
+          sourceBuffer = mediaSource.addSourceBuffer('audio/mpeg');
+          liveAudio.play().catch(error => {
+            console.error(`Error auto-playing live audio for ${remoteId}:`, error);
+          });
+        } catch (error) {
+          console.error(`SourceBuffer error for ${remoteId}:`, error);
+          updateStatus(`${remoteId}Text`, 'error', `Audio setup failed: ${error.message}`);
+        }
       });
 
       function startRecording() {
@@ -125,6 +147,8 @@
       }
 
       socket.onopen = () => {
+        clearTimeout(connectionTimeout); // Cancel timeout on success
+        console.log(`WebSocket connected to ${ip}`);
         updateStatus(`${remoteId}Text`, 'connected', 'Connected');
         startRecording();
       };
@@ -139,13 +163,16 @@
       };
 
       socket.onerror = (error) => {
+        clearTimeout(connectionTimeout);
         console.error(`WebSocket error for ${ip}:`, error);
-        updateStatus(`${remoteId}Text`, 'error', 'Connection Error');
+        updateStatus(`${remoteId}Text`, 'error', `Connection failed: ${error.message || 'Unknown error'}`);
         clearInterval(intervalId);
       };
 
       socket.onclose = (event) => {
-        updateStatus(`${remoteId}Text`, 'disconnected', `Disconnected (Code: ${event.code})`);
+        clearTimeout(connectionTimeout);
+        console.log(`WebSocket closed for ${ip}: Code=${event.code}, Reason=${event.reason || 'No reason'}`);
+        updateStatus(`${remoteId}Text`, 'disconnected', `Disconnected (Code: ${event.code}${event.reason ? ', ' + event.reason : ''})`);
         clearInterval(intervalId);
       };
 
