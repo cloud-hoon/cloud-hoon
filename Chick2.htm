@@ -10,39 +10,61 @@
 </head>
 <body>
     <h1>Fox Scare</h1>
-    <p>Make noise to scare away the foxes!</p>
+    <p>Make noise to scare away the nearest fox!</p>
     <canvas id="gameCanvas"></canvas>
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
-        canvas.width = 800;
-        canvas.height = 400;let foxes = [{ x: 750, y: 250, speed: 0.5 }];
-    let eggs = { x: 50, y: 270, width: 40, height: 30 };
-    let scarePower = 0;
+        canvas.width = 600;
+        canvas.height = 600;let eggs = { x: canvas.width / 2, y: canvas.height / 2, radius: 20 };
+    let foxes = [];
 
-    function drawFoxes() {
-        ctx.fillStyle = "orange";
-        foxes.forEach(fox => ctx.fillRect(fox.x, fox.y, 40, 30));
+    function spawnFox() {
+        let side = Math.floor(Math.random() * 4);
+        let x, y;
+        if (side === 0) { x = Math.random() * canvas.width; y = 0; }
+        else if (side === 1) { x = canvas.width; y = Math.random() * canvas.height; }
+        else if (side === 2) { x = Math.random() * canvas.width; y = canvas.height; }
+        else { x = 0; y = Math.random() * canvas.height; }
+        
+        foxes.push({ x, y, speed: 1 + Math.random(), scared: 0 });
     }
 
     function drawEggs() {
         ctx.fillStyle = "yellow";
-        ctx.fillRect(eggs.x, eggs.y, eggs.width, eggs.height);
+        ctx.beginPath();
+        ctx.arc(eggs.x, eggs.y, eggs.radius, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    function drawFoxes() {
+        ctx.fillStyle = "orange";
+        foxes.forEach(fox => {
+            ctx.beginPath();
+            ctx.arc(fox.x, fox.y, 15, 0, Math.PI * 2);
+            ctx.fill();
+        });
     }
 
     function update() {
         foxes.forEach(fox => {
-            fox.x -= fox.speed;
-            if (scarePower > 0) {
-                fox.x += scarePower;
+            if (fox.scared > 0) {
+                fox.scared--;
+                return;
             }
-            if (fox.x <= eggs.x + eggs.width) {
+            let dx = eggs.x - fox.x;
+            let dy = eggs.y - fox.y;
+            let dist = Math.sqrt(dx * dx + dy * dy);
+            fox.x += (dx / dist) * fox.speed;
+            fox.y += (dy / dist) * fox.speed;
+            
+            if (dist < eggs.radius + 10) {
                 alert("Game Over! The fox stole your eggs!");
                 location.reload();
             }
         });
-        scarePower *= 0.9;
-        if (Math.random() < 0.01) foxes.push({ x: 750, y: 250, speed: 0.5 + Math.random() * 0.5 });
+        
+        if (Math.random() < 0.02) spawnFox();
     }
 
     function gameLoop() {
@@ -65,7 +87,17 @@
         function analyzeAudio() {
             analyser.getByteFrequencyData(dataArray);
             let volume = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
-            if (volume > 30) scarePower = Math.min(volume / 3, 20);
+            
+            if (volume > 30 && foxes.length > 0) {
+                let nearestFox = foxes.reduce((nearest, fox) => {
+                    let dist1 = Math.hypot(nearest.x - eggs.x, nearest.y - eggs.y);
+                    let dist2 = Math.hypot(fox.x - eggs.x, fox.y - eggs.y);
+                    return dist2 < dist1 ? fox : nearest;
+                });
+                nearestFox.scared = 30;
+                nearestFox.x += (nearestFox.x - eggs.x) * 0.5;
+                nearestFox.y += (nearestFox.y - eggs.y) * 0.5;
+            }
             requestAnimationFrame(analyzeAudio);
         }
         analyzeAudio();
