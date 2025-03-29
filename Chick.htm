@@ -2,14 +2,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>V2 Mic-Controlled Chicken Jump</title>
+    <title>Mic-Controlled Chicken Jump</title>
     <style>
         body { text-align: center; overflow: hidden; margin: 0; }
         canvas { background: skyblue; display: block; margin: auto; }
     </style>
 </head>
 <body>
-    <h1>Mic-Controlled Chicken Jump</h1>
+    <h1>V3</h1>
     <p>Speak louder to jump higher and farther!</p>
     <canvas id="gameCanvas"></canvas>
     <script>
@@ -19,6 +19,8 @@
         canvas.height = 400;let chicken = { x: 50, y: 300, vy: 0, vx: 0, gravity: 0.6, jumping: false };
     let scrollOffset = 0;
     let obstacles = [];
+    let volumeDuration = 0;
+    let wasLoud = false;
 
     function createObstacles() {
         for (let i = 1; i <= 10; i++) {
@@ -75,10 +77,19 @@
         function analyzeAudio() {
             analyser.getByteFrequencyData(dataArray);
             let volume = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
-            if (volume > 50 && !chicken.jumping) {
-                chicken.vy = -volume / 10;
-                chicken.vx = volume / 15;
-                chicken.jumping = true;
+            
+            if (volume > 50) {
+                wasLoud = true;
+                volumeDuration += 1;
+            } else if (wasLoud) {
+                wasLoud = false;
+                if (!chicken.jumping) {
+                    let jumpStrength = Math.min(volumeDuration / 5, 20);
+                    chicken.vy = -jumpStrength;
+                    chicken.vx = jumpStrength / 1.5;
+                    chicken.jumping = true;
+                    volumeDuration = 0;
+                }
             }
             requestAnimationFrame(analyzeAudio);
         }
