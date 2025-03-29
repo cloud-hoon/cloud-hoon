@@ -2,15 +2,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fox Scare</title>
+    <title>Fox Scare v3</title>
     <style>
         body { text-align: center; overflow: hidden; margin: 0; }
         canvas { background: lightgreen; display: block; margin: auto; }
     </style>
 </head>
 <body>
-    <h1>Fox Scare 2</h1>
-    <p>Make noise to scare away the nearest fox!</p>
+    <h1>Fox Scare v3</h1>
+    <p>Say a number to scare the corresponding fox!</p>
     <canvas id="gameCanvas"></canvas>
     <script>
         const canvas = document.getElementById("gameCanvas");
@@ -27,7 +27,7 @@
         else if (side === 2) { x = Math.random() * canvas.width; y = canvas.height; }
         else { x = 0; y = Math.random() * canvas.height; }
         
-        foxes.push({ x, y, speed: 1 + Math.random(), scared: 0 });
+        foxes.push({ x, y, speed: 1 + Math.random(), scared: 0, number: foxes.length + 1 });
     }
 
     function drawEggs() {
@@ -43,6 +43,8 @@
             ctx.beginPath();
             ctx.arc(fox.x, fox.y, 15, 0, Math.PI * 2);
             ctx.fill();
+            ctx.fillStyle = "black";
+            ctx.fillText(fox.number, fox.x - 5, fox.y - 20);
         });
     }
 
@@ -75,35 +77,27 @@
         requestAnimationFrame(gameLoop);
     }
 
-    async function getMicrophoneInput() {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const analyser = audioContext.createAnalyser();
-        const microphone = audioContext.createMediaStreamSource(stream);
-        microphone.connect(analyser);
-        analyser.fftSize = 256;
-        const dataArray = new Uint8Array(analyser.frequencyBinCount);
-
-        function analyzeAudio() {
-            analyser.getByteFrequencyData(dataArray);
-            let volume = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
-            
-            if (volume > 30 && foxes.length > 0) {
-                let nearestFox = foxes.reduce((nearest, fox) => {
-                    let dist1 = Math.hypot(nearest.x - eggs.x, nearest.y - eggs.y);
-                    let dist2 = Math.hypot(fox.x - eggs.x, fox.y - eggs.y);
-                    return dist2 < dist1 ? fox : nearest;
-                });
-                nearestFox.scared = 30;
-                nearestFox.x += (nearestFox.x - eggs.x) * 0.5;
-                nearestFox.y += (nearestFox.y - eggs.y) * 0.5;
+    function listenForNumber() {
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = "en-US";
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.onresult = function(event) {
+            let number = parseInt(event.results[0][0].transcript);
+            if (number >= 1 && number <= 10) {
+                let fox = foxes.find(f => f.number === number);
+                if (fox) {
+                    fox.scared = 30;
+                    fox.x += (fox.x - eggs.x) * 0.5;
+                    fox.y += (fox.y - eggs.y) * 0.5;
+                }
             }
-            requestAnimationFrame(analyzeAudio);
-        }
-        analyzeAudio();
+        };
+        recognition.start();
     }
 
-    getMicrophoneInput();
+    setInterval(listenForNumber, 3000);  // Listen every 3 seconds
+
     gameLoop();
 </script>
 
