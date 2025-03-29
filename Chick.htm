@@ -1,0 +1,72 @@
+<!DOCTYPE html><html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mic-Controlled Chicken Jump</title>
+    <style>
+        body { text-align: center; overflow: hidden; margin: 0; }
+        canvas { background: skyblue; display: block; margin: auto; }
+    </style>
+</head>
+<body>
+    <h1>Mic-Controlled Chicken Jump</h1>
+    <p>Speak louder to jump higher and farther!</p>
+    <canvas id="gameCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = 800;
+        canvas.height = 400;let chicken = { x: 50, y: 300, vy: 0, vx: 0, gravity: 0.6, jumping: false };
+
+    function drawChicken() {
+        ctx.fillStyle = "yellow";
+        ctx.fillRect(chicken.x, chicken.y, 30, 30);
+    }
+
+    function update() {
+        chicken.vy += chicken.gravity;
+        chicken.y += chicken.vy;
+        chicken.x += chicken.vx;
+        chicken.vx *= 0.9; // Apply friction to horizontal movement
+        
+        if (chicken.y >= 300) {
+            chicken.y = 300;
+            chicken.jumping = false;
+        }
+    }
+
+    function gameLoop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawChicken();
+        update();
+        requestAnimationFrame(gameLoop);
+    }
+
+    async function getMicrophoneInput() {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const analyser = audioContext.createAnalyser();
+        const microphone = audioContext.createMediaStreamSource(stream);
+        microphone.connect(analyser);
+        analyser.fftSize = 256;
+        const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+        function analyzeAudio() {
+            analyser.getByteFrequencyData(dataArray);
+            let volume = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
+            if (volume > 50 && !chicken.jumping) {
+                chicken.vy = -volume / 10; // Jump height based on loudness
+                chicken.vx = volume / 15;  // Forward movement based on loudness
+                chicken.jumping = true;
+            }
+            requestAnimationFrame(analyzeAudio);
+        }
+        analyzeAudio();
+    }
+
+    getMicrophoneInput();
+    gameLoop();
+</script>
+
+</body>
+</html>
