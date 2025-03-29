@@ -1,0 +1,79 @@
+<!DOCTYPE html><html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fox Scare</title>
+    <style>
+        body { text-align: center; overflow: hidden; margin: 0; }
+        canvas { background: lightgreen; display: block; margin: auto; }
+    </style>
+</head>
+<body>
+    <h1>Fox Scare</h1>
+    <p>Make noise to scare away the foxes!</p>
+    <canvas id="gameCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = 800;
+        canvas.height = 400;let foxes = [{ x: 750, y: 250, speed: 0.5 }];
+    let eggs = { x: 50, y: 270, width: 40, height: 30 };
+    let scarePower = 0;
+
+    function drawFoxes() {
+        ctx.fillStyle = "orange";
+        foxes.forEach(fox => ctx.fillRect(fox.x, fox.y, 40, 30));
+    }
+
+    function drawEggs() {
+        ctx.fillStyle = "yellow";
+        ctx.fillRect(eggs.x, eggs.y, eggs.width, eggs.height);
+    }
+
+    function update() {
+        foxes.forEach(fox => {
+            fox.x -= fox.speed;
+            if (scarePower > 0) {
+                fox.x += scarePower;
+            }
+            if (fox.x <= eggs.x + eggs.width) {
+                alert("Game Over! The fox stole your eggs!");
+                location.reload();
+            }
+        });
+        scarePower *= 0.9;
+        if (Math.random() < 0.01) foxes.push({ x: 750, y: 250, speed: 0.5 + Math.random() * 0.5 });
+    }
+
+    function gameLoop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawEggs();
+        drawFoxes();
+        update();
+        requestAnimationFrame(gameLoop);
+    }
+
+    async function getMicrophoneInput() {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const analyser = audioContext.createAnalyser();
+        const microphone = audioContext.createMediaStreamSource(stream);
+        microphone.connect(analyser);
+        analyser.fftSize = 256;
+        const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+        function analyzeAudio() {
+            analyser.getByteFrequencyData(dataArray);
+            let volume = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
+            if (volume > 30) scarePower = Math.min(volume / 3, 20);
+            requestAnimationFrame(analyzeAudio);
+        }
+        analyzeAudio();
+    }
+
+    getMicrophoneInput();
+    gameLoop();
+</script>
+
+</body>
+</html>
