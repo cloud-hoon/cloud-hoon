@@ -12,12 +12,14 @@
     <h1>Fox Scare v3</h1>
     <p>Say a number to scare the corresponding fox!</p>
     <canvas id="gameCanvas"></canvas>
+    <p id="message"></p>
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
         canvas.width = 600;
         canvas.height = 600;let eggs = { x: canvas.width / 2, y: canvas.height / 2, radius: 20 };
     let foxes = [];
+    let gameOver = false;
 
     function spawnFox() {
         let side = Math.floor(Math.random() * 4);
@@ -61,15 +63,16 @@
             fox.y += (dy / dist) * fox.speed;
             
             if (dist < eggs.radius + 10) {
-                alert("Game Over! The fox stole your eggs!");
-                location.reload();
+                gameOver = true;
+                document.getElementById("message").innerText = "Game Over! Foxes reached your eggs. Foxes: " + foxes.map(f => f.number).join(", ");
             }
         });
         
-        if (Math.random() < 0.02) spawnFox();
+        if (Math.random() < 0.02 && !gameOver) spawnFox();
     }
 
     function gameLoop() {
+        if (gameOver) return;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawEggs();
         drawFoxes();
@@ -84,7 +87,7 @@
         recognition.interimResults = false;
         recognition.onresult = function(event) {
             let number = parseInt(event.results[0][0].transcript);
-            if (number >= 1 && number <= 10) {
+            if (number >= 1 && number <= 10 && !gameOver) {
                 let fox = foxes.find(f => f.number === number);
                 if (fox) {
                     fox.scared = 30;
