@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memory Match Game</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin: 2em;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 80px);
+      grid-gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .box {
+      width: 80px;
+      height: 80px;
+      font-size: 2em;
+      background: #ddd;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .box.revealed {
+      background: #a3d8a3;
+    }
+    #startBtn {
+      padding: 10px 20px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Memory Match Game</h1>
+  <p>Time: <span id="timer">0</span>s</p>
+  <p>Coins: <span id="coins">0</span></p>
+  <button id="startBtn">Start</button>
+  <div class="grid" id="grid"></div>
+
+  <script>
+    const grid = document.getElementById('grid');
+    const timerDisplay = document.getElementById('timer');
+    const coinDisplay = document.getElementById('coins');
+    const startBtn = document.getElementById('startBtn');
+
+    let boxes = [];
+    let revealed = [];
+    let matchedCount = 0;
+    let timer = 0;
+    let interval;
+    let coins = parseInt(localStorage.getItem('coins') || '0');
+    coinDisplay.textContent = coins;
+
+    const alphabet = 'ABCDEFGH';
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function createGrid() {
+      grid.innerHTML = '';
+      matchedCount = 0;
+      revealed = [];
+      let items = shuffle([...alphabet, ...alphabet]);
+      boxes = items.map((letter, index) => {
+        const div = document.createElement('div');
+        div.classList.add('box');
+        div.dataset.letter = letter;
+        div.dataset.index = index;
+        div.textContent = '';
+        div.addEventListener('click', () => revealBox(div));
+        grid.appendChild(div);
+        return div;
+      });
+    }
+
+    function revealBox(box) {
+      if (box.classList.contains('revealed') || revealed.length === 2) return;
+
+      box.textContent = box.dataset.letter;
+      box.classList.add('revealed');
+      revealed.push(box);
+
+      if (revealed.length === 2) {
+        const [a, b] = revealed;
+        if (a.dataset.letter === b.dataset.letter) {
+          revealed = [];
+          matchedCount += 2;
+          if (matchedCount === 16) {
+            clearInterval(interval);
+            rewardCoins();
+          }
+        } else {
+          setTimeout(() => {
+            a.textContent = '';
+            b.textContent = '';
+            a.classList.remove('revealed');
+            b.classList.remove('revealed');
+            revealed = [];
+          }, 800);
+        }
+      }
+    }
+
+    function rewardCoins() {
+      let earned = 0;
+      if (timer <= 20) earned = 20;
+      else if (timer <= 30) earned = 5;
+      else if (timer <= 60) earned = 1;
+      coins += earned;
+      localStorage.setItem('coins', coins);
+      coinDisplay.textContent = coins;
+      alert(`Game complete! Time: ${timer}s. Coins earned: ${earned}`);
+    }
+
+    function startGame() {
+      timer = 0;
+      timerDisplay.textContent = timer;
+      clearInterval(interval);
+      interval = setInterval(() => {
+        timer++;
+        timerDisplay.textContent = timer;
+      }, 1000);
+      createGrid();
+    }
+
+    startBtn.addEventListener('click', startGame);
+  </script>
+</body>
+</html>
