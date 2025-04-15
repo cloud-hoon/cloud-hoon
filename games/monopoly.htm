@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Monopoly Game with Three.js</title>
+  <style>
+    body { margin: 0; }
+    #canvas { display: block;}
+  </style>
+</head>
+<body>
+  <canvas id='canvas'></canvas>
+  <script src="three.min.js.txt"></script>
+  <script>
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("canvas") });
+renderer.setSize(window.innerWidth, window.innerHeight);
+
+// Add ambient light to the scene
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Color: white, Intensity: 0.5
+scene.add(ambientLight);
+
+camera.position.z = 150;
+
+const tileSize = 20;
+const numTilesPerSide = 10; // Number of tiles per side (excluding corners)
+
+const tileColors = [
+  0x348ceb, 0x86a91a, 0xde2b2b, 0xff9f00, 0x4e25e3, 0xfc589e, 0x62b2f4, 0x141414,
+];
+
+const blackTileColor = 0x000000; // Black tile color
+
+// Store tile positions for smoother movement
+const tilePositions = [];
+
+// Create the four sides
+for (let side = 0; side < 4; side++) {
+  for (let i = 0; i < numTilesPerSide; i++) {
+    const tileGeometry = new THREE.BoxGeometry(tileSize, tileSize, 1);
+
+    // Use black tiles in the middle of each side
+    const isBlackTile = i === Math.floor(numTilesPerSide / 2);
+    const tileMaterial = new THREE.MeshBasicMaterial({ color: isBlackTile ? blackTileColor : tileColors[i % tileColors.length] });
+
+    const tileMesh = new THREE.Mesh(tileGeometry, tileMaterial);
+
+    let x = 0, y = 0;
+
+    if (side === 0) {
+      // Top side
+      x = i * tileSize - numTilesPerSide / 2 * tileSize;
+      y = numTilesPerSide / 2 * tileSize;
+    } else if (side === 1) {
+      // Right side
+      x = numTilesPerSide / 2 * tileSize;
+      y = i * -tileSize + numTilesPerSide / 2 * tileSize;
+    } else if (side === 2) {
+      // Bottom side
+      x = i * -tileSize + numTilesPerSide / 2 * tileSize;
+      y = -numTilesPerSide / 2 * tileSize;
+    } else if (side === 3) {
+      // Left side
+      x = -numTilesPerSide / 2 * tileSize;
+      y = i * tileSize - numTilesPerSide / 2 * tileSize;
+    }
+
+    tileMesh.position.x = x;
+    tileMesh.position.y = y;
+    tileMesh.position.z = 0;
+
+    tilePositions.push({ x, y }); // Store the tile positions
+
+    scene.add(tileMesh);
+  }
+}
+
+// Create a token
+const tokenGeometry = new THREE.BoxGeometry(5, 5, 5);
+const tokenMaterial1 = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+const tokenMaterial2 = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+const tokenMeshes = [new THREE.Mesh(tokenGeometry, tokenMaterial1), new THREE.Mesh(tokenGeometry, tokenMaterial2)];
+const currentTileIndex = [0,0];
+const balances = [0,0];
+for(tokenMesh of tokenMeshes){
+  tokenMesh.position.x = -numTilesPerSide / 2 * tileSize + tileSize / 2;
+  tokenMesh.position.y = numTilesPerSide / 2 * tileSize - tileSize / 2;
+  tokenMesh.position.z = 10;
+  scene.add(tokenMesh);
+}
+
+
+// Create a button to roll the dice
+const MAX_PLAYER = 2; // default 2 player
+let currPlayer = 0; // either 0 or 1 
+const divControls = document.createElement('div');
+divControls.style.position = 'absolute';
+divControls.style.top = '50%';
+divControls.style.left = '50%';
+divControls.style.transform = 'translate(-50%, -50%)';
+document.body.appendChild(divControls);
+
+const rollButton = document.createElement('button');
+rollButton.innerText = 'Roll Dice';
+rollButton.addEventListener('click', rollDice);
+divControls.appendChild(rollButton);
+// Create a button to roll the dice
+const autorollButton = document.createElement('button');
+autorollButton.innerText = 'Auto Roll';
+autorollButton.addEventListener('click', ()=>{setInterval(()=>rollDice(), 1000)});
+divControls.appendChild(autorollButton);
+
+const resultDisplay = document.createElement('div');
+resultDisplay.style.position = 'absolute';
+resultDisplay.style.top = '100px';
+resultDisplay.style.left = '50%';
+resultDisplay.style.color='white';
+resultDisplay.style.transform = 'translateX(-50%)';
+document.body.appendChild(resultDisplay);
+function rollDice() {
+  const rollValue = Math.floor(Math.random() * 6) + 1; // Simulate rolling a 6-sided die
+  
+  resultDisplay.innerText = `Dice roll result: ${rollValue}`+`\nPlayer Red : $${balances[0]}`
++`\nPlayer Blue : $${balances[1]}`;
+  // Calculate the target tile index based on the dice roll
+  let targetTileIndex = currentTileIndex[currPlayer] + rollValue;
+  if(targetTileIndex >= tilePositions.length){
+    targetTileIndex = targetTileIndex % tilePositions.length;
+    balances[currPlayer]+= 200; // pass or land on GO
+  }
+
+  
+
+  animateTokenMovement(targetTileIndex);  
+}
+
+function animateTokenMovement(targetTileIndex) {
+  // Find the target tile position
+  const targetTilePosition = tilePositions[targetTileIndex];
+  targetX=targetTilePosition.x;
+  targetY=targetTilePosition.y;
+  const animationDuration = 1000; // Animation duration in milliseconds
+  const steps = 30; // Number of steps for smoother movement
+
+  const initialX = tokenMeshes[currPlayer].position.x;
+  const initialY = tokenMeshes[currPlayer].position.y;
+  const deltaX = (targetX - initialX) / steps;
+  const deltaY = (targetY - initialY) / steps;
+
+  let stepCount = 0;
+
+  function animateStep() {
+    tokenMeshes[currPlayer].position.x += deltaX;
+    tokenMeshes[currPlayer].position.y += deltaY;
+
+    stepCount++;
+
+    if (stepCount < steps) {
+      requestAnimationFrame(animateStep);
+    }else{
+      tokenMeshes[currPlayer].position.x = targetX;
+      tokenMeshes[currPlayer].position.y = targetY;
+      currentTileIndex[currPlayer] = targetTileIndex; 
+      currPlayer = (currPlayer + 1) % MAX_PLAYER;
+    }
+  }  
+  animateStep();
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
+}
+
+animate();
+
+
+  </script>
+</body>
+</html>

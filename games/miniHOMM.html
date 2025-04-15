@@ -1,0 +1,234 @@
+    <title>Heroes Mini-Game</title>
+  <style>
+ #game-board {
+    position: relative;
+    width: 500px;
+    height: 500px;
+    background-color: #f4f4f4;
+    border: 1px solid #333;
+  }
+
+  .tile {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #fff;
+  }
+
+.selected {
+  background-color: yellow;
+}
+
+/* Warrior and Goblin classes */
+.warrior {
+  background-color: green;
+  color: white;
+}
+
+.goblin {
+  background-color: red;
+  color: white;
+}
+/* Button for end turn */
+#end-turn-btn {
+  padding: 10px;
+  margin-top: 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+#end-turn-btn:hover {
+  background-color: #0056b3;
+}
+
+#log {
+  margin-top: 10px;
+  width: 100%;
+  font-family: monospace;
+}
+
+  </style>
+</head>
+  <h1>Heroes Mini-Game</h1>
+<div id="game-board" style="position: relative;"></div>
+<div>
+  <button id="end-turn-btn">End Turn</button>
+</div>
+<textarea id="log" rows="10" cols="50" readonly></textarea>
+
+ <script>const warriors = [
+  { id: 1, name: 'Warrior 1', health: 100, position: [1, 1], hasMoved: false, hasAttacked: false },
+  { id: 2, name: 'Warrior 2', health: 100, position: [3, 1], hasMoved: false, hasAttacked: false },
+];
+
+const goblins = Array.from({ length: 8 }, (_, i) => ({
+  id: i + 1,
+  name: `Goblin ${i + 1}`,
+  health: 50,
+  position: [Math.floor(Math.random() * 10), Math.floor(Math.random() * 10)],
+}));
+
+const wolves = Array.from({ length: 2 }, (_, i) => ({
+  id: i + 1,
+  name: `Wolf ${i + 1}`,
+  health: 80,
+  position: [Math.floor(Math.random() * 10), Math.floor(Math.random() * 10)],
+}));
+
+const logTextarea = document.getElementById('log');
+let currentTurn = 'player';
+let selectedWarrior = null;
+
+function logAction(message) {
+  logTextarea.value += `${message}\n`;
+  logTextarea.scrollTop = logTextarea.scrollHeight; // Auto-scroll
+}
+
+function renderMap() {
+  const board = document.getElementById('game-board');
+  board.innerHTML = '';
+
+  for (let y = 0; y < 10; y++) {
+    for (let x = 0; x < 10; x++) {
+      const tile = document.createElement('div');
+      tile.className = 'tile';
+      tile.style.left = `${x * 50}px`;
+      tile.style.top = `${y * 50}px`;
+
+      const warrior = warriors.find(w => w.position[0] === x && w.position[1] === y);
+      const goblin = goblins.find(g => g.position[0] === x && g.position[1] === y);
+      const wolf = wolves.find(w => w.position[0] === x && w.position[1] === y);
+
+      if (warrior) {
+        tile.style.backgroundColor = 'blue';
+        tile.innerHTML = `W (${warrior.health})`;
+      } else if (goblin) {
+        tile.style.backgroundColor = 'red';
+        tile.innerHTML = `G (${goblin.health})`;
+      } else if (wolf) {
+        tile.style.backgroundColor = 'darkorange';
+        tile.innerHTML = `F (${wolf.health})`;
+      }
+
+      tile.addEventListener('click', () => handleTileClick(x, y));
+      board.appendChild(tile);
+    }
+  }
+}
+function handleTileClick(x, y) {
+  if (currentTurn !== 'player') return;
+
+  if (selectedWarrior) {
+    const dx = Math.abs(selectedWarrior.position[0] - x);
+    const dy = Math.abs(selectedWarrior.position[1] - y);
+    const distance = dx + dy;
+
+    // Check if moving to the enemy's tile
+    const targetGoblin = goblins.find(g => g.position[0] === x && g.position[1] === y);
+    const targetWolf = wolves.find(w => w.position[0] === x && w.position[1] === y);
+    const targetEnemy = targetGoblin || targetWolf;
+
+    if (targetEnemy && distance === 1) {
+      // Attack the enemy
+      targetEnemy.health -= 20; // Warrior deals 20 damage
+      selectedWarrior.hasAttacked = true;
+      logAction(`${selectedWarrior.name} attacked ${targetEnemy.name}. ${targetEnemy.name}'s health is now ${targetEnemy.health}`);
+      
+      // Check if the enemy is defeated
+      if (targetEnemy.health <= 0) {
+        logAction(`${targetEnemy.name} has been defeated!`);
+        if (targetGoblin) goblins.splice(goblins.indexOf(targetGoblin), 1);
+        if (targetWolf) wolves.splice(wolves.indexOf(targetWolf), 1);
+      }
+
+      selectedWarrior = null;
+      renderMap();
+    } else if (distance === 1) {
+      // Move to an empty tile
+      selectedWarrior.position = [x, y];
+      selectedWarrior.hasMoved = true;
+      logAction(`${selectedWarrior.name} moved to (${x}, ${y})`);
+      selectedWarrior = null;
+      renderMap();
+    } else {
+      logAction('Invalid move. You can only move 1 tile.');
+    }
+  } else {
+    // Select a warrior
+    selectedWarrior = warriors.find(w => w.position[0] === x && w.position[1] === y && !w.hasMoved);
+    if (selectedWarrior) {
+      logAction(`${selectedWarrior.name} selected.`);
+    }
+  }
+}
+
+function enemyTurn() {
+  [...goblins, ...wolves].forEach(enemy => {
+    if (enemy.health <= 0) return;
+
+    const target = warriors.find(w => w.health > 0);
+    if (!target) return;
+
+    const dx = target.position[0] - enemy.position[0];
+    const dy = target.position[1] - enemy.position[1];
+
+    const stepX = dx > 0 ? 1 : dx < 0 ? -1 : 0;
+    const stepY = dy > 0 ? 1 : dy < 0 ? -1 : 0;
+
+    // Wolves can move 2 tiles; goblins move 1 tile
+    const maxSteps = enemy.name.includes('Wolf') ? 2 : 1;
+
+    for (let step = 1; step <= maxSteps; step++) {
+      const newX = enemy.position[0] + stepX * step;
+      const newY = enemy.position[1] + stepY * step;
+
+      // Check if the new tile is occupied
+      const isTileOccupied = warriors.some(w => w.position[0] === newX && w.position[1] === newY) ||
+                             goblins.some(g => g.position[0] === newX && g.position[1] === newY) ||
+                             wolves.some(w => w.position[0] === newX && w.position[1] === newY);
+
+      if (!isTileOccupied) {
+        // Move to the new tile if it's free
+        enemy.position = [newX, newY];
+        break;
+      }
+    }
+
+    // Check if the enemy can attack the target
+    const distance = Math.abs(target.position[0] - enemy.position[0]) + Math.abs(target.position[1] - enemy.position[1]);
+    if (distance === 0) {
+      target.health -= 10; // Enemy deals 10 damage
+      logAction(`${enemy.name} attacked ${target.name}. ${target.name}'s health is now ${target.health}`);
+    }
+  });
+
+  renderMap();
+}
+
+function endTurn() {
+  if (currentTurn === 'player') {
+    warriors.forEach(warrior => {
+      warrior.hasMoved = false;
+      warrior.hasAttacked = false;
+    });
+    currentTurn = 'enemy';
+    logAction('Enemy turn.');
+    enemyTurn();
+    currentTurn = 'player';
+    logAction('Player turn.');
+  }
+}
+
+document.getElementById('end-turn-btn').addEventListener('click', endTurn);
+
+// Initialize Game
+renderMap();
+logAction('Game starts. Player\'s turn.');
+</script>

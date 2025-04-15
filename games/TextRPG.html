@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lone Wolf-style Adventure</title>
+</head>
+<body>
+    <h1>Lone Wolf-style Adventure</h1>
+    <div id="game">
+        <p>Welcome, Lone Wolf! Your adventure begins.</p>
+    </div>
+
+    <script>
+        let gameState = "start"; // Tracks the game state
+        let synth = window.speechSynthesis;
+        let voices = [];
+
+        // Fetch available voices and populate the 'voices' array
+        function populateVoices() {
+            voices = synth.getVoices();
+        }
+
+        // Initialize voices when the page loads
+        populateVoices();
+        if (synth.onvoiceschanged !== undefined) {
+            synth.onvoiceschanged = populateVoices;
+        }
+
+        // Function to speak the provided text
+        function speakText(text) {
+            // Stop the current speech if it's speaking
+            if (synth.speaking && gameState != "dragon") {
+                synth.cancel();
+            }
+
+            let utterance = new SpeechSynthesisUtterance(text);
+
+            // You can choose a voice from the 'voices' array by index or name
+            // Example: utterance.voice = voices[0]; // Use the first available voice
+            utterance.voice = voices.find(voice => voice.name === 'Your Preferred Voice Name');
+
+            // Optionally, you can set the rate and pitch of speech
+            utterance.rate = 2; // Normal speed
+            utterance.pitch = 1.0; // Normal pitch
+
+            synth.speak(utterance);
+        }
+
+        // Function to update the game text, speak it, and show options
+        function updateGameText(text, options) {
+            document.getElementById("game").innerHTML = text;
+
+            // Speak the text
+            speakText(text);
+
+            // Create buttons for options
+            if (options) {
+                options.forEach(option => {
+                    document.getElementById("game").innerHTML += `<button onclick="${option.action}()">${option.label}</button>`;
+                });
+            }
+        }
+
+        function startAdventure() {
+            const text = "<p>You find yourself in a dark forest. Do you want to go left or right?</p>";
+            const options = [
+                { label: "Go Left", action: "goLeft" },
+                { label: "Go Right", action: "goRight" }
+            ];
+
+            updateGameText(text, options);
+            gameState = "forest";
+        }
+
+        function goLeft() {
+            const text = "<p>You discover a hidden treasure chest. What do you do?</p>";
+            const options = [
+                { label: "Open the chest", action: "openChest" }
+            ];
+
+            updateGameText(text, options);
+            gameState = "treasure";
+        }
+
+        function goRight() {
+            const text = "<p>You come across a river. How do you proceed?</p>";
+            const options = [
+                { label: "Try to cross the river", action: "crossRiver" },
+                { label: "Turn back", action: "startAdventure" },
+                { label: "Explore the riverbank", action: "exploreRiverbank" }
+            ];
+
+            updateGameText(text, options);
+            gameState = "river";
+        }
+ function exploreDownstream() {
+            const text = "<p>You sail downstream and reach a beautiful waterfall. What a breathtaking sight!</p>";
+            const options = [
+                { label: "Return to the forest", action: "startAdventure" }
+            ];
+
+            updateGameText(text, options);
+            gameState = "start";
+        }
+        function openChest() {
+            const text = "<p>You find a valuable sword in the chest! You are now better equipped for your journey.</p>";
+            const options = [
+                { label: "Continue your adventure", action: "startAdventure" }
+            ];
+
+            updateGameText(text, options);
+            gameState = "start";
+        }
+
+
+        function exploreRiverbank() {
+            const text = "<p>You discover a small boat hidden by the riverbank. What do you do?</p>";
+            const options = [
+                { label: "Take the boat and explore downstream", action: "exploreDownstream" },
+                { label: "Return to the forest", action: "startAdventure" }
+            ];
+
+            updateGameText(text, options);
+            gameState = "riverbank";
+        }
+
+        function enterCave() {
+            const text = "<p>You enter the cave but are met by a fearsome dragon! You must fight to survive.</p>";
+            const options = [
+                { label: "Fight the dragon", action: "fightDragon" }
+            ];
+
+            updateGameText(text, options);
+            gameState = "dragon";
+        }
+function crossRiver() {
+    const text = "<p>You successfully cross the river and find a hidden cave. Do you enter the cave?</p>";
+    const options = [
+        { label: "Enter the cave", action: "enterCave" },
+        { label: "Return to the forest", action: "startAdventure" }
+    ];
+
+    updateGameText(text, options);
+    gameState = "cave";
+}
+
+function fightDragon() {
+    let text = "<p>You bravely engage the dragon in battle.</p>";
+    let dragonHP = 100;
+    let yourHP = 100;
+
+    function continueBattle() {
+        if (dragonHP <= 0 || yourHP <= 0) {
+            let battleResult = "";
+
+            if (yourHP <= 0) {
+                battleResult = "<p>You were defeated by the dragon!</p>";
+                const options = [
+                    { label: "Start over", action: "startAdventure" }
+                ];
+                updateGameText(text + battleResult, options);
+            } else {
+                battleResult = "<p>Congratulations! You have defeated the dragon and completed your adventure.</p>";
+                const options = [
+                    { label: "Play again", action: "startAdventure" }
+                ];
+                updateGameText(text + battleResult, options);
+            }
+
+            gameState = "start";
+        } else {
+            // Simulate a simple battle, you and the dragon take turns attacking
+            const dragonDamage = Math.floor(Math.random() * 10) + 1;
+            const yourDamage = Math.floor(Math.random() * 10) + 1;
+
+            dragonHP -= yourDamage;
+            yourHP -= dragonDamage;
+
+            text += `<p>You hit the dragon for ${yourDamage} damage.</p>`;
+            text += `<p>The dragon hits you for ${dragonDamage} damage.</p>`;
+
+            updateGameText(text);
+
+            // Continue the battle after a short delay
+            setTimeout(continueBattle, 1000);
+        }
+    }
+
+    // Start the battle
+    continueBattle();
+}
+        // Call the startAdventure function to begin the game
+        startAdventure();
+    </script>
+</body>
+</html>

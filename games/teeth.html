@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brushing Teeth Game</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        
+        #game-container {
+            width: 100%;
+            height: 100vh;
+            background-color: #f0f0f0;
+            position: relative;
+        }
+        
+        #toothbrush {
+            width: 30px;
+            height: 100px;
+            background-color: #00f;
+            position: absolute;
+	   top:100px;
+            transform-origin: center;
+            transform: rotate(90deg);
+	    z-index:9999;
+        }
+        
+        .tooth {
+            width: 40px;
+            height: 60px;
+            background-color: #ccc;
+            position: absolute;
+            transition: background-color 1s ease;
+	    border: 1px black solid;
+        }
+
+        .top-teeth {
+            top: 20px; position:absolute;
+        }
+
+        .bottom-teeth {
+            top: 120px;     position: absolute;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="toothbrush"></div>
+        <!-- Top Teeth -->
+        <div class="teeth top-teeth"></div>
+        <!-- Bottom Teeth -->
+        <div class="teeth bottom-teeth"></div>
+    </div>
+    <script>
+        const toothbrush = document.getElementById("toothbrush");
+        const topTeeth = document.querySelector(".top-teeth");
+        const bottomTeeth = document.querySelector(".bottom-teeth");
+        const teeth = [];
+
+        // Create 18 teeth for the top and 18 for the bottom
+        for (let i = 0; i < 18; i++) {
+            const toothTop = document.createElement("div");
+            toothTop.className = "tooth top-tooth";
+            toothTop.style.left = i * 40 + "px";
+	    toothTop.style.backgroundColor="rgb(139,69,19)";
+            teeth.push(toothTop);
+            topTeeth.appendChild(toothTop);
+
+            const toothBottom = document.createElement("div");
+            toothBottom.className = "tooth bottom-tooth";
+            toothBottom.style.left = i * 40 + "px";
+	     toothBottom.style.backgroundColor="rgb(139,69,19)";
+            teeth.push(toothBottom);
+            bottomTeeth.appendChild(toothBottom);
+	    
+	
+        }
+        document.addEventListener("mousemove", (e) => moveBrush(e));
+	 document.addEventListener("touchmove", (e) => moveBrush(e));
+	 	 document.addEventListener("touchstart", (e) => moveBrush(e));
+
+	function moveBrush(e){
+       
+            // Move the toothbrush to the mouse position
+            toothbrush.style.left = e.clientX - toothbrush.offsetWidth / 2 + "px";
+            toothbrush.style.top = e.clientY - toothbrush.offsetHeight / 2 + "px";
+
+            // Check for collision between toothbrush and teeth
+            teeth.forEach((tooth) => {
+                if (isColliding(toothbrush, tooth)) {
+                    // Gradually turn the tooth white
+                    tooth.style.backgroundColor = "#fff";
+                }
+            });
+        };
+
+        function isColliding(element1, element2) {
+            const rect1 = element1.getBoundingClientRect();
+            const rect2 = element2.getBoundingClientRect();
+            
+            return (
+                rect1.left < rect2.right &&
+                rect1.right > rect2.left &&
+                rect1.top < rect2.bottom &&
+                rect1.bottom > rect2.top
+            );
+        }
+
+        function darkenColor(tooth) {
+            const currentColor = tooth.style.backgroundColor || 'rgb(139, 69, 19)';
+            const rgb = currentColor.match(/\d+/g);
+	  let newRGB = [];
+	  const expectedRGB = [139,69,19];
+	  for(i=0;i<3;i++){
+		newRGB.push(  (rgb[i] > expectedRGB[i]) ? rgb[i]-1 : rgb[i]);
+	  }
+            tooth.style.backgroundColor = `rgb(${newRGB.join(', ')})`;
+        }
+	function darkenTeeth(){
+	 teeth.forEach((tooth) => {
+                   tooth.style.backgroundColor = darkenColor(tooth);
+                    
+                });
+	}
+	
+	setInterval(()=>darkenTeeth(), 100);
+    </script>
+</body>
+</html>

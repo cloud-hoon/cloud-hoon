@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Storytelling App with Text-to-Speech</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        #story-textarea {
+            width: 80%;
+            height: 300px;
+            font-size: 18px;
+        }
+        #output {
+            margin-top: 20px;
+            font-size: 16px;
+        }
+        #speech-button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Storytelling App with Text-to-Speech</h1>
+    <textarea id="story-textarea" placeholder="Start typing your story here..."></textarea>
+
+    <script>
+        const storyTextarea = document.getElementById('story-textarea');
+        let speechSynthesis = window.speechSynthesis;
+        // Function to start or stop text-to-speech
+        function toggleSpeech() {
+            if (speechSynthesis.speaking) {
+                speechSynthesis.cancel();
+            } else {
+                const text = storyTextarea.value;
+                const speech = new SpeechSynthesisUtterance(text);
+		speech.rate=1.5;
+                speechSynthesis.speak(speech);
+            }
+        }
+
+        // Add an event listener to the textarea to trigger reading when it changes
+        storyTextarea.addEventListener('change', toggleSpeech);
+
+    </script>
+</body>
+</html>

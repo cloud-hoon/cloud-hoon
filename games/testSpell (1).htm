@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Spelling Game</title>
+    <style>
+      body { margin: 0; }
+      canvas { display: block; }
+      #word-container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 40px;
+      }
+      .button-container {
+        position: absolute;
+        top: 100px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 20px;
+      }
+      .animal-button {
+        padding: 10px 20px;
+        font-size: 40px;
+        cursor: pointer;
+        border: none;
+        background-color: #0074d9;
+        color: white;
+        border-radius: 5px;
+      }
+      #score {
+        position: absolute;
+        top: 30px;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 40px;
+        color: white;
+      }
+      #result {
+        position: absolute;
+        top: 60px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 24px;
+        font-weight: bold;
+      }
+      .correct {
+        color: #00ff00;
+      }
+      .wrong {
+        color: #ff0000;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="three.min.js"></script>
+    <div id="word-container"></div>
+    <div class="button-container">
+      <button class="animal-button" id="correct-button"></button>
+      <button class="animal-button" id="incorrect-button1"></button>
+      <button class="animal-button" id="incorrect-button2"></button>
+	<button class="animal-button" id="incorrect-button3"></button>
+    </div>
+    <div id="score">Score: 0</div>
+    <div id="result"></div>
+    <script>
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      const renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      const geometry = new THREE.BoxGeometry(2,2,2);
+      const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+      const cube = new THREE.Mesh(geometry, material);
+      scene.add(cube);
+
+      camera.position.z = 5;
+
+      const animals = ['cat', 'dog', 'fish', 'bird', 'elephant', 'panda', 'tiger', 'lion', 'monkey', 'giraffe', 'zebra', 'rhinoceros', 'kangaroo', 'hippopotamus', 'crocodile', 'chicken', 'horse', 'octopus', 'penguin', 'koala', 'polar bear', 'dolphin', 'gorilla', 'turtle', 'flamingo', 'peacock', 'parrot', 'pigeon'];
+ const vegetarianFood = [
+  "Vegetable Stir Fry",
+  "Caprese Salad",
+  "Quinoa Bowl",
+  "Eggplant Parmesan",
+  "Hummus Wrap",
+  "Spinach and Feta Stuffed Mushrooms",
+  "Chickpea Curry",
+  "Roasted Vegetable Pizza",
+  "Avocado Toast",
+  "Tomato Basil Bruschetta",
+  "Vegetarian Sushi Rolls",
+  "Mushroom Risotto",
+  "Sweet Potato and Black Bean Quesadilla",
+  "Greek Salad",
+  "Cauliflower Steak",
+  "Zucchini Noodles with Pesto",
+  "Vegetarian Spring Rolls",
+  "Broccoli and Cheddar Stuffed Peppers",
+  "Lentil Soup",
+  "Cucumber Avocado Rolls"
+];
+const colors = [
+  "Red",
+  "Orange",
+  "Yellow",
+  "Green",
+  "Blue",
+  "Indigo",
+  "Violet",
+  "Purple",
+  "Pink",
+  "Brown",
+  "Gray",
+  "Black",
+  "White",
+  "Cyan",
+  "Magenta",
+  "Lime",
+  "Maroon",
+  "Teal",
+  "Navy",
+  "Silver"
+];
+
+
+const words=animals.concat(vegetarianFood, colors);
+// Set the correct answer button
+        const correctButton = document.getElementById('correct-button');
+        
+        //correctButton.removeEventListener('click', handleAnswer);
+        correctButton.addEventListener('click', () => handleAnswer(true));
+
+       // Set incorrect answer buttons
+        const incorrectButtons = document.querySelectorAll('.animal-button:not(#correct-button)');
+        for (let i = 0; i < incorrectButtons.length; i++) {
+          //incorrectButtons[i].removeEventListener('click', handleAnswer);
+          incorrectButtons[i].addEventListener('click', () => handleAnswer(false));
+        }
+      
+      let score = 0;
+      const scoreElement = document.getElementById('score');
+      const resultElement = document.getElementById('result');
+
+      function displayWord() {
+        const shuffledWords = shuffleArray(words);
+        const randomWord = shuffledWords[shuffledWords.length-1];
+
+        // Display the word using HTML
+        const wordContainer = document.getElementById('word-container');
+        wordContainer.innerText = randomWord;
+
+        cube.material.color.setHex(0x00ff00);
+        cube.scale.set(1, 1, 1);
+        cube.position.set(0, 0, 0);
+
+        // Speak the word
+        const synth = window.speechSynthesis;
+        const utterance = new SpeechSynthesisUtterance(randomWord);
+        synth.speak(utterance);
+
+        // Shuffle the words for button placement
+        
+        correctButton.innerText = randomWord;
+        
+        // Set incorrect answer buttons
+        const incorrectButtons = document.querySelectorAll('.animal-button:not(#correct-button)');
+        for (let i = 0; i < incorrectButtons.length; i++) {          
+          incorrectButtons[i].innerText = shuffledWords[i];
+        }
+
+	container= document.querySelector(".button-container");
+	elements = Array.from(container.children);
+	const shuffledElements = elements.sort(() => Math.random() - 0.5);
+while (container.firstChild) {
+      container.removeChild(container.firstChild);
+    }
+
+    // Add back the shuffled elements
+    shuffledElements.forEach(element => {
+      container.appendChild(element);
+    });
+      }
+
+      function handleAnswer(isCorrect) {
+        if (isCorrect) {
+          score++;
+          scoreElement.innerText = `Score: ${score}`;
+          resultElement.innerText = 'Correct!';
+          resultElement.classList.remove('wrong');
+          resultElement.classList.add('correct');
+
+        setTimeout(() => {
+          resultElement.innerText = '';
+          displayWord();
+        }, 1000);
+        } else {
+          resultElement.innerText = 'Try Again!';
+const synth = window.speechSynthesis;
+        const utterance = new SpeechSynthesisUtterance("Try Again");
+        synth.speak(utterance);
+          resultElement.classList.remove('correct');
+          resultElement.classList.add('wrong');
+        }
+
+        
+      }
+
+      function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+      }
+
+      displayWord(); // Start the game
+
+      function animate() {
+        requestAnimationFrame(animate);
+        cube.rotation.x += 0.01;
+        cube.rotation.y += 0.01;
+        renderer.render(scene, camera);
+      }
+
+      animate();
+    </script>
+  </body>
+</html>

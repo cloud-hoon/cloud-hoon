@@ -1,0 +1,559 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Spelling Game</title>
+    <style>
+      body { margin: 0; }
+      canvas { display: block; }
+      #word-container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 40px;
+      }
+      .button-container {
+        position: absolute;
+        top: 100px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 20px;
+      }
+      .animal-button {
+        padding: 10px 20px;
+        font-size: 40px;
+        cursor: pointer;
+        border: none;
+        background-color: #0074d9;
+        color: white;
+        border-radius: 5px;
+      }
+      #score {
+        position: absolute;
+        top: 30px;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 40px;
+        color: white;
+      }
+      #result {
+        position: absolute;
+        top: 60px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 24px;
+        font-weight: bold;
+      }
+      .correct {
+        color: #00ff00;
+      }
+      .wrong {
+        color: #ff0000;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="three.min.js"></script>
+    <div id="word-container"></div>
+    <div class="button-container">
+      <button class="animal-button" id="correct-button"></button>
+      <button class="animal-button" id="incorrect-button1"></button>
+      <button class="animal-button" id="incorrect-button2"></button>
+	<button class="animal-button" id="incorrect-button3"></button>
+    </div>
+    <div id="score">Score: 0</div>
+    <div id="result"></div>
+    <script>
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      const renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      const geometry = new THREE.BoxGeometry(2,2,2);
+      const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+      const cube = new THREE.Mesh(geometry, material);
+      scene.add(cube);
+
+      camera.position.z = 5;
+
+      const animals = ['cat', 'dog', 'fish', 'bird', 'elephant', 'panda', 'tiger', 'lion', 'monkey', 'giraffe', 'zebra', 'rhinoceros', 'kangaroo', 'hippopotamus', 'crocodile', 'chicken', 'horse', 'octopus', 'penguin', 'koala', 'polar bear', 'dolphin', 'gorilla', 'turtle', 'flamingo', 'peacock', 'parrot', 'pigeon'];
+ const vegetarianFood = [
+  "Vegetable Stir Fry",
+  "Caprese Salad",
+  "Quinoa Bowl",
+  "Eggplant Parmesan",
+  "Hummus Wrap",
+  "Spinach and Feta Stuffed Mushrooms",
+  "Chickpea Curry",
+  "Roasted Vegetable Pizza",
+  "Avocado Toast",
+  "Tomato Basil Bruschetta",
+  "Vegetarian Sushi Rolls",
+  "Mushroom Risotto",
+  "Sweet Potato and Black Bean Quesadilla",
+  "Greek Salad",
+  "Cauliflower Steak",
+  "Zucchini Noodles with Pesto",
+  "Vegetarian Spring Rolls",
+  "Broccoli and Cheddar Stuffed Peppers",
+  "Lentil Soup",
+  "Cucumber Avocado Rolls"
+];
+const colors = [
+  "Red",
+  "Orange",
+  "Yellow",
+  "Green",
+  "Blue",
+  "Indigo",
+  "Violet",
+  "Purple",
+  "Pink",
+  "Brown",
+  "Gray",
+  "Black",
+  "White",
+  "Cyan",
+  "Magenta",
+  "Lime",
+  "Maroon",
+  "Teal",
+  "Navy",
+  "Silver"
+];
+const chineseWordsFor4YearOlds = [
+  '你好', // Nǐ hǎo - Hello
+  '谢谢', // Xièxiè - Thank you
+  '请',   // Qǐng - Please
+  '好的', // Hǎo de - Okay/Good
+  '再见', // Zàijiàn - Goodbye
+  '朋友', // Péngyǒu - Friend
+  '颜色', // Yánsè - Color
+  '动物', // Dòngwù - Animal
+  '水',   // Shuǐ - Water
+  '玩',   // Wán - Play
+  '小猫',
+  '大象',
+  '玩具',
+  '雨伞',
+  '花朵',
+  // ... (continue adding more words)
+  '蝴蝶',
+  '橙子',
+  '风筝',
+  '秋天',
+  '冰淇淋',
+  // ... (continue adding more words)
+  '太阳',
+  '海豚',
+  '星星',
+  '小鸭子',
+  '彩虹',
+   '小猫',
+  '大象',
+  '玩具',
+  '雨伞',
+  '花朵',
+  '小鸟',
+  '蓝天',
+  '大海',
+  '山坡',
+  '月亮',
+  '玫瑰',
+  '小狗',
+  '巧克力',
+  '鱼儿',
+  '早晨',
+  '彩虹',
+  '橙子',
+  '冰淇淋',
+  '雪人',
+  '小鸭子',
+  '花瓣',
+  '蜜蜂',
+  '蝴蝶',
+  '星星',
+  '小老鼠',
+  '音乐',
+  '风筝',
+  '秋天',
+  '糖果',
+  '大树',
+  '太阳',
+  '小熊',
+  '火车',
+  '云朵',
+  '雪花',
+  '草地',
+  '海豚',
+  '小船',
+  '公园',
+  '小猎人',
+  '小白兔',
+  '旅行',
+  '闪电',
+  '小甲虫',
+  '沙滩',
+  '小芋头',
+  '小喇叭',
+  '鸟巢',
+  '小橘子',
+  '小蜗牛',
+  '小火车',
+  '小蜜蜂',
+  '小松鼠',
+  '小猴子',
+  '小螃蟹',
+  '小青蛙',
+  '小狐狸',
+  '小海豚',
+  '小斑马',
+  '小蘑菇',
+  '小橙子',
+  '小爱心',
+  '小猫咪',
+  '小狗狗',
+  '小猪猪',
+  '小鸭妈妈',
+  '小熊熊',
+  '小兔子',
+  '小鱼儿',
+  '小鸟儿',
+  '小飞机',
+  '小蝴蝶',
+  '小星星',
+  '小月亮',
+  '小太阳',
+  '小彩虹',
+  '小雨伞',
+  '小花朵',
+  '小玩具',
+  '小梨子',
+  '小苹果',
+  '小西瓜',
+  '小香蕉',
+  '小草莓',
+  '小樱桃',
+  '小葡萄',
+  '小柚子',
+  '小桃子',
+  '小橘子',
+  '小菠萝',
+  '小芒果',
+  '小火龙果',
+  '小杨桃',
+  '小荔枝',
+  '小牛奶',
+  '小果汁',
+  '小冰淇淋',
+  '小巧克力',
+  '小面包',
+  '小饼干',
+  '小糖果',
+  '小蛋糕',
+  '小奶酪',
+  '小布丁',
+  '小果冻',
+  '小棒棒糖',
+  '小甜筒',
+  '小麦片',
+  '小果酱',
+  '小蜜桃',
+  '小薯条',
+  '小沙拉',
+  '小汉堡',
+  '小三明治',
+  '小披萨',
+  '小意面',
+  '小寿司',
+  '小炸鸡',
+  '小薯饼',
+  '小热狗',
+  '小糖醋排骨',
+  '小春卷',
+  '小汤圆',
+  '小馄饨',
+  '小烧卖',
+  '小包子',
+  '小灌汤包',
+  '小馒头',
+  '小擀面皮',
+  '小饺子',
+  '小粽子',
+  '小年糕',
+  '小元宵',
+  '小糖糍',
+  '小爆米花',
+  '小薯片',
+  '小花生',
+  '小果仁',
+  '小坚果',
+  '小松子',
+  '小开心果',
+  '小葵花籽',
+  '小巴旦木',
+  '小核桃',
+  '小榛子',
+  '小杏仁',
+  '小橄榄',
+  '小蓝莓',
+  '小草莓',
+  '小覆盆子',
+  '小车厘子',
+  '小柠檬',
+  '小橙子',
+  '小葡萄柚',
+  '小哈密瓜',
+  '小橙子',
+  '小橙汁',
+  '小柠檬茶',
+  '小水果茶',
+  '小牛奶茶',
+  '小奶茶',
+  '小鲜奶',
+  '小椰奶',
+  '小豆浆',
+  '小冰咖啡',
+  '小拿铁',
+  '小卡布奇诺',
+  '小摩卡',
+  '小浓缩咖啡',
+  '小美式咖啡',
+  '小香草拿铁',
+  '小焦糖玛奇朵',
+  '小抹茶拿铁',
+  '小玫瑰奶茶',
+  '小红茶拿铁',
+  '小芒果冰沙',
+  '小草莓冰沙',
+  '小蓝莓冰沙',
+  '小香蕉冰沙',
+  '小牛奶冰沙',
+  '小柠檬冰沙',
+  '小芋头冰沙',
+  '小草莓冰淇淋',
+  '小巧克力冰淇淋',
+  '小香草冰淇淋',
+  '小抹茶冰淇淋',
+  '小荔枝冰淇淋',
+  '小芒果冰淇淋',
+  '小橙汁冰淇淋',
+  '小柠檬冰淇淋',
+  '小奶油冰淇淋',
+  '小蜜桃冰淇淋',
+  '小绿茶冰淇淋',
+  '小薄荷冰淇淋',
+  '小蛋糕冰淇淋',
+  '小草莓蛋糕',
+  '小巧克力蛋糕',
+  '小榴莲蛋糕',
+  '小奶油蛋糕',
+  '小椰子蛋糕',
+  '小蜜桃蛋糕',
+  '小橙汁蛋糕',
+  '小柠檬蛋糕',
+  '小草莓曲奇',
+  '小巧克力曲奇',
+  '小椰子曲奇',
+  '小榴莲曲奇',
+  '小奶油曲奇',
+  '小杏仁曲奇',
+  '小葡萄干',
+  '小开心果曲奇',
+  '小蔓越莓曲奇',
+  '小酥皮面包',
+  '小全麦面包',
+  '小牛角面包',
+  '小法棍面包',
+  '小提子面包',
+  '小核桃面包',
+  '小杏仁面包',
+  '小榴莲面包',
+  '小奶油面包',
+  '小甜甜圈',
+  '小葡萄干面包',
+  '小果酱面包',
+  '小巧克力面包',
+  '小杏仁奶茶',
+  '小红枣奶茶',
+  '小芒果奶茶',
+  '小草莓奶茶',
+  '小橙汁奶茶',
+  '小柠檬奶茶',
+  '小抹茶奶茶',
+  '小玫瑰奶茶',
+  '小香草奶茶',
+  '小巧克力奶茶',
+  '小鲜奶茶',
+  '小椰奶茶',
+  '小豆浆奶茶',
+  '小酸奶',
+  '小优格',
+  '小牛奶酸奶',
+  '小草莓酸奶',
+  '小蓝莓酸奶',
+  '小芒果酸奶',
+  '小橙汁酸奶',
+  '小柠檬酸奶',
+  '小抹茶酸奶',
+  '小草莓优格',
+  '小蓝莓优格',
+  '小芒果优格',
+  '小橙汁优格',
+  '小柠檬优格',
+  '小抹茶优格',
+  '小芝士优格',
+  '小酸奶冰淇淋',
+  '小优格冰淇淋',
+  '小果酱冰淇淋',
+  '小巧克力冰淇淋',
+  '小草莓冰淇淋',
+  '小橙子冰淇淋',
+  '小柠檬冰淇淋',
+  '小香草冰淇淋',
+  '小抹茶冰淇淋',
+  '小蜜桃冰淇淋',
+  '小芒果冰淇淋',
+  '小绿茶冰淇淋',
+  '小榴莲冰淇淋',
+  '小薄荷冰淇淋',
+  '小椰子冰淇淋',
+  '小核桃冰淇淋',
+  '小香蕉冰淇淋',
+  '小椰奶冰淇淋',
+  '小红豆冰淇淋',
+  '小花生冰淇淋',
+  '小奶油冰淇淋',
+  '小柚子冰淇淋',
+  '小奇异果冰淇淋',
+  '小杨桃冰淇淋',
+  '小橙汁冰淇淋',
+  '小奶茶冰淇淋',
+  '小咖啡冰淇淋',
+  '小巧克力蛋糕冰淇淋',
+  '小抹茶蛋糕冰淇淋',
+  '小草莓蛋糕冰淇淋',
+  '小香草蛋糕冰淇淋',
+  '小榴莲蛋糕冰淇淋',
+  '小巧克力曲奇冰淇淋',
+  '小椰子曲奇冰淇淋',
+  '小杏仁曲奇冰淇淋',
+  '小柠檬曲奇冰淇淋',
+  '小葡萄干曲奇冰淇淋',
+  '小开心果曲奇冰淇淋',
+  '小果酱曲奇冰淇淋',
+  
+  // Add more words as needed
+];
+
+
+const words=chineseWordsFor4YearOlds.concat(animals,vegetarianFood, colors);
+// Set the correct answer button
+        const correctButton = document.getElementById('correct-button');
+        
+        //correctButton.removeEventListener('click', handleAnswer);
+        correctButton.addEventListener('click', () => handleAnswer(true));
+
+       // Set incorrect answer buttons
+        const incorrectButtons = document.querySelectorAll('.animal-button:not(#correct-button)');
+        for (let i = 0; i < incorrectButtons.length; i++) {
+          //incorrectButtons[i].removeEventListener('click', handleAnswer);
+          incorrectButtons[i].addEventListener('click', () => handleAnswer(false));
+        }
+      
+      let score = 0;
+      const scoreElement = document.getElementById('score');
+      const resultElement = document.getElementById('result');
+
+      function displayWord() {
+        const shuffledWords = shuffleArray(words);
+        const randomWord = shuffledWords[shuffledWords.length-1];
+
+        // Display the word using HTML
+        const wordContainer = document.getElementById('word-container');
+        wordContainer.innerText = randomWord;
+
+        cube.material.color.setHex(0x00ff00);
+        cube.scale.set(1, 1, 1);
+        cube.position.set(0, 0, 0);
+
+        // Speak the word
+        const synth = window.speechSynthesis;
+        const utterance = new SpeechSynthesisUtterance(randomWord);
+utterance.lang = 'zh-CN';
+
+        synth.speak(utterance);
+
+        // Shuffle the words for button placement
+        
+        correctButton.innerText = randomWord;
+        
+        // Set incorrect answer buttons
+        const incorrectButtons = document.querySelectorAll('.animal-button:not(#correct-button)');
+        for (let i = 0; i < incorrectButtons.length; i++) {          
+          incorrectButtons[i].innerText = shuffledWords[i];
+        }
+
+	container= document.querySelector(".button-container");
+	elements = Array.from(container.children);
+	const shuffledElements = elements.sort(() => Math.random() - 0.5);
+while (container.firstChild) {
+      container.removeChild(container.firstChild);
+    }
+
+    // Add back the shuffled elements
+    shuffledElements.forEach(element => {
+      container.appendChild(element);
+    });
+      }
+
+      function handleAnswer(isCorrect) {
+        if (isCorrect) {
+          score++;
+          scoreElement.innerText = `Score: ${score}`;
+          resultElement.innerText = 'Correct!';
+          resultElement.classList.remove('wrong');
+          resultElement.classList.add('correct');
+
+        setTimeout(() => {
+          resultElement.innerText = '';
+          displayWord();
+        }, 1000);
+        } else {
+          resultElement.innerText = 'Try Again!';
+const synth = window.speechSynthesis;
+        const utterance = new SpeechSynthesisUtterance("Try Again");
+        synth.speak(utterance);
+          resultElement.classList.remove('correct');
+          resultElement.classList.add('wrong');
+        }
+
+        
+      }
+
+      function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+      }
+
+      displayWord(); // Start the game
+
+      function animate() {
+        requestAnimationFrame(animate);
+        cube.rotation.x += 0.01;
+        cube.rotation.y += 0.01;
+        renderer.render(scene, camera);
+      }
+
+      animate();
+    </script>
+  </body>
+</html>

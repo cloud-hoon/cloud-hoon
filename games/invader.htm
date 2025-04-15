@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Galactic Invaders Redux</title>
+  <style>
+    body { margin: 0; }
+    canvas { display: block; }
+    #scoreDiv {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 24px;
+      color: white;
+    }
+   #flipBtn {
+      position: absolute;
+      top: 80px;
+      left: 10px;
+      font-size: 24px;
+    }
+  </style>
+</head>
+<body>
+<div id="scoreDiv">Score: 0</div>
+<button id="flipBtn" onclick="if(scene.rotation.x){scene.rotation.x=0}else{scene.rotation.x=-1}">Flip View</button>
+<script src="three.min.js"></script>
+<script src="CSS3DRenderer.js"></script>
+<script>
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+scene.rotation.x=-1
+  const renderer = new THREE.WebGLRenderer();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  document.body.appendChild(renderer.domElement);
+
+  const spaceshipGeometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
+  const spaceshipMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+  const spaceship = new THREE.Mesh(spaceshipGeometry, spaceshipMaterial);
+  spaceship.position.set(0, -3, 0);  // Set spaceship initial position
+  scene.add(spaceship);
+
+  const invaders = [];
+  const projectiles = [];
+  let score = 0;
+  let escapedInvaders = 0;
+  let specialProjectileActive = false;
+  function createInvader(oldInvader) {
+    if(oldInvader){
+          scene.remove(oldInvader);
+          invaders.splice(invaders.indexOf(oldInvader), 1);    
+    }
+    const invaderGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+    const invaderMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    const invader = new THREE.Mesh(invaderGeometry, invaderMaterial);
+    invader.position.x = Math.random() * 10 - 5;
+    invader.position.y = Math.random() * 5 + 5; // Start them off-screen
+    scene.add(invader);
+    invaders.push(invader);
+  }
+  function fireProjectile(){
+      const projectileGeometry = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+let projectileMaterial;
+      if (specialProjectileActive) {
+        // Use a special projectile when the power-up is active
+        projectileMaterial = new THREE.MeshBasicMaterial({ color: 0xffa500 });
+      } else {
+      const rainbowColors = [
+  0xff0000, // Red
+  0xffa500, // Orange
+  0xffff00, // Yellow
+  0x008000, // Green
+  0x0000ff, // Blue
+  0x4b0082, // Indigo
+  0x9400d3 // Violet
+];
+const randomIndex = Math.floor(Math.random() * rainbowColors.length);
+  randColor= rainbowColors[randomIndex];
+      
+        projectileMaterial = new THREE.MeshBasicMaterial({ color: randColor });
+      }
+      const projectile = new THREE.Mesh(projectileGeometry, projectileMaterial);
+      projectile.position.copy(spaceship.position);
+      scene.add(projectile);
+      projectiles.push(projectile);
+  }
+function updateScore() {
+    document.getElementById('scoreDiv').innerText = `Score: ${score}\nEscaped Invaders: ${escapedInvaders}`;
+  }
+function respawnPowerUp() {  
+    powerUpBox.position.x = Math.random() * 10 - 5;
+    powerUpBox.position.y = Math.random() * 5 + 5;
+  }
+  const powerUpGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+  const powerUpMaterial = new THREE.MeshBasicMaterial({ color: 0xff00ff });
+  const powerUpBox = new THREE.Mesh(powerUpGeometry, powerUpMaterial);
+  scene.add(powerUpBox);  
+
+
+  // Initial creation of invaders
+  for (let i = 0; i < 15; i++) {
+    createInvader();
+  }
+
+  camera.position.z = 5;
+
+  function animate() {
+    requestAnimationFrame(animate);
+
+    if (leftArrowPressed && spaceship.position.x > -4.5) spaceship.position.x -= 0.1;
+    if (rightArrowPressed && spaceship.position.x < 4.5) spaceship.position.x += 0.1;
+
+    for (const projectile of projectiles) {
+      projectile.position.y += 0.1;
+
+      for (const invader of invaders) {
+        if (projectile.position.distanceTo(invader.position) < 0.5) {
+          scene.remove(projectile);
+          projectiles.splice(projectiles.indexOf(projectile), 1);
+	  createInvader(invader);
+          score += 10;  // Increase the score
+          updateScore(); // Update the score display
+        }
+      }
+
+      if(projectile.position.y > 10){
+        scene.remove(projectile);
+        projectiles.splice(projectiles.indexOf(projectile), 1);
+      }
+    }
+
+    // Check if invaders have reached the bottom or if they are defeated
+    for (const invader of invaders) {
+      if (invader.position.y < -5) {
+        escapedInvaders++;
+        createInvader(invader);
+        updateScore();
+        break;
+      }
+      invader.position.y -= 0.02;
+    }
+
+// Check for collision with power-up box
+    powerUpBox.position.y -= 0.08;
+    if (spaceship.position.distanceTo(powerUpBox.position) < 0.5) {
+      // Activate special projectile for 5 seconds
+      specialProjectileActive = true;
+      setTimeout(() => {
+        specialProjectileActive = false;
+      }, 5000);
+    }
+    renderer.render(scene, camera);
+  }
+
+  let leftArrowPressed = false;
+  let rightArrowPressed = false;
+
+  window.addEventListener('keydown', (event) => {
+    if (event.key === 'ArrowLeft' || event.key === "a" || event.key === "A") {
+      leftArrowPressed = true;
+    } else if (event.key === 'ArrowRight' || event.key === "d" || event.key === "D") {
+      rightArrowPressed = true;
+    } else if (event.code === 'Space') {
+      fireProjectile();
+    }
+});
+
+  window.addEventListener('keyup', (event) => {
+    if (event.key === 'ArrowLeft' || event.key === "a" || event.key === "A") {
+      leftArrowPressed = false;
+    } else if (event.key === 'ArrowRight' || event.key === "d" || event.key === "D") {
+      rightArrowPressed = false;
+    }
+  });
+
+  animate();
+  setInterval(()=>fireProjectile(), 200);
+  respawnPowerUp();
+  setInterval(()=>respawnPowerUp(), 7000);
+</script>
+
+</body>
+</html>
