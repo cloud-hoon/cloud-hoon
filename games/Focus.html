@@ -28,8 +28,6 @@
       position: absolute;
       width: 100vw;
       height: 100px;
-      top: 50%;
-      margin-top: -50px;
       background: #e0ffe0;
     }
     .distraction {
@@ -49,7 +47,7 @@
       left: 10px;
       background: yellow;
       padding: 10px;
-      font-size: 20px;
+      font-size: 16px;
       border-radius: 10px;
     }
   </style>
@@ -58,7 +56,7 @@
   <div id="game">
     <div id="path"></div>
     <div id="line"></div>
-    <div id="timer">Best: 0.0s</div>
+    <div id="timer">Time: 0.0s | Best: 0.0s</div>
   </div>
 
   <script>
@@ -66,22 +64,41 @@
     const path = document.getElementById('path');
     const timer = document.getElementById('timer');
     const game = document.getElementById('game');
+
     let bestTime = 0;
     let startTime = null;
     let gameRunning = false;
+    let pathY = window.innerHeight / 2 - 50;
+    let pathTargetY = pathY;
 
     function resetGame() {
-      alert("Oops! Stay focused!");
+      alert("Oops! Stay in the path!");
       if (startTime) {
         const timeSurvived = (Date.now() - startTime) / 1000;
         if (timeSurvived > bestTime) {
           bestTime = timeSurvived;
         }
       }
-      timer.textContent = `Best: ${bestTime.toFixed(1)}s`;
       startTime = Date.now();
       line.style.top = '50%';
       gameRunning = true;
+    }
+
+    function updateTimer() {
+      if (!gameRunning) return;
+      const now = Date.now();
+      const timeNow = ((now - startTime) / 1000).toFixed(1);
+      timer.textContent = `Time: ${timeNow}s | Best: ${bestTime.toFixed(1)}s`;
+    }
+
+    function animatePath() {
+      if (!gameRunning) return;
+      // Smooth transition toward a new random Y
+      if (Math.abs(pathTargetY - pathY) < 1) {
+        pathTargetY = Math.random() * (window.innerHeight - 200) + 50;
+      }
+      pathY += (pathTargetY - pathY) * 0.02;
+      path.style.top = pathY + 'px';
     }
 
     function spawnDistraction() {
@@ -117,6 +134,11 @@
         spawnDistraction();
       }
     }, 1000);
+
+    setInterval(() => {
+      animatePath();
+      updateTimer();
+    }, 50);
 
     // Start game
     resetGame();
