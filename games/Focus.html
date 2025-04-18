@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Focus Game</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: sans-serif;
+      background: #f0f0f0;
+    }
+    #game {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background: white;
+    }
+    #line {
+      position: absolute;
+      width: 10px;
+      height: 50px;
+      background: blue;
+      border-radius: 5px;
+    }
+    #path {
+      position: absolute;
+      width: 100vw;
+      height: 100px;
+      top: 50%;
+      margin-top: -50px;
+      background: #e0ffe0;
+    }
+    .distraction {
+      position: absolute;
+      font-size: 30px;
+      animation: float 4s infinite;
+      pointer-events: none;
+    }
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+      100% { transform: translateY(0px); }
+    }
+    #timer {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: yellow;
+      padding: 10px;
+      font-size: 20px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="game">
+    <div id="path"></div>
+    <div id="line"></div>
+    <div id="timer">Best: 0.0s</div>
+  </div>
+
+  <script>
+    const line = document.getElementById('line');
+    const path = document.getElementById('path');
+    const timer = document.getElementById('timer');
+    const game = document.getElementById('game');
+    let bestTime = 0;
+    let startTime = null;
+    let gameRunning = false;
+
+    function resetGame() {
+      alert("Oops! Stay focused!");
+      if (startTime) {
+        const timeSurvived = (Date.now() - startTime) / 1000;
+        if (timeSurvived > bestTime) {
+          bestTime = timeSurvived;
+        }
+      }
+      timer.textContent = `Best: ${bestTime.toFixed(1)}s`;
+      startTime = Date.now();
+      line.style.top = '50%';
+      gameRunning = true;
+    }
+
+    function spawnDistraction() {
+      const distraction = document.createElement('div');
+      distraction.className = 'distraction';
+      distraction.style.left = Math.random() * window.innerWidth + 'px';
+      distraction.style.top = Math.random() * window.innerHeight + 'px';
+      distraction.textContent = ['!', 'Haha!', 'Look!', 'Wobble', 'Boing'][Math.floor(Math.random() * 5)];
+      game.appendChild(distraction);
+      setTimeout(() => game.removeChild(distraction), 4000);
+    }
+
+    document.addEventListener('mousemove', (e) => {
+      if (!gameRunning) return;
+      const y = e.clientY;
+      line.style.top = y - 25 + 'px';
+
+      const lineRect = line.getBoundingClientRect();
+      const pathRect = path.getBoundingClientRect();
+
+      const inBounds =
+        lineRect.top >= pathRect.top &&
+        lineRect.bottom <= pathRect.bottom;
+
+      if (!inBounds) {
+        gameRunning = false;
+        resetGame();
+      }
+    });
+
+    setInterval(() => {
+      if (gameRunning) {
+        spawnDistraction();
+      }
+    }, 1000);
+
+    // Start game
+    resetGame();
+  </script>
+</body>
+</html>
