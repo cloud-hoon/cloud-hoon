@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Fun Abacus Game</title>
+  <title>Abacus Game</title>
   <style>
     body {
       font-family: sans-serif;
@@ -11,7 +11,7 @@
       padding: 20px;
       background: #f0f8ff;
     }
-    h1, h2, h3 {
+    h1, h3 {
       color: #333;
     }
     .abacus {
@@ -22,18 +22,19 @@
     }
     .rod {
       background: #ddd;
-      padding: 20px;
+      padding: 10px 20px;
       border-radius: 12px;
       min-height: 300px;
       display: flex;
       flex-direction: column;
-      justify-content: space-around;
+      align-items: center;
+      position: relative;
     }
     .bead {
       width: 50px;
       height: 50px;
       background: #ffcc66;
-      margin: 10px auto;
+      margin: 10px 0;
       border-radius: 50%;
       cursor: pointer;
       transition: transform 0.2s;
@@ -43,103 +44,94 @@
       transform: translateY(50px);
       background: #ffa500;
     }
+    .separator {
+      height: 2px;
+      width: 100%;
+      background: black;
+      margin: 10px 0;
+    }
     .stars {
-      font-size: 28px;
-      margin-top: 15px;
+      font-size: 60px;
+      margin-top: 25px;
       color: gold;
-    }
-    button {
-      margin: 10px;
-      padding: 12px 20px;
-      font-size: 16px;
-      cursor: pointer;
-      border-radius: 8px;
-      border: none;
-      background: #5dade2;
-      color: white;
-    }
-    button:hover {
-      background: #3498db;
     }
   </style>
 </head>
 <body>
-  <h1>Fun Abacus Game</h1>
+  <h1>Fun Abacus</h1>
   <h3 id="question">Show the number: <span id="target">0</span></h3>
   <div class="abacus">
+    <!-- 3 rods: Hundreds, Tens, Units -->
     <div class="rod" data-place="100">
-      <div class="bead"></div>
-      <div class="bead"></div>
-      <div class="bead"></div>
-      <div class="bead"></div>
-      <div class="bead"></div>
+      <div class="bead" data-value="5"></div>
+      <div class="separator"></div>
+      <div class="bead" data-value="1"></div>
+      <div class="bead" data-value="1"></div>
+      <div class="bead" data-value="1"></div>
+      <div class="bead" data-value="1"></div>
     </div>
     <div class="rod" data-place="10">
-      <div class="bead"></div>
-      <div class="bead"></div>
-      <div class="bead"></div>
-      <div class="bead"></div>
-      <div class="bead"></div>
+      <div class="bead" data-value="5"></div>
+      <div class="separator"></div>
+      <div class="bead" data-value="1"></div>
+      <div class="bead" data-value="1"></div>
+      <div class="bead" data-value="1"></div>
+      <div class="bead" data-value="1"></div>
     </div>
     <div class="rod" data-place="1">
-      <div class="bead"></div>
-      <div class="bead"></div>
-      <div class="bead"></div>
-      <div class="bead"></div>
-      <div class="bead"></div>
+      <div class="bead" data-value="5"></div>
+      <div class="separator"></div>
+      <div class="bead" data-value="1"></div>
+      <div class="bead" data-value="1"></div>
+      <div class="bead" data-value="1"></div>
+      <div class="bead" data-value="1"></div>
     </div>
   </div>
-  <h2>Total: <span id="total">0</span></h2>
-  <button onclick="checkAnswer()">Check Answer</button>
-  <button onclick="newQuestion()">New Question</button>
-  <button onclick="resetAbacus()">Reset</button>
+  <h3>Total: <span id="total">0</span></h3>
   <div class="stars" id="stars"></div>
 
   <script>
     let score = 0;
+    let targetNumber = 0;
     const rods = document.querySelectorAll('.rod');
     const totalDisplay = document.getElementById('total');
     const targetDisplay = document.getElementById('target');
     const starsDisplay = document.getElementById('stars');
-    let targetNumber = 0;
 
     function updateTotal() {
       let total = 0;
       rods.forEach(rod => {
         const place = parseInt(rod.dataset.place);
-        const activeBeads = rod.querySelectorAll('.bead.active').length;
-        total += activeBeads * place;
+        const beads = rod.querySelectorAll('.bead.active');
+        beads.forEach(bead => {
+          const beadValue = parseInt(bead.dataset.value);
+          total += beadValue * place;
+        });
       });
       totalDisplay.textContent = total;
-    }
-
-    function resetAbacus() {
-      document.querySelectorAll('.bead').forEach(bead => bead.classList.remove('active'));
-      updateTotal();
+      if (total === targetNumber) {
+        score++;
+        showStars();
+        setTimeout(newQuestion, 1000);
+      }
     }
 
     function newQuestion() {
+      resetAbacus();
       targetNumber = Math.floor(Math.random() * 500);
       targetDisplay.textContent = targetNumber;
-      resetAbacus();
     }
 
-    function checkAnswer() {
-      const current = parseInt(totalDisplay.textContent);
-      if (current === targetNumber) {
-        score++;
-        alert("Great job!");
-      } else {
-        alert("Oops! Try again.");
-      }
-      renderStars();
+    function resetAbacus() {
+      document.querySelectorAll('.bead').forEach(b => b.classList.remove('active'));
+      updateTotal();
     }
 
-    function renderStars() {
+    function showStars() {
       starsDisplay.textContent = '★'.repeat(score);
     }
 
-    // Bead click events
+    // Add click events to beads
     rods.forEach(rod => {
       const beads = rod.querySelectorAll('.bead');
       beads.forEach(bead => {
@@ -150,7 +142,7 @@
       });
     });
 
-    newQuestion(); // start with one question
+    newQuestion();
   </script>
 </body>
 </html>
