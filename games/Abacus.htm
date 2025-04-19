@@ -40,8 +40,12 @@
       transition: transform 0.2s;
       box-shadow: 0 3px 5px rgba(0,0,0,0.2);
     }
-    .bead.active {
+    .bead.top.active {
       transform: translateY(50px);
+      background: #ffa500;
+    }
+    .bead.bottom.active {
+      transform: translateY(-50px);
       background: #ffa500;
     }
     .separator {
@@ -51,98 +55,44 @@
       margin: 10px 0;
     }
     .stars {
-      font-size: 60px;
-      margin-top: 25px;
-      color: gold;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 250px;
+      margin: 20px auto;
+    }
+    .star {
+      font-size: 40px;
+      margin: 5px;
+    }
+    #score-count {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
     }
   </style>
 </head>
 <body>
   <h1>Fun Abacus</h1>
+  <div id="score-count">Stars: 0</div>
   <h3 id="question">Show the number: <span id="target">0</span></h3>
   <div class="abacus">
     <!-- 3 rods: Hundreds, Tens, Units -->
     <div class="rod" data-place="100">
-      <div class="bead" data-value="5"></div>
+      <div class="bead top" data-value="5"></div>
       <div class="separator"></div>
-      <div class="bead" data-value="1"></div>
-      <div class="bead" data-value="1"></div>
-      <div class="bead" data-value="1"></div>
-      <div class="bead" data-value="1"></div>
+      <div class="bead bottom" data-value="1"></div>
+      <div class="bead bottom" data-value="1"></div>
+      <div class="bead bottom" data-value="1"></div>
+      <div class="bead bottom" data-value="1"></div>
     </div>
     <div class="rod" data-place="10">
-      <div class="bead" data-value="5"></div>
+      <div class="bead top" data-value="5"></div>
       <div class="separator"></div>
-      <div class="bead" data-value="1"></div>
-      <div class="bead" data-value="1"></div>
-      <div class="bead" data-value="1"></div>
-      <div class="bead" data-value="1"></div>
+      <div class="bead bottom" data-value="1"></div>
+      <div class="bead bottom" data-value="1"></div>
+      <div class="bead bottom" data-value="1"></div>
+      <div class="bead bottom" data-value="1"></div>
     </div>
     <div class="rod" data-place="1">
-      <div class="bead" data-value="5"></div>
-      <div class="separator"></div>
-      <div class="bead" data-value="1"></div>
-      <div class="bead" data-value="1"></div>
-      <div class="bead" data-value="1"></div>
-      <div class="bead" data-value="1"></div>
-    </div>
-  </div>
-  <h3>Total: <span id="total">0</span></h3>
-  <div class="stars" id="stars"></div>
-
-  <script>
-    let score = 0;
-    let targetNumber = 0;
-    const rods = document.querySelectorAll('.rod');
-    const totalDisplay = document.getElementById('total');
-    const targetDisplay = document.getElementById('target');
-    const starsDisplay = document.getElementById('stars');
-
-    function updateTotal() {
-      let total = 0;
-      rods.forEach(rod => {
-        const place = parseInt(rod.dataset.place);
-        const beads = rod.querySelectorAll('.bead.active');
-        beads.forEach(bead => {
-          const beadValue = parseInt(bead.dataset.value);
-          total += beadValue * place;
-        });
-      });
-      totalDisplay.textContent = total;
-      if (total === targetNumber) {
-        score++;
-        showStars();
-        setTimeout(newQuestion, 1000);
-      }
-    }
-
-    function newQuestion() {
-      resetAbacus();
-      targetNumber = Math.floor(Math.random() * 500);
-      targetDisplay.textContent = targetNumber;
-    }
-
-    function resetAbacus() {
-      document.querySelectorAll('.bead').forEach(b => b.classList.remove('active'));
-      updateTotal();
-    }
-
-    function showStars() {
-      starsDisplay.textContent = '★'.repeat(score);
-    }
-
-    // Add click events to beads
-    rods.forEach(rod => {
-      const beads = rod.querySelectorAll('.bead');
-      beads.forEach(bead => {
-        bead.addEventListener('click', () => {
-          bead.classList.toggle('active');
-          updateTotal();
-        });
-      });
-    });
-
-    newQuestion();
-  </script>
-</body>
-</html>
+      <div class="
