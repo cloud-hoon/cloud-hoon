@@ -1,26 +1,33 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Camera Face & QR Scanner</title>
+  <title>Face & QR Scanner with Snapshots</title>
   <style>
     video, canvas { max-width: 100%; border: 1px solid #ccc; }
     #overlay { position: absolute; top: 0; left: 0; }
     #container { position: relative; display: inline-block; }
+    .snapshots { margin-top: 20px; }
+    .snapshot { margin: 10px 0; border: 1px solid #ccc; padding: 5px; }
   </style>
 </head>
 <body>
-  <h1>Face & QR Scanner</h1>
+  <h1>Face & QR Scanner with Snapshots</h1>
   <div id="container">
     <video id="video" autoplay muted playsinline></video>
     <canvas id="overlay"></canvas>
   </div>
   <p id="log">Initializing...</p>
+  <div class="snapshots" id="snapshots"></div>
 
   <script>
     const video = document.getElementById('video');
     const overlay = document.getElementById('overlay');
     const ctx = overlay.getContext('2d');
     const log = document.getElementById('log');
+    const snapshotsContainer = document.getElementById('snapshots');
+
+    const seenQRCodes = new Set();
+    const seenFaces = [];
 
     async function setupCamera() {
       try {
@@ -37,6 +44,30 @@
       }
     }
 
+    function isSimilarFace(newFace) {
+      return seenFaces.some(f =>
+        Math.abs(f.x - newFace.x) < 30 &&
+        Math.abs(f.y - newFace.y) < 30 &&
+        Math.abs(f.width - newFace.width) < 30 &&
+        Math.abs(f.height - newFace.height) < 30
+      );
+    }
+
+    function captureSnapshot(label) {
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const context = canvas.getContext('2d');
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      const container = document.createElement('div');
+      container.className = 'snapshot';
+      const timestamp = new Date().toLocaleString();
+      container.innerHTML = `<strong>${label}</strong><br>${timestamp}<br>`;
+      container.appendChild(canvas);
+      snapshotsContainer.prepend(container);
+    }
+
     async function detectLoop() {
       const faceDetector = ('FaceDetector' in window) ? new FaceDetector({ fastMode: true }) : null;
       const barcodeDetector = ('BarcodeDetector' in window) ? new BarcodeDetector({ formats: ['qr_code'] }) : null;
@@ -48,17 +79,23 @@
 
       const detect = async () => {
         ctx.clearRect(0, 0, overlay.width, overlay.height);
+        let newInfo = [];
 
         try {
           if (faceDetector) {
             const faces = await faceDetector.detect(video);
             faces.forEach(face => {
-              const { x, y, width, height } = face.boundingBox;
+              const box = face.boundingBox;
               ctx.strokeStyle = 'blue';
               ctx.lineWidth = 2;
-              ctx.strokeRect(x, y, width, height);
+              ctx.strokeRect(box.x, box.y, box.width, box.height);
+
+              if (!isSimilarFace(box)) {
+                seenFaces.push(box);
+                captureSnapshot('New Face Detected');
+                newInfo.push('Face');
+              }
             });
-            if (faces.length > 0) log.textContent = `Faces detected: ${faces.length}`;
           }
 
           if (barcodeDetector) {
@@ -70,14 +107,19 @@
               ctx.strokeRect(x, y, width, height);
               ctx.fillStyle = 'green';
               ctx.fillText(code.rawValue, x, y - 10);
-            });
-            if (barcodes.length > 0) log.textContent += ` | QR codes: ${barcodes.map(b => b.rawValue).join(', ')}`;
-          }
 
+              if (!seenQRCodes.has(code.rawValue)) {
+                seenQRCodes.add(code.rawValue);
+                captureSnapshot(`New QR Code: ${code.rawValue}`);
+                newInfo.push(`QR: ${code.rawValue}`);
+              }
+            });
+          }
         } catch (err) {
           console.error('Detection error:', err);
         }
 
+        log.textContent = `Scanning... ${newInfo.join(', ')}`;
         requestAnimationFrame(detect);
       };
 
