@@ -95,4 +95,81 @@
       <div class="bead bottom" data-value="1"></div>
     </div>
     <div class="rod" data-place="1">
-      <div class="
+      <div class="bead top" data-value="5"></div>
+      <div class="separator"></div>
+      <div class="bead bottom" data-value="1"></div>
+      <div class="bead bottom" data-value="1"></div>
+      <div class="bead bottom" data-value="1"></div>
+      <div class="bead bottom" data-value="1"></div>
+    </div>
+  </div>
+  <h3>Total: <span id="total">0</span></h3>
+  <div class="stars" id="stars"></div>
+
+  <script>
+    let score = 0;
+    let targetNumber = 0;
+    const rods = document.querySelectorAll('.rod');
+    const totalDisplay = document.getElementById('total');
+    const targetDisplay = document.getElementById('target');
+    const starsDisplay = document.getElementById('stars');
+    const scoreCount = document.getElementById('score-count');
+
+    function updateTotal() {
+      let total = 0;
+      rods.forEach(rod => {
+        const place = parseInt(rod.dataset.place);
+        const beads = rod.querySelectorAll('.bead.active');
+        beads.forEach(bead => {
+          const beadValue = parseInt(bead.dataset.value);
+          total += beadValue * place;
+        });
+      });
+      totalDisplay.textContent = total;
+      if (total === targetNumber) {
+        score++;
+        scoreCount.textContent = `Stars: ${score}`;
+        showStar();
+        setTimeout(newQuestion, 800);
+      }
+    }
+
+    function newQuestion() {
+      resetAbacus();
+      targetNumber = Math.floor(Math.random() * 500);
+      targetDisplay.textContent = targetNumber;
+    }
+
+    function resetAbacus() {
+      document.querySelectorAll('.bead').forEach(b => b.classList.remove('active'));
+      updateTotal();
+    }
+
+    function showStar() {
+      const star = document.createElement('span');
+      star.className = 'star';
+      star.textContent = '★';
+      star.style.color = getRandomColor();
+      starsDisplay.appendChild(star);
+    }
+
+    function getRandomColor() {
+      const colors = ['red', 'orange', 'gold', 'green', 'blue', 'purple', 'hotpink', 'teal'];
+      return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    // Add click events to beads
+    rods.forEach(rod => {
+      const beads = rod.querySelectorAll('.bead');
+      beads.forEach(bead => {
+        bead.addEventListener('click', () => {
+          bead.classList.toggle('active');
+          updateTotal();
+        });
+      });
+    });
+
+    newQuestion();
+  </script>
+</body>
+</html>
