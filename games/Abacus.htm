@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Abacus for Kids</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 20px; background: #f5f5f5; }
+    h1 { color: #333; }
+    .abacus { display: flex; justify-content: center; margin: 20px 0; }
+    .rod { margin: 0 10px; background: #ddd; padding: 10px; border-radius: 10px; }
+    .bead { width: 30px; height: 30px; background: #ffcc66; margin: 5px auto; border-radius: 50%; cursor: pointer; transition: transform 0.2s; }
+    .bead.active { transform: translateY(30px); background: #ffa500; }
+    button { margin-top: 20px; padding: 10px 20px; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <h1>Learn to Count with the Abacus!</h1>
+  <p>Click the beads to move them. Each column is a digit (1s, 10s, 100s).</p>
+  <div class="abacus">
+    <div class="rod" data-place="100">
+      <div class="bead"></div>
+      <div class="bead"></div>
+      <div class="bead"></div>
+      <div class="bead"></div>
+      <div class="bead"></div>
+    </div>
+    <div class="rod" data-place="10">
+      <div class="bead"></div>
+      <div class="bead"></div>
+      <div class="bead"></div>
+      <div class="bead"></div>
+      <div class="bead"></div>
+    </div>
+    <div class="rod" data-place="1">
+      <div class="bead"></div>
+      <div class="bead"></div>
+      <div class="bead"></div>
+      <div class="bead"></div>
+      <div class="bead"></div>
+    </div>
+  </div>
+  <h2>Total: <span id="total">0</span></h2>
+  <button onclick="resetAbacus()">Reset</button>
+
+  <script>
+    const rods = document.querySelectorAll('.rod');
+    const totalDisplay = document.getElementById('total');
+
+    rods.forEach(rod => {
+      const place = parseInt(rod.dataset.place);
+      const beads = rod.querySelectorAll('.bead');
+
+      beads.forEach((bead, index) => {
+        bead.addEventListener('click', () => {
+          bead.classList.toggle('active');
+          updateTotal();
+        });
+      });
+    });
+
+    function updateTotal() {
+      let total = 0;
+      rods.forEach(rod => {
+        const place = parseInt(rod.dataset.place);
+        const activeBeads = rod.querySelectorAll('.bead.active').length;
+        total += activeBeads * place;
+      });
+      totalDisplay.textContent = total;
+    }
+
+    function resetAbacus() {
+      document.querySelectorAll('.bead').forEach(bead => bead.classList.remove('active'));
+      updateTotal();
+    }
+  </script>
+</body>
+</html>
