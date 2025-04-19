@@ -3,80 +3,80 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Abacus Puzzle Game</title>
+  <title>Mini Abacus Game</title>
   <style>
     body {
       font-family: sans-serif;
       text-align: center;
       background: #f0f8ff;
-      padding: 20px;
+      padding: 10px;
     }
     h1, h3 {
       color: #333;
+      margin: 10px 0;
     }
     .abacus {
       display: flex;
       justify-content: center;
-      margin: 30px 0;
+      margin: 10px 0;
     }
     .rod {
       background: #ddd;
-      padding: 20px 30px;
-      border-radius: 15px;
-      min-height: 400px;
+      padding: 10px 15px;
+      border-radius: 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      position: relative;
+      min-height: 250px;
     }
     .bead {
-      width: 60px;
-      height: 60px;
+      width: 40px;
+      height: 40px;
       background: #ffcc66;
-      margin: 15px 0;
+      margin: 6px 0;
       border-radius: 50%;
       cursor: pointer;
       transition: transform 0.2s;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
     .bead.top.active {
-      transform: translateY(70px);
+      transform: translateY(40px);
       background: #ffa500;
     }
     .bead.bottom.active {
-      transform: translateY(-70px);
+      transform: translateY(-40px);
       background: #ffa500;
     }
     .separator {
       height: 2px;
       width: 100%;
       background: black;
-      margin: 50px 0;
+      margin: 30px 0;
     }
     .stars {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       max-width: 250px;
-      margin: 20px auto;
+      margin: 10px auto;
     }
     .star {
-      font-size: 40px;
-      margin: 5px;
+      font-size: 32px;
+      margin: 3px;
     }
     #score-count {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: bold;
-      margin-bottom: 10px;
+      margin-bottom: 5px;
     }
     button {
-      padding: 10px 20px;
-      font-size: 18px;
-      margin-top: 20px;
+      padding: 8px 16px;
+      font-size: 16px;
+      margin-top: 10px;
       border: none;
       background: #4CAF50;
       color: white;
-      border-radius: 10px;
+      border-radius: 8px;
       cursor: pointer;
     }
   </style>
@@ -84,7 +84,7 @@
 <body>
   <h1>Abacus Puzzle</h1>
   <div id="score-count">Stars: 0</div>
-  <h3>Solve: <span id="question">1 + 2</span></h3>
+  <h3>Solve: <span id="question">1234 + 2</span></h3>
   <div class="abacus">
     <div class="rod" data-place="1">
       <div class="bead top" data-value="5"></div>
@@ -109,8 +109,8 @@
     const scoreCount = document.getElementById('score-count');
 
     function generateQuestion() {
-      const a = Math.floor(Math.random() * 6);
-      const b = Math.floor(Math.random() * 6);
+      const a = Math.floor(Math.random() * 10); // 0–9
+      const b = Math.floor(Math.random() * 10);
       const op = Math.random() > 0.5 ? '+' : '-';
       let question = '';
       if (op === '+') {
@@ -143,7 +143,7 @@
         score++;
         scoreCount.textContent = `Stars: ${score}`;
         showStar();
-        setTimeout(generateQuestion, 1000);
+        setTimeout(generateQuestion, 800);
       }
     }
 
