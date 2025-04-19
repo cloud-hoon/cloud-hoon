@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Camera Face & QR Scanner</title>
+  <style>
+    video, canvas { max-width: 100%; border: 1px solid #ccc; }
+    #overlay { position: absolute; top: 0; left: 0; }
+    #container { position: relative; display: inline-block; }
+  </style>
+</head>
+<body>
+  <h1>Face & QR Scanner</h1>
+  <div id="container">
+    <video id="video" autoplay muted playsinline></video>
+    <canvas id="overlay"></canvas>
+  </div>
+  <p id="log">Initializing...</p>
+
+  <script>
+    const video = document.getElementById('video');
+    const overlay = document.getElementById('overlay');
+    const ctx = overlay.getContext('2d');
+    const log = document.getElementById('log');
+
+    async function setupCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+        video.srcObject = stream;
+        video.onloadedmetadata = () => {
+          overlay.width = video.videoWidth;
+          overlay.height = video.videoHeight;
+          detectLoop();
+        };
+      } catch (err) {
+        log.textContent = 'Camera access denied or not supported.';
+        console.error(err);
+      }
+    }
+
+    async function detectLoop() {
+      const faceDetector = ('FaceDetector' in window) ? new FaceDetector({ fastMode: true }) : null;
+      const barcodeDetector = ('BarcodeDetector' in window) ? new BarcodeDetector({ formats: ['qr_code'] }) : null;
+
+      if (!faceDetector && !barcodeDetector) {
+        log.textContent = 'Face and QR detection not supported in this browser.';
+        return;
+      }
+
+      const detect = async () => {
+        ctx.clearRect(0, 0, overlay.width, overlay.height);
+
+        try {
+          if (faceDetector) {
+            const faces = await faceDetector.detect(video);
+            faces.forEach(face => {
+              const { x, y, width, height } = face.boundingBox;
+              ctx.strokeStyle = 'blue';
+              ctx.lineWidth = 2;
+              ctx.strokeRect(x, y, width, height);
+            });
+            if (faces.length > 0) log.textContent = `Faces detected: ${faces.length}`;
+          }
+
+          if (barcodeDetector) {
+            const barcodes = await barcodeDetector.detect(video);
+            barcodes.forEach(code => {
+              const { x, y, width, height } = code.boundingBox;
+              ctx.strokeStyle = 'green';
+              ctx.lineWidth = 2;
+              ctx.strokeRect(x, y, width, height);
+              ctx.fillStyle = 'green';
+              ctx.fillText(code.rawValue, x, y - 10);
+            });
+            if (barcodes.length > 0) log.textContent += ` | QR codes: ${barcodes.map(b => b.rawValue).join(', ')}`;
+          }
+
+        } catch (err) {
+          console.error('Detection error:', err);
+        }
+
+        requestAnimationFrame(detect);
+      };
+
+      detect();
+    }
+
+    setupCamera();
+  </script>
+</body>
+</html>
