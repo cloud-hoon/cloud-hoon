@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Claw Machine Game</title>
+  <style>
+    body {
+      background: linear-gradient(to bottom right, #ffe6f0, #ccf2ff);
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    h1 {
+      color: #ff3399;
+    }
+    #gameArea {
+      border: 5px solid #ff99cc;
+      background: #ffffff;
+      border-radius: 20px;
+      width: 300px;
+      height: 400px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .prize {
+      width: 50px;
+      height: 50px;
+      background-color: yellow;
+      border-radius: 50%;
+      position: absolute;
+      text-align: center;
+      line-height: 50px;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 20px;
+      color: #0066cc;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: #66ccff;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    button:hover {
+      background-color: #3399ff;
+    }
+  </style>
+</head>
+<body>
+  <h1>Claw Machine Game!</h1>
+  <div id="gameArea"></div>
+  <div id="result"></div>
+  <button onclick="grabPrize()">Grab a Prize!</button>
+
+  <script>
+    const gameArea = document.getElementById('gameArea');
+    const result = document.getElementById('result');
+    const prizes = ['Bear', 'Star', 'Ball', 'Dino', 'Car'];
+
+    function spawnPrizes() {
+      gameArea.innerHTML = '';
+      prizes.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'prize';
+        div.style.left = Math.random() * 240 + 'px';
+        div.style.top = Math.random() * 340 + 'px';
+        div.textContent = '🎁';
+        div.dataset.name = item;
+        gameArea.appendChild(div);
+      });
+    }
+
+    function grabPrize() {
+      const allPrizes = document.querySelectorAll('.prize');
+      if (allPrizes.length === 0) return;
+      const chosen = allPrizes[Math.floor(Math.random() * allPrizes.length)];
+      result.textContent = `You grabbed a ${chosen.dataset.name}!`;
+      chosen.remove();
+    }
+
+    window.onload = spawnPrizes;
+  </script>
+</body>
+</html>
