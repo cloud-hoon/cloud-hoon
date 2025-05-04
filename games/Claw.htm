@@ -26,9 +26,6 @@
       height: 400px;
       position: relative;
       overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
     }
     .prize {
       width: 50px;
@@ -40,58 +37,95 @@
       line-height: 50px;
       font-size: 24px;
       font-weight: bold;
-      cursor: pointer;
+    }
+    #claw {
+      width: 50px;
+      height: 50px;
+      position: absolute;
+      top: 0;
+      left: 125px;
+      font-size: 36px;
+      text-align: center;
     }
     #result {
       margin-top: 20px;
       font-size: 20px;
       color: #0066cc;
     }
-    button {
-      padding: 10px 20px;
+    .controls {
+      margin-top: 20px;
+    }
+    .controls button {
+      padding: 10px 15px;
       font-size: 18px;
       background-color: #66ccff;
       color: white;
       border: none;
       border-radius: 10px;
       cursor: pointer;
-      margin-top: 20px;
+      margin: 0 10px;
     }
-    button:hover {
+    .controls button:hover {
       background-color: #3399ff;
     }
   </style>
 </head>
 <body>
   <h1>Claw Machine Game!</h1>
-  <div id="gameArea"></div>
+  <div id="gameArea">
+    <div id="claw">🛠️</div>
+  </div>
   <div id="result"></div>
-  <button onclick="grabPrize()">Grab a Prize!</button>
+  <div class="controls">
+    <button onclick="moveClaw(-20)">Left</button>
+    <button onclick="grabPrize()">Grab</button>
+    <button onclick="moveClaw(20)">Right</button>
+  </div>
 
   <script>
     const gameArea = document.getElementById('gameArea');
+    const claw = document.getElementById('claw');
     const result = document.getElementById('result');
-    const prizes = ['Bear', 'Star', 'Ball', 'Dino', 'Car'];
+    const prizeSymbols = ['💖', '🌟', '🎉', '🐮', '🚗'];
+    const prizeNames = ['Heart', 'Star', 'Party', 'Cow', 'Car'];
+
+    function getRandomInt(max) {
+      return Math.floor(Math.random() * max);
+    }
 
     function spawnPrizes() {
-      gameArea.innerHTML = '';
-      prizes.forEach((item, index) => {
+      for (let i = 0; i < prizeNames.length; i++) {
         const div = document.createElement('div');
         div.className = 'prize';
-        div.style.left = Math.random() * 240 + 'px';
-        div.style.top = Math.random() * 340 + 'px';
-        div.textContent = '🎁';
-        div.dataset.name = item;
+        div.style.left = 40 + i * 50 + 'px';
+        div.style.top = '340px';
+        const index = getRandomInt(prizeSymbols.length);
+        div.textContent = prizeSymbols[index];
+        div.dataset.name = prizeNames[index];
         gameArea.appendChild(div);
-      });
+      }
+    }
+
+    function moveClaw(delta) {
+      const left = parseInt(claw.style.left);
+      let newLeft = left + delta;
+      if (newLeft < 0) newLeft = 0;
+      if (newLeft > 250) newLeft = 250;
+      claw.style.left = newLeft + 'px';
     }
 
     function grabPrize() {
-      const allPrizes = document.querySelectorAll('.prize');
-      if (allPrizes.length === 0) return;
-      const chosen = allPrizes[Math.floor(Math.random() * allPrizes.length)];
-      result.textContent = `You grabbed a ${chosen.dataset.name}!`;
-      chosen.remove();
+      const clawX = parseInt(claw.style.left);
+      const prizes = document.querySelectorAll('.prize');
+      for (let prize of prizes) {
+        const prizeX = parseInt(prize.style.left);
+        if (Math.abs(clawX - prizeX) < 30) {
+          result.textContent = `You grabbed a ${prize.dataset.name}!`;
+          prize.remove();
+          return;
+        }
+      }
+      result.textContent = "Oops! Nothing grabbed. Try again!";
     }
 
     window.onload = spawnPrizes;
