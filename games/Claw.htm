@@ -15,8 +15,11 @@
       height: 100vh;
       margin: 0;
     }
-    h1 {
+    #collected {
+      font-size: 22px;
+      font-weight: bold;
       color: #ff3399;
+      margin-bottom: 10px;
     }
     #gameArea {
       border: 5px solid #ff99cc;
@@ -48,7 +51,7 @@
       text-align: center;
     }
     #result {
-      margin-top: 20px;
+      margin-top: 10px;
       font-size: 20px;
       color: #0066cc;
     }
@@ -71,7 +74,7 @@
   </style>
 </head>
 <body>
-  <h1>Claw Machine Game!</h1>
+  <div id="collected">Collected: </div>
   <div id="gameArea">
     <div id="claw">X</div>
   </div>
@@ -86,28 +89,47 @@
     const gameArea = document.getElementById('gameArea');
     const claw = document.getElementById('claw');
     const result = document.getElementById('result');
+    const collected = document.getElementById('collected');
     const prizeSymbols = ['💖', '🌟', '🎉', '🐮', '🚗'];
     const prizeNames = ['Heart', 'Star', 'Party', 'Cow', 'Car'];
-
     let clawLeft = 130;
-    let clawTop = 0;
+    let heldPrize = null;
 
     function getRandomInt(max) {
       return Math.floor(Math.random() * max);
     }
 
+    function isOverlapping(newX, newY, existingPrizes) {
+      for (let p of existingPrizes) {
+        let px = parseInt(p.style.left);
+        let py = parseInt(p.style.top);
+        if (Math.abs(px - newX) < 45 && Math.abs(py - newY) < 45) {
+          return true;
+        }
+      }
+      return false;
+    }
+
     function spawnPrizes() {
+      const existing = [];
       for (let i = 0; i < 15; i++) {
+        let tries = 0;
+        let x, y;
+        do {
+          x = getRandomInt(260);
+          y = 320 + getRandomInt(40);
+          tries++;
+        } while (isOverlapping(x, y, existing) && tries < 50);
+
         const div = document.createElement('div');
         div.className = 'prize';
-        const x = getRandomInt(260);
-        const y = 320 + getRandomInt(40);
         div.style.left = x + 'px';
         div.style.top = y + 'px';
         const index = getRandomInt(prizeSymbols.length);
         div.textContent = prizeSymbols[index];
         div.dataset.name = prizeNames[index];
         gameArea.appendChild(div);
+        existing.push(div);
       }
     }
 
@@ -116,32 +138,44 @@
       if (clawLeft < 0) clawLeft = 0;
       if (clawLeft > 260) clawLeft = 260;
       claw.style.left = clawLeft + 'px';
+      if (heldPrize) heldPrize.style.left = clawLeft + 'px';
     }
 
     function grabPrize() {
       claw.style.transition = 'top 0.5s';
       claw.style.top = '340px';
+      if (heldPrize) heldPrize.remove();
+      heldPrize = null;
 
       setTimeout(() => {
         const prizes = document.querySelectorAll('.prize');
         for (let prize of prizes) {
           const prizeX = parseInt(prize.style.left);
-          if (Math.abs(clawLeft - prizeX) < 30) {
-            result.textContent = `You grabbed a ${prize.dataset.name}!`;
-            prize.remove();
-            resetClaw();
-            return;
+          const prizeY = parseInt(prize.style.top);
+          if (Math.abs(clawLeft - prizeX) < 30 && prizeY >= 320) {
+            heldPrize = prize;
+            prize.style.top = '340px';
+            prize.style.left = clawLeft + 'px';
+            break;
           }
         }
-        result.textContent = "Oops! Nothing grabbed. Try again!";
-        resetClaw();
-      }, 600);
-    }
+      }, 500);
 
-    function resetClaw() {
       setTimeout(() => {
         claw.style.top = '0px';
-      }, 500);
+        if (heldPrize) heldPrize.style.top = '0px';
+      }, 1000);
+
+      setTimeout(() => {
+        if (heldPrize) {
+          collected.innerHTML += heldPrize.textContent + ' ';
+          result.textContent = `You grabbed a ${heldPrize.dataset.name}!`;
+          heldPrize.remove();
+          heldPrize = null;
+        } else {
+          result.textContent = "Oops! Nothing grabbed. Try again!";
+        }
+      }, 1500);
     }
 
     window.onload = spawnPrizes;
