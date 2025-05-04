@@ -40,7 +40,7 @@
       line-height: 40px;
       font-size: 20px;
       font-weight: bold;
-      transition: top 0.5s;
+      transition: top 0.5s, left 0.5s;
     }
     #claw {
       width: 40px;
@@ -50,7 +50,7 @@
       left: 130px;
       font-size: 28px;
       text-align: center;
-      transition: top 0.5s;
+      transition: top 0.5s, left 0.5s;
     }
     #result {
       margin-top: 10px;
@@ -96,6 +96,16 @@
     const prizeNames = ['Heart', 'Star', 'Party', 'Cow', 'Car'];
     let clawLeft = 130;
     let heldPrize = null;
+
+    function playSound(type) {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioCtx.createOscillator();
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(type === 'drop' ? 200 : 600, audioCtx.currentTime);
+      oscillator.connect(audioCtx.destination);
+      oscillator.start();
+      oscillator.stop(audioCtx.currentTime + 0.2);
+    }
 
     function getRandomInt(max) {
       return Math.floor(Math.random() * max);
@@ -169,10 +179,19 @@
 
       setTimeout(() => {
         if (heldPrize) {
-          collected.innerHTML += heldPrize.textContent + ' ';
-          result.textContent = `You grabbed a ${heldPrize.dataset.name}!`;
-          heldPrize.remove();
-          heldPrize = null;
+          if (Math.random() < 0.7) {
+            // Drop prize
+            heldPrize.style.top = '340px';
+            heldPrize = null;
+            result.textContent = "Oh no! The prize dropped!";
+            playSound('drop');
+          } else {
+            collected.innerHTML += heldPrize.textContent + ' ';
+            result.textContent = `You grabbed a ${heldPrize.dataset.name}!`;
+            heldPrize.remove();
+            heldPrize = null;
+            playSound('collect');
+          }
         } else {
           result.textContent = "Oops! Nothing grabbed. Try again!";
         }
