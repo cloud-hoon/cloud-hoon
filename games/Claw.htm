@@ -40,6 +40,7 @@
       line-height: 40px;
       font-size: 20px;
       font-weight: bold;
+      transition: top 0.5s;
     }
     #claw {
       width: 40px;
@@ -49,6 +50,7 @@
       left: 130px;
       font-size: 28px;
       text-align: center;
+      transition: top 0.5s;
     }
     #result {
       margin-top: 10px;
@@ -117,9 +119,9 @@
         let x, y;
         do {
           x = getRandomInt(260);
-          y = 320 + getRandomInt(40);
+          y = 300 + getRandomInt(80);
           tries++;
-        } while (isOverlapping(x, y, existing) && tries < 50);
+        } while (isOverlapping(x, y, existing) && tries < 100);
 
         const div = document.createElement('div');
         div.className = 'prize';
@@ -142,7 +144,6 @@
     }
 
     function grabPrize() {
-      claw.style.transition = 'top 0.5s';
       claw.style.top = '340px';
       if (heldPrize) heldPrize.remove();
       heldPrize = null;
@@ -152,10 +153,10 @@
         for (let prize of prizes) {
           const prizeX = parseInt(prize.style.left);
           const prizeY = parseInt(prize.style.top);
-          if (Math.abs(clawLeft - prizeX) < 30 && prizeY >= 320) {
+          if (Math.abs(clawLeft - prizeX) < 30 && prizeY >= 300) {
             heldPrize = prize;
-            prize.style.top = '340px';
             prize.style.left = clawLeft + 'px';
+            prize.style.top = '340px';
             break;
           }
         }
@@ -175,7 +176,7 @@
         } else {
           result.textContent = "Oops! Nothing grabbed. Try again!";
         }
-      }, 1500);
+      }, 1600);
     }
 
     window.onload = spawnPrizes;
