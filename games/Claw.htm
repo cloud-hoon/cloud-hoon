@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -40,17 +39,16 @@
       line-height: 40px;
       font-size: 20px;
       font-weight: bold;
-      transition: top 0.5s, left 0.5s;
+      transition: top 0.5s;
     }
-    #claw {
+    .claw {
       width: 40px;
       height: 40px;
       position: absolute;
       top: 0;
-      left: 130px;
       font-size: 28px;
       text-align: center;
-      transition: top 0.5s, left 0.5s;
+      transition: top 0.5s, left 0.3s;
     }
     #result {
       margin-top: 10px;
@@ -78,34 +76,26 @@
 <body>
   <div id="collected">Collected: </div>
   <div id="gameArea">
-    <div id="claw">X</div>
+    <div class="claw" id="claw1">X</div>
+    <div class="claw" id="claw2">X</div>
   </div>
   <div id="result"></div>
   <div class="controls">
-    <button onclick="moveClaw(-20)">Left</button>
+    <button onclick="moveClaws(-20)">Left</button>
     <button onclick="grabPrize()">Grab</button>
-    <button onclick="moveClaw(20)">Right</button>
-  </div>
-
-  <script>
+    <button onclick="moveClaws(20)">Right</button>
+  </div>  <script>
     const gameArea = document.getElementById('gameArea');
-    const claw = document.getElementById('claw');
+    const claws = [
+      document.getElementById('claw1'),
+      document.getElementById('claw2')
+    ];
     const result = document.getElementById('result');
     const collected = document.getElementById('collected');
     const prizeSymbols = ['💖', '🌟', '🎉', '🐮', '🚗'];
     const prizeNames = ['Heart', 'Star', 'Party', 'Cow', 'Car'];
-    let clawLeft = 130;
-    let heldPrize = null;
-
-    function playSound(type) {
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      const oscillator = audioCtx.createOscillator();
-      oscillator.type = 'sine';
-      oscillator.frequency.setValueAtTime(type === 'drop' ? 200 : 600, audioCtx.currentTime);
-      oscillator.connect(audioCtx.destination);
-      oscillator.start();
-      oscillator.stop(audioCtx.currentTime + 0.2);
-    }
+    let clawLefts = [80, 180];
+    let heldPrizes = [null, null];
 
     function getRandomInt(max) {
       return Math.floor(Math.random() * max);
@@ -145,60 +135,73 @@
       }
     }
 
-    function moveClaw(delta) {
-      clawLeft += delta;
-      if (clawLeft < 0) clawLeft = 0;
-      if (clawLeft > 260) clawLeft = 260;
-      claw.style.left = clawLeft + 'px';
-      if (heldPrize) heldPrize.style.left = clawLeft + 'px';
+    function moveClaws(delta) {
+      clawLefts = clawLefts.map(x => Math.min(260, Math.max(0, x + delta)));
+      claws.forEach((claw, i) => {
+        claw.style.left = clawLefts[i] + 'px';
+        if (heldPrizes[i]) heldPrizes[i].style.left = clawLefts[i] + 'px';
+      });
+    }
+
+    function playSound(freq) {
+      const context = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = context.createOscillator();
+      const gainNode = context.createGain();
+      oscillator.connect(gainNode);
+      gainNode.connect(context.destination);
+      oscillator.type = 'sine';
+      oscillator.frequency.setValueAtTime(freq, context.currentTime);
+      oscillator.start();
+      oscillator.stop(context.currentTime + 0.2);
     }
 
     function grabPrize() {
-      claw.style.top = '340px';
-      if (heldPrize) heldPrize.remove();
-      heldPrize = null;
+      claws.forEach(claw => claw.style.top = '340px');
+      heldPrizes.forEach(p => p?.remove());
+      heldPrizes = [null, null];
 
       setTimeout(() => {
         const prizes = document.querySelectorAll('.prize');
-        for (let prize of prizes) {
-          const prizeX = parseInt(prize.style.left);
-          const prizeY = parseInt(prize.style.top);
-          if (Math.abs(clawLeft - prizeX) < 30 && prizeY >= 300) {
-            heldPrize = prize;
-            prize.style.left = clawLeft + 'px';
-            prize.style.top = '340px';
-            break;
+        claws.forEach((claw, i) => {
+          const clawX = clawLefts[i];
+          for (let prize of prizes) {
+            const prizeX = parseInt(prize.style.left);
+            const prizeY = parseInt(prize.style.top);
+            if (!heldPrizes.includes(prize) && Math.abs(clawX - prizeX) < 30 && prizeY >= 300) {
+              heldPrizes[i] = prize;
+              prize.style.left = clawX + 'px';
+              prize.style.top = '340px';
+              break;
+            }
           }
-        }
+        });
       }, 500);
 
       setTimeout(() => {
-        claw.style.top = '0px';
-        if (heldPrize) heldPrize.style.top = '0px';
+        claws.forEach(claw => claw.style.top = '0px');
+        heldPrizes.forEach((p, i) => {
+          if (p) p.style.top = '0px';
+        });
       }, 1000);
 
       setTimeout(() => {
-        if (heldPrize) {
-          if (Math.random() < 0.7) {
-            // Drop prize
-            heldPrize.style.top = '340px';
-            heldPrize = null;
-            result.textContent = "Oh no! The prize dropped!";
-            playSound('drop');
-          } else {
-            collected.innerHTML += heldPrize.textContent + ' ';
-            result.textContent = `You grabbed a ${heldPrize.dataset.name}!`;
-            heldPrize.remove();
-            heldPrize = null;
-            playSound('collect');
+        heldPrizes.forEach((p, i) => {
+          if (p) {
+            if (Math.random() < 0.7) {
+              collected.innerHTML += p.textContent + ' ';
+              result.textContent = `You grabbed a ${p.dataset.name}!`;
+              p.remove();
+              playSound(880);
+            } else {
+              p.style.top = '340px';
+              playSound(220);
+            }
           }
-        } else {
-          result.textContent = "Oops! Nothing grabbed. Try again!";
-        }
+        });
+        heldPrizes = [null, null];
       }, 1600);
     }
 
     window.onload = spawnPrizes;
-  </script>
-</body>
+  </script></body>
 </html>
