@@ -8,6 +8,8 @@
     #container { position: relative; display: inline-block; }
     .snapshots { margin-top: 20px; }
     .snapshot { margin: 10px 0; border: 1px solid #ccc; padding: 5px; }
+    button { margin-top: 10px; margin-right: 10px; }
+    #controls { margin-top: 10px; }
   </style>
 </head>
 <body>
@@ -17,6 +19,13 @@
     <canvas id="overlay"></canvas>
   </div>
   <p id="log">Initializing...</p>
+  <div id="controls">
+    <button id="pauseBtn">Pause</button>
+    <button id="toggleFaceBtn">Toggle Face Detection (On)</button>
+    <button id="toggleQRBtn">Toggle QR Detection (On)</button>
+    <button id="clearSnapshotsBtn">Clear Snapshots</button>
+    <span id="counters"></span>
+  </div>
   <div class="snapshots" id="snapshots"></div>
 
   <script>
@@ -25,9 +34,49 @@
     const ctx = overlay.getContext('2d');
     const log = document.getElementById('log');
     const snapshotsContainer = document.getElementById('snapshots');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const toggleFaceBtn = document.getElementById('toggleFaceBtn');
+    const toggleQRBtn = document.getElementById('toggleQRBtn');
+    const clearSnapshotsBtn = document.getElementById('clearSnapshotsBtn');
+    const counters = document.getElementById('counters');
+
+    let scanning = true;
+    let detectFaces = true;
+    let detectQRs = true;
+    let faceCount = 0;
+    let qrCount = 0;
 
     const seenQRCodes = new Set();
     const seenFaces = [];
+
+    pauseBtn.addEventListener('click', () => {
+      scanning = !scanning;
+      pauseBtn.textContent = scanning ? 'Pause' : 'Resume';
+      if (scanning) detectLoop();
+    });
+
+    toggleFaceBtn.addEventListener('click', () => {
+      detectFaces = !detectFaces;
+      toggleFaceBtn.textContent = `Toggle Face Detection (${detectFaces ? 'On' : 'Off'})`;
+    });
+
+    toggleQRBtn.addEventListener('click', () => {
+      detectQRs = !detectQRs;
+      toggleQRBtn.textContent = `Toggle QR Detection (${detectQRs ? 'On' : 'Off'})`;
+    });
+
+    clearSnapshotsBtn.addEventListener('click', () => {
+      snapshotsContainer.innerHTML = '';
+      seenFaces.length = 0;
+      seenQRCodes.clear();
+      faceCount = 0;
+      qrCount = 0;
+      updateCounters();
+    });
+
+    function updateCounters() {
+      counters.textContent = `Faces: ${faceCount}, QR Codes: ${qrCount}`;
+    }
 
     async function setupCamera() {
       try {
@@ -64,7 +113,16 @@
       container.className = 'snapshot';
       const timestamp = new Date().toLocaleString();
       container.innerHTML = `<strong>${label}</strong><br>${timestamp}<br>`;
+
+      const downloadBtn = document.createElement('a');
+      downloadBtn.textContent = 'Download Snapshot';
+      downloadBtn.href = canvas.toDataURL('image/png');
+      downloadBtn.download = `${label}-${Date.now()}.png`;
+      downloadBtn.style.display = 'block';
+      downloadBtn.style.marginTop = '5px';
+
       container.appendChild(canvas);
+      container.appendChild(downloadBtn);
       snapshotsContainer.prepend(container);
     }
 
@@ -78,11 +136,13 @@
       }
 
       const detect = async () => {
+        if (!scanning) return;
+
         ctx.clearRect(0, 0, overlay.width, overlay.height);
         let newInfo = [];
 
         try {
-          if (faceDetector) {
+          if (faceDetector && detectFaces) {
             const faces = await faceDetector.detect(video);
             faces.forEach(face => {
               const box = face.boundingBox;
@@ -92,13 +152,14 @@
 
               if (!isSimilarFace(box)) {
                 seenFaces.push(box);
+                faceCount++;
                 captureSnapshot('New Face Detected');
                 newInfo.push('Face');
               }
             });
           }
 
-          if (barcodeDetector) {
+          if (barcodeDetector && detectQRs) {
             const barcodes = await barcodeDetector.detect(video);
             barcodes.forEach(code => {
               const { x, y, width, height } = code.boundingBox;
@@ -110,6 +171,7 @@
 
               if (!seenQRCodes.has(code.rawValue)) {
                 seenQRCodes.add(code.rawValue);
+                qrCount++;
                 captureSnapshot(`New QR Code: ${code.rawValue}`);
                 newInfo.push(`QR: ${code.rawValue}`);
               }
@@ -120,7 +182,8 @@
         }
 
         log.textContent = `Scanning... ${newInfo.join(', ')}`;
-        requestAnimationFrame(detect);
+        updateCounters();
+        if (scanning) requestAnimationFrame(detect);
       };
 
       detect();
