@@ -42,10 +42,10 @@
 		const voice = voices.find(v => v.name === "Google US English" || v.name.includes("Samantha") || v.name.includes("Alex"));
 		if (voice) {
   			speech.voice = voice;
-		}
-
-		speech.rate=1.5;
-                speechSynthesis.speak(speech);
+		}else{
+			speech.rate=1.5;
+                }
+		speechSynthesis.speak(speech);
             }
         }
 
