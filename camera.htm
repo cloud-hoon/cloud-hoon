@@ -3,12 +3,18 @@
 <head>
   <title>Face & QR Scanner with Snapshots</title>
   <style>
-    video, canvas { max-width: 100%; border: 1px solid #ccc; }
+    video { width: 50%; border: 1px solid #ccc; }
+    canvas { max-width: 100%; border: 1px solid #ccc; }
     #overlay { position: absolute; top: 0; left: 0; }
     #container { position: relative; display: inline-block; }
     .snapshots { margin-top: 20px; }
     .snapshot { margin: 10px 0; border: 1px solid #ccc; padding: 5px; }
-    button { margin-top: 10px; margin-right: 10px; }
+    button {
+      font-size: 1.5em;
+      padding: 10px 20px;
+      margin-top: 10px;
+      margin-right: 10px;
+    }
     #controls { margin-top: 10px; }
   </style>
 </head>
@@ -19,12 +25,12 @@
     <canvas id="overlay"></canvas>
   </div>
   <p id="log">Initializing...</p>
+  <p id="counters"></p>
   <div id="controls">
     <button id="pauseBtn">Pause</button>
     <button id="toggleFaceBtn">Toggle Face Detection (On)</button>
     <button id="toggleQRBtn">Toggle QR Detection (On)</button>
     <button id="clearSnapshotsBtn">Clear Snapshots</button>
-    <span id="counters"></span>
   </div>
   <div class="snapshots" id="snapshots"></div>
 
@@ -45,6 +51,7 @@
     let detectQRs = true;
     let faceCount = 0;
     let qrCount = 0;
+    let stream = null;
 
     const seenQRCodes = new Set();
     const seenFaces = [];
@@ -52,7 +59,14 @@
     pauseBtn.addEventListener('click', () => {
       scanning = !scanning;
       pauseBtn.textContent = scanning ? 'Pause' : 'Resume';
-      if (scanning) detectLoop();
+      if (scanning) {
+        setupCamera();
+      } else {
+        if (stream) {
+          stream.getTracks().forEach(track => track.stop());
+          video.srcObject = null;
+        }
+      }
     });
 
     toggleFaceBtn.addEventListener('click', () => {
@@ -80,7 +94,7 @@
 
     async function setupCamera() {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
         video.srcObject = stream;
         video.onloadedmetadata = () => {
           overlay.width = video.videoWidth;
@@ -102,12 +116,12 @@
       );
     }
 
-    function captureSnapshot(label) {
+    function captureSnapshot(label, box) {
       const canvas = document.createElement('canvas');
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+      canvas.width = box.width;
+      canvas.height = box.height;
       const context = canvas.getContext('2d');
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      context.drawImage(video, box.x, box.y, box.width, box.height, 0, 0, box.width, box.height);
 
       const container = document.createElement('div');
       container.className = 'snapshot';
@@ -153,7 +167,7 @@
               if (!isSimilarFace(box)) {
                 seenFaces.push(box);
                 faceCount++;
-                captureSnapshot('New Face Detected');
+                captureSnapshot('New Face Detected', box);
                 newInfo.push('Face');
               }
             });
@@ -172,7 +186,7 @@
               if (!seenQRCodes.has(code.rawValue)) {
                 seenQRCodes.add(code.rawValue);
                 qrCount++;
-                captureSnapshot(`New QR Code: ${code.rawValue}`);
+                captureSnapshot(`New QR Code: ${code.rawValue}`, { x, y, width, height });
                 newInfo.push(`QR: ${code.rawValue}`);
               }
             });
