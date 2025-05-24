@@ -9,12 +9,7 @@
     #container { position: relative; display: inline-block; }
     .snapshots { margin-top: 20px; }
     .snapshot { margin: 10px 0; border: 1px solid #ccc; padding: 5px; }
-    button {
-      font-size: 1.5em;
-      padding: 10px 20px;
-      margin-top: 10px;
-      margin-right: 10px;
-    }
+    button { margin-top: 10px; margin-right: 10px; font-size: 1.5em; padding: 10px 20px; }
     #controls { margin-top: 10px; }
   </style>
 </head>
@@ -51,7 +46,6 @@
     let detectQRs = true;
     let faceCount = 0;
     let qrCount = 0;
-    let stream = null;
 
     const seenQRCodes = new Set();
     const seenFaces = [];
@@ -59,14 +53,7 @@
     pauseBtn.addEventListener('click', () => {
       scanning = !scanning;
       pauseBtn.textContent = scanning ? 'Pause' : 'Resume';
-      if (scanning) {
-        setupCamera();
-      } else {
-        if (stream) {
-          stream.getTracks().forEach(track => track.stop());
-          video.srcObject = null;
-        }
-      }
+      if (scanning) detectLoop();
     });
 
     toggleFaceBtn.addEventListener('click', () => {
@@ -94,7 +81,7 @@
 
     async function setupCamera() {
       try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
         video.srcObject = stream;
         video.onloadedmetadata = () => {
           overlay.width = video.videoWidth;
@@ -186,7 +173,11 @@
               if (!seenQRCodes.has(code.rawValue)) {
                 seenQRCodes.add(code.rawValue);
                 qrCount++;
-                captureSnapshot(`New QR Code: ${code.rawValue}`, { x, y, width, height });
+                const urlPattern = /^(https?:\/\/)?([\w.-]+)\.([a-z\.]{2,6})([\/\w .-]*)*\/?$/i;
+                const link = urlPattern.test(code.rawValue) ?
+                  code.rawValue.startsWith('http') ? code.rawValue : 'https://' + code.rawValue :
+                  `https://www.google.com/search?q=${encodeURIComponent(code.rawValue)}`;
+                captureSnapshot(`<a href="${link}" target="_blank">QR: ${code.rawValue}</a>`, {x, y, width, height});
                 newInfo.push(`QR: ${code.rawValue}`);
               }
             });
@@ -207,4 +198,3 @@
   </script>
 </body>
 </html>
- 
