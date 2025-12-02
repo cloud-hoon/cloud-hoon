@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MSG Parser (Unicode/ANSI/HTML Fallback)</title>
+  <script src="https://cdn.jsdelivr.net/npm/cfb@1.2.2/dist/cfb.js"></script>
+  <style>
+    body { font-family: sans-serif; margin: 2em; }
+    h1 { font-size: 1.5em; margin-bottom: 1em; }
+    .field { margin-bottom: 1.25em; }
+    .field label { font-weight: bold; display: block; margin-bottom: 0.25em; }
+    .field pre { background: #f4f4f4; padding: 0.5em; white-space: pre-wrap; }
+    #bodyHtml { border: 1px solid #ddd; padding: 1em; background: #fff; }
+  </style>
+</head>
+<body>
+
+  <h1>Parse Outlook .MSG</h1>
+  <input type="file" id="msgFile" accept=".msg" />
+  <div id="result"></div>
+
+  <script>
+  document.getElementById('msgFile').addEventListener('change', async evt => {
+    const file = evt.target.files[0];
+    if (!file) return;
+    const buffer = await file.arrayBuffer();
+    const arr = new Uint8Array(buffer);
+    const cfb = CFB.read(arr, { type: 'array' });
+
+    // Decoders
+    const dec16 = new TextDecoder('utf-16le');
+    const dec8  = new TextDecoder('windows-1252');
+    const decUtf8 = new TextDecoder('utf-8');
+
+    // Generic helper: try to find a stream by its 8-digit tag suffix, decode with given decoder
+    function getStream(tagSuffix, decoder) {
+      const path = cfb.FullPaths.find(p => p.endsWith(tagSuffix));
+      if (!path) return null;
+      const entry = CFB.find(cfb, path);
+      if (!entry || entry.content == null) return null;
+      const d = entry.content;
+      // If parser already returned a JS string, use it directly
+      if (typeof d === 'string') return d;
+      // Otherwise ensure a Uint8Array
+      const bytes = (d instanceof Uint8Array) ? d : new Uint8Array(d);
+      return decoder.decode(bytes);
+    }
+
+    // Subject: Unicode (0037001F) ? ANSI fallback (00370003)
+    const subject = getStream('0037001F', dec16)
+                  || getStream('00370003', dec8)
+                  || '(no subject found)';
+
+    // Bodies: Unicode plain (1000001F) ? ANSI plain (10000003) ? HTML (10130102)
+    const bodyUni  = getStream('1000001F', dec16);
+    const bodyAnsi = getStream('10000003', dec8);
+    const bodyHtml = getStream('10130102', decUtf8);
+    const plainBody = bodyUni || bodyAnsi;
+
+    // Sender
+    const senderName  = getStream('0C1A001F', dec16) || '(no sender name)';
+    const senderEmail = getStream('0C1F001F', dec16) || '(no sender email)';
+
+    // Render
+    const out = [];
+    out.push(`<div class="field">
+                <label>Subject:</label>
+                <pre>${subject}</pre>
+              </div>`);
+    if (plainBody) {
+      out.push(`<div class="field">
+                  <label>Body (plain-text):</label>
+                  <pre>${plainBody}</pre>
+                </div>`);
+    }
+    if (bodyHtml && !plainBody) {
+      out.push(`<div class="field">
+                  <label>Body (HTML):</label>
+                  <div id="bodyHtml">${bodyHtml}</div>
+                </div>`);
+    }
+    out.push(`<div class="field">
+                <label>Sender Name:</label>
+                <pre>${senderName}</pre>
+              </div>`);
+    out.push(`<div class="field">
+                <label>Sender E-Mail:</label>
+                <pre>${senderEmail}</pre>
+              </div>`);
+
+    document.getElementById('result').innerHTML = out.join('');
+  });
+  </script>
+
+</body>
+</html>

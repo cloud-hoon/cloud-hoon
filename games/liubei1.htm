@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Oath of the Peach Garden — Mini Game</title>
+<style>
+  :root{
+    --bg:#0f1724; --card:#0b1220; --accent:#e6b85a; --muted:#9aa6b2;
+    --text:#e6eef6; --glass: rgba(255,255,255,0.03);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,#071022 0%, #071a2a 60%);color:var(--text)}
+  .wrap{max-width:900px;margin:28px auto;padding:20px;display:grid;grid-template-columns:1fr 340px;gap:18px}
+  .main{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));padding:18px;border-radius:12px;box-shadow:0 6px 24px rgba(2,6,23,0.6)}
+  .sidebar{background:var(--card);padding:14px;border-radius:12px;height:fit-content;min-height:360px}
+  header{display:flex;gap:12px;align-items:center}
+  .logo{width:64px;height:64px;border-radius:10px;background:linear-gradient(135deg,#2b6b9a,#3c8bbf);display:flex;align-items:center;justify-content:center;font-weight:700;color:white}
+  h1{margin:0;font-size:20px}
+  p.lead{margin:6px 0 12px;color:var(--muted)}
+  #scene {background:var(--glass);padding:14px;border-radius:8px;min-height:220px}
+  .portrait{display:flex;gap:12px;align-items:flex-start}
+  .por-left{width:120px;height:120px;border-radius:8px;background:linear-gradient(180deg,#163a2e,#1d5a47);display:flex;align-items:center;justify-content:center;font-weight:700}
+  .dialogue{flex:1}
+  .choices{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+  button.choice{padding:10px 12px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--text);text-align:left;cursor:pointer}
+  button.choice:hover{transform:translateY(-2px)}
+  .muted{color:var(--muted);font-size:13px}
+  .stat{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px dashed rgba(255,255,255,0.03)}
+  .bar{height:8px;background:rgba(255,255,255,0.06);border-radius:6px;overflow:hidden;width:100%}
+  .bar > i{display:block;height:100%;background:linear-gradient(90deg,#ffb86b,#ffd89b);width:30%}
+  .log{height:120px;overflow:auto;padding:8px;margin-top:8px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.02));border-radius:6px;font-size:13px;color:var(--muted)}
+  footer{display:flex;gap:8px;align-items:center;margin-top:12px}
+  button.small{padding:8px 10px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--text);cursor:pointer}
+  .center{display:flex;justify-content:center;align-items:center}
+  .big{font-size:18px;font-weight:700}
+  .turn{margin-top:8px;color:var(--muted);font-size:13px}
+  /* responsive */
+  @media (max-width:900px){.wrap{grid-template-columns:1fr;padding:12px}.sidebar{order:2}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="main">
+    <header>
+      <div class="logo">OL</div>
+      <div>
+        <h1>Oath of the Peach Garden — Mini</h1>
+        <p class="lead">A tiny interactive retelling of Liu Bei’s early arc. Choices change your stats and outcomes.</p>
+      </div>
+    </header>
+
+    <section id="scene" aria-live="polite">
+      <!-- scene content injected here -->
+    </section>
+
+    <div class="center turn" id="turnInfo"></div>
+
+    <footer>
+      <button class="small" id="saveBtn">Save</button>
+      <button class="small" id="loadBtn">Load</button>
+      <button class="small" id="restartBtn">Restart</button>
+      <div style="flex:1"></div>
+      <div class="muted">Made for learning: edit story & units in the code.</div>
+    </footer>
+  </div>
+
+  <aside class="sidebar">
+    <div class="big">Party</div>
+    <div class="stat" style="margin-top:8px">
+      <div>
+        <div style="font-weight:700">Liu Bei</div>
+        <div class="muted">Leader · Aspiring ruler</div>
+      </div>
+      <div style="text-align:right">
+        <div>LV <span id="lv">1</span></div>
+        <div>HP <span id="hp">10</span></div>
+      </div>
+    </div>
+
+    <div style="margin-top:10px">
+      <div class="muted">Honor</div>
+      <div style="display:flex;gap:8px;margin-top:6px"><div style="flex:1" class="bar"><i id="honorBar"></i></div><div style="width:40px;text-align:right" id="honor">30</div></div>
+    </div>
+
+    <div style="margin-top:10px">
+      <div class="muted">Followers</div>
+      <div style="font-weight:700;margin-top:6px" id="followers">3</div>
+      <div class="muted" style="font-size:12px">(Guan Yu & Zhang Fei may join after certain scenes)</div>
+    </div>
+
+    <div style="margin-top:12px">
+      <div class="muted">Log</div>
+      <div class="log" id="gamelog"></div>
+    </div>
+  </aside>
+</div>
+
+<script>
+/*
+  Tiny story engine:
+  - scenes: nodes with text, portrait, choices
+  - choice: {text, effect: fn(state), nextScene}
+  - state persisted in localStorage on save
+  - simple combat in scene "yellow_turban_battle"
+*/
+
+// --- Game state
+let state = {
+  sceneId: 'intro',
+  lv: 1,
+  hp: 10,
+  honor: 30,         // 0 - 100
+  followers: 1,
+  inventory: [],
+  visited: {},
+  turn: 0
+};
+
+// --- Scenes definition
+const scenes = {
+  intro: {
+    title: "A humble beginning",
+    portrait: "Liu Bei sits at a straw mat, thinking of a better China.",
+    text: `You are Liu Bei, born into humble life. Word spreads of unrest in the countryside — bandits and the Yellow Turbans. You dream of restoring order and caring for the people.`,
+    choices: [
+      { text: "Leave the village and help the people", next: "peach_garden", effect: (s)=>{ s.honor += 5; s.gamelog = 'You depart to help villagers.' } },
+      { text: "Stay and earn more money", next: "stay", effect: (s)=>{ s.honor -= 5; s.gamelog = 'You choose to stay and mend sandals.' } }
+    ]
+  },
+
+  stay: {
+    title: "A small choice",
+    portrait: "You sit on the mat and stitch sandals.",
+    text: `You stay, earning a stable living but you hear the cries of the nearby village worsening.`,
+    choices: [
+      { text: "Change your mind and go help them anyway", next: "peach_garden", effect: (s)=>{ s.honor += 6; s.gamelog = 'You finally go to help.' } },
+      { text: "Keep quiet, it's not your fight", next: "end_quiet", effect: (s)=>{ s.honor -= 2; s.gamelog = 'You remain safe but haunted.' } }
+    ]
+  },
+
+  peach_garden: {
+    title: "The Peach Garden Oath",
+    portrait: "Three strangers meet beneath a blossoming tree.",
+    text: `You meet two sworn brothers — Guan Yu and Zhang Fei — each fierce and loyal. Together you make an oath to restore peace and serve the people.`,
+    choices: [
+      { text: "Swear the oath together", next: "yellow_turban_battle", effect: (s)=>{ s.followers = 3; s.honor += 10; s.gamelog = 'Guan Yu and Zhang Fei join you.' } },
+      { text: "Keep your goals separate", next: "yellow_turban_battle", effect: (s)=>{ s.followers = 1; s.honor += 2; s.gamelog = 'You travel alone.' } }
+    ]
+  },
+
+  yellow_turban_battle: {
+    title: "Yellow Turban Skirmish",
+    portrait: "Peasants with crude weapons swarm the road.",
+    text: `A convoy of peasants ambushes a supply wagon. You must act to protect civilians. This will be a short combat — your honor and followers matter.`,
+    choices: [
+      { text: "Fight to protect the villagers (Enter combat)", next: "after_battle", effect: (s)=>{ s.gamelog = 'You choose to fight.' } },
+      { text: "Sneak around and protect survivors later", next: "after_battle", effect: (s)=>{ s.honor -= 5; s.gamelog = 'You avoid direct conflict.' } }
+    ],
+    combat: true
+  },
+
+  after_battle: {
+    title: "After the skirmish",
+    portrait: "Smoke settles. The people look at you with hope.",
+    text: `The dust settles. Your choices shaped the outcome.`,
+    choices: [
+      { text: "Help rebuild and gain reputation", next: "governor", effect: (s)=>{ s.honor += 5; s.lv+=1; s.gamelog='You helped rebuild.' } },
+      { text: "Move on and seek bigger allies", next: "ally_search", effect: (s)=>{ s.honor += 1; s.gamelog='You seek allies.' } }
+    ]
+  },
+
+  governor: {
+    title: "Rising Reputation",
+    portrait: "A village elder thanks you warmly.",
+    text: `Villagers spread tales of your deeds. Small postings and support come your way.`,
+    choices: [
+      { text: "Accept a local leadership role", next: "end_good", effect: (s)=>{ s.honor += 10; s.followers += 2; s.gamelog='You accept leadership.' } },
+      { text: "Politely refuse and travel to larger theaters", next: "ally_search", effect: (s)=>{ s.honor += 0; s.gamelog='You aim for greater things.' } }
+    ]
+  },
+
+  ally_search: {
+    title: "Looking for Allies",
+    portrait: "You travel the roads searching for powerful allies.",
+    text: `You look to join bigger forces. The world is changing and war looms.`,
+    choices: [
+      { text: "Join Gongsun Zan (briefly)", next: "end_gongsun", effect: (s)=>{ s.honor += 2; s.gamelog='You ally with Gongsun Zan.' } },
+      { text: "Keep independent", next: "end_underdog", effect: (s)=>{ s.honor += 1; s.gamelog='You remain independent.' } }
+    ]
+  },
+
+  // endings
+  end_good: {
+    title: "A Beacon for the People",
+    portrait: "You stand proud among grateful people.",
+    text: `Your honor and leadership earned you the people's trust. This is the seed of a future kingdom.`,
+    choices: [
+      { text: "Play again", next: "intro", effect: (s)=>resetState(s) }
+    ]
+  },
+
+  end_quiet: {
+    title: "Quiet Life",
+    portrait: "The straw mat is a little comfier, but your heart aches.",
+    text: `You live a peaceful life but often wonder 'what if'.`,
+    choices: [
+      { text: "Play again", next: "intro", effect: (s)=>resetState(s) }
+    ]
+  },
+
+  end_gongsun: {
+    title: "Under a Banner",
+    portrait: "A new banner flies above your head.",
+    text: `Allies give temporary power. The path to rulership is long and filled with compromise.`,
+    choices: [
+      { text: "Play again", next: "intro", effect: (s)=>resetState(s) }
+    ]
+  },
+
+  end_underdog: {
+    title: "The Underdog Continues",
+    portrait: "Seasoned and determined, you press on.",
+    text: `Your story continues in the margins of history; greatness takes time.`,
+    choices: [
+      { text: "Play again", next: "intro", effect: (s)=>resetState(s) }
+    ]
+  }
+};
+
+// --- Utility functions
+function log(msg){
+  const el = document.getElementById('gamelog');
+  const line = document.createElement('div');
+  line.textContent = `[Turn ${state.turn}] ${msg}`;
+  el.prepend(line);
+}
+
+function resetState(s){
+  Object.assign(s, {
+    sceneId: 'intro',
+    lv: 1, hp: 10, honor: 30, followers: 1, inventory: [], visited: {}, turn: 0
+  });
+}
+
+function percent(val, max=100){ return Math.max(0, Math.min(100, val)); }
+
+// --- Rendering
+function renderScene(id){
+  state.sceneId = id;
+  state.turn++;
+  document.getElementById('turnInfo').textContent = `Turn ${state.turn} · Scene: ${id}`;
+  const scene = scenes[id];
+  if(!scene) return console.error('Scene missing', id);
+
+  // mark visited
+  state.visited[id] = (state.visited[id]||0) + 1;
+
+  // scene HTML
+  const container = document.getElementById('scene');
+  container.innerHTML = '';
+
+  const header = document.createElement('div');
+  header.className = 'portrait';
+
+  const portrait = document.createElement('div');
+  portrait.className = 'por-left';
+  portrait.innerHTML = scene.portrait || '—';
+  header.appendChild(portrait);
+
+  const dialog = document.createElement('div');
+  dialog.className = 'dialogue';
+  const title = document.createElement('div');
+  title.className = 'big';
+  title.textContent = scene.title || '';
+  dialog.appendChild(title);
+
+  const text = document.createElement('div');
+  text.style.marginTop = '8px';
+  text.innerHTML = scene.text.replace(/\n/g,'<br>');
+  dialog.appendChild(text);
+
+  header.appendChild(dialog);
+  container.appendChild(header);
+
+  // choices
+  const choices = document.createElement('div');
+  choices.className = 'choices';
+  (scene.choices||[]).forEach((c,idx)=>{
+    const btn = document.createElement('button');
+    btn.className = 'choice';
+    btn.innerHTML = `<strong>${c.text}</strong>`;
+    btn.onclick = ()=> {
+      // apply effect
+      try {
+        c.effect && c.effect(state);
+      } catch(e){ console.error(e) }
+      // if scene has combat and choice leads to combat, run combat
+      if(scene.combat && c.text.toLowerCase().includes('enter combat')){
+        runCombat().then(resultScene=>{
+          // after combat choose next
+          renderScene(resultScene);
+        });
+      } else {
+        renderScene(c.next);
+      }
+      updateSidebar();
+      saveAuto(); // auto-save after each choice
+      log(state.gamelog || `Chose: ${c.text}`);
+    };
+    choices.appendChild(btn);
+  });
+
+  container.appendChild(choices);
+
+  updateSidebar();
+}
+
+// --- Simple combat system (small, deterministic enough for demo)
+// returns Promise resolving to next scene id (we keep after_battle)
+function runCombat(){
+  return new Promise((resolve)=>{
+    // enemy strength depends on followers and honor
+    const enemy = { name:'Yellow Turban Bandits', hp: 6 + Math.floor(Math.random()*4) };
+    const player = { name:'Liu Bei', hp: state.hp + Math.floor(state.followers*2/1.2), atk: 2 + Math.floor(state.lv/1.5) };
+    log(`Combat start: ${player.name} vs ${enemy.name}`);
+    // simulate turns
+    const interval = setInterval(()=>{
+      // player attacks
+      const pAtk = player.atk + Math.floor(Math.random()*3);
+      enemy.hp -= pAtk;
+      log(`You strike for ${pAtk}. Enemy HP ${Math.max(0,enemy.hp)}.`);
+
+      if(enemy.hp <= 0){
+        clearInterval(interval);
+        state.honor = percent(state.honor + 8);
+        state.lv += 1;
+        state.hp = Math.max(1, state.hp - Math.floor(Math.random()*2)); // slight wear
+        state.gamelog = 'Victory in the skirmish!';
+        log('Victory! You saved villagers.');
+        resolve('after_battle');
+        return;
+      }
+
+      // enemy attacks
+      const eAtk = 1 + Math.floor(Math.random()*3) + (state.followers > 2 ? 0 : 1);
+      player.hp -= eAtk;
+      log(`Enemy hits for ${eAtk}. Your party feels the blow.`);
+      if(player.hp <= 0){
+        clearInterval(interval);
+        // loss path: reduce honor, change next scene to after_battle but with penalty
+        state.honor = Math.max(0, state.honor - 10);
+        state.hp = 1;
+        state.gamelog = 'Defeat, but some survived.';
+        log('You are forced to retreat.');
+        resolve('after_battle');
+        return;
+      }
+      // update time to avoid infinite loop
+    }, 700);
+  });
+}
+
+// --- Sidebar update
+function updateSidebar(){
+  document.getElementById('lv').textContent = state.lv;
+  document.getElementById('hp').textContent = state.hp;
+  document.getElementById('honor').textContent = state.honor;
+  document.getElementById('followers').textContent = state.followers;
+  document.getElementById('honorBar').style.width = (state.honor)+'%';
+}
+
+// --- Persistence
+function saveAuto(){
+  try {
+    localStorage.setItem('liu_bei_save', JSON.stringify(state));
+    // small visual confirmation in console
+    console.log('Game saved');
+  } catch(e){ console.warn('Save failed', e) }
+}
+function loadGame(){
+  const saved = localStorage.getItem('liu_bei_save');
+  if(saved){
+    try{
+      const data = JSON.parse(saved);
+      Object.assign(state, data);
+      renderScene(state.sceneId);
+      log('Game loaded from save.');
+    }catch(e){ console.warn(e) }
+  } else {
+    alert('No saved game found.');
+  }
+}
+
+// UI buttons
+document.getElementById('saveBtn').onclick = ()=>{ saveAuto(); alert('Saved') };
+document.getElementById('loadBtn').onclick = ()=>{ loadGame(); };
+document.getElementById('restartBtn').onclick = ()=>{ if(confirm('Restart the story?')){ resetState(state); renderScene('intro'); } };
+
+// init
+resetState(state);
+renderScene('intro');
+updateSidebar();
+log('Game started. Make choices to progress.');
+
+// Expose state for debugging (remove in production)
+window._GAME = { state, scenes, renderScene, saveAuto, loadGame };
+
+</script>
+</body>
+</html>
