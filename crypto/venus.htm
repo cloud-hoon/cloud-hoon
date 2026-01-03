@@ -1,134 +1,124 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8" />
-  <title>Venus Liquidation</title>
+  <meta charset="utf-8">
+  <title>Venus Liquidation - Coinbase Wallet</title>
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@coinbase/wallet-sdk@3.3.2/dist/CoinbaseWalletSDK.umd.min.js"></script>
 </head>
-<body style="font-family: monospace; padding: 20px;">
+<body style="font-family: monospace; padding:20px;">
 
-<h2>Venus Liquidation Tool v3</h2>
+<h2>Venus Liquidation (Coinbase Wallet)</h2>
 
-<button onclick="connect()">1️⃣ Connect Wallet</button>
-<br><br>
+<!-- Input fields -->
+<label>vCRV (borrowed market):</label><br>
+<input id="vcrvInput" type="text" value="0x30aD10Bd5Be62CAb37863C2BfcC6E8fb4fD85BDa" style="width: 600px;"><br><br>
 
-<button onclick="approveCRV()">2️⃣ Approve CRV</button>
-<br><br>
+<label>vcrvUSD (collateral market):</label><br>
+<input id="vcrvUSDInput" type="text" value="0x2d499800239C4CD3012473Cb1EAE33562F0A6933" style="width: 600px;"><br><br>
 
-<button onclick="liquidate()">3️⃣ Liquidate Borrower
-</button>
-<input id='borrowed_ADDRESS' value= "0x30aD10Bd5Be62CAb37863C2BfcC6E8fb4fD85BDa">
+<label>Borrower address:</label><br>
+<input id="borrowerInput" type="text" value="0x15525dA6CD5Cf7c2aFab280477850ee9709464fD" style="width: 600px;"><br><br>
+
+<label>Repay amount (CRV):</label><br>
+<input id="repayInput" type="text" value="6.0" style="width: 100px;"><br><br>
+
+<!-- Buttons -->
+<button onclick="connectCW()">1️⃣ Connect Coinbase Wallet</button><br><br>
+<button onclick="approveCRV()">2️⃣ Approve CRV</button><br><br>
+<button onclick="liquidate()">3️⃣ Liquidate Borrower</button>
 
 <pre id="log"></pre>
 
 <script>
-/* ========== CONFIG (YOU MUST SET THESE) ========== */
-
-// ERC20 CRV token
-const CRV_ADDRESS = "0xYOUR_CRV_ADDRESS";
-
-// vCRV (borrowed market)
-const VCRV_ADDRESS = "0x30aD10Bd5Be62CAb37863C2BfcC6E8fb4fD85BDa";
-
-// vcrvUSD (collateral market)
-const VCRVUSD_ADDRESS = "0x2d499800239C4CD3012473Cb1EAE33562F0A6933";
-
-// Borrower address
-const BORROWER = "0x15525dA6CD5Cf7c2aFab280477850ee9709464fD";
-
-// Repay amount: 6 CRV
-const REPAY_AMOUNT = ethers.utils.parseUnits("6.0", 18);
-
-/* ========== ABIs (minimal) ========== */
-
-const ERC20_ABI = [
-  "function approve(address spender, uint256 amount) external returns (bool)",
-  "function allowance(address owner, address spender) external view returns (uint256)"
-];
-
-const VCRV_ABI = [
-  "function liquidateBorrow(address borrower, uint256 repayAmount, address vTokenCollateral) external"
-];
-
-/* ========== GLOBALS ========== */
-
+// ======= CONFIG =======
+// Removed hard-coded addresses
 let provider, signer;
 
-/* ========== HELPERS ========== */
+// ======= LOG HELPER =======
+function log(msg){ document.getElementById("log").textContent += msg + "\n"; }
 
-function log(msg) {
-  document.getElementById("log").textContent += msg + "\n";
-}
+// ======= CONNECT COINBASE WALLET =======
+async function connectCW(){
+  const coinbaseWallet = new CoinbaseWalletSDK.CoinbaseWalletSDK({
+    appName: "Venus Liquidation Tool",
+    darkMode: false
+  });
 
-/* ========== ACTIONS ========== */
+  const rpcUrl = "https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID"; // change chain if needed
+  const chainId = 1;
 
-async function connect() {
-  if (!window.ethereum) {
-    alert("MetaMask required");
-    return;
-  }
+  const cwProvider = coinbaseWallet.makeWeb3Provider(rpcUrl, chainId);
 
-  provider = new ethers.providers.Web3Provider(window.ethereum);
+  provider = new ethers.providers.Web3Provider(cwProvider);
   await provider.send("eth_requestAccounts", []);
   signer = provider.getSigner();
 
   const addr = await signer.getAddress();
-  log("Connected: " + addr);
+  log("✅ Connected Coinbase Wallet: " + addr);
 }
 
-async function approveCRV() {
-  if (!signer) return alert("Connect wallet first");
+// ======= APPROVE =======
+async function approveCRV(){
+  if(!signer) return alert("Connect wallet first");
 
-  const crv = new ethers.Contract(CRV_ADDRESS, ERC20_ABI, signer);
+  const vcrvAddress = document.getElementById("vcrvInput").value.trim();
+  const repayValue = document.getElementById("repayInput").value.trim();
+  const repayAmount = ethers.utils.parseUnits(repayValue, 18);
 
-  log("Sending approve...");
-  const tx = await crv.approve(VCRV_ADDRESS, REPAY_AMOUNT);
-  log("Approve tx sent: " + tx.hash);
+  // We need the CRV token address (replace if different network)
+  const CRV_ADDRESS = "0xYOUR_CRV";
 
-  await tx.wait();
-  log("Approve confirmed");
+  const crv = new ethers.Contract(CRV_ADDRESS, [
+    "function approve(address spender, uint256 amount) external returns (bool)"
+  ], signer);
+
+  try{
+    log("Approving CRV...");
+    const tx = await crv.approve(vcrvAddress, repayAmount);
+    log("Tx sent: " + tx.hash);
+    await tx.wait();
+    log("✅ Approve confirmed");
+  }catch(err){ handleError(err); }
 }
-async function liquidate() {
-  if (!signer) return alert("Connect wallet first");
 
-  const vcrv = new ethers.Contract(VCRV_ADDRESS, VCRV_ABI, signer);
+// ======= LIQUIDATE =======
+async function liquidate(){
+  if(!signer) return alert("Connect wallet first");
 
-  try {
+  const vcrvAddress = document.getElementById("vcrvInput").value.trim();
+  const vcrvUSDAddress = document.getElementById("vcrvUSDInput").value.trim();
+  const borrowerAddress = document.getElementById("borrowerInput").value.trim();
+  const repayValue = document.getElementById("repayInput").value.trim();
+  const repayAmount = ethers.utils.parseUnits(repayValue, 18);
+
+  const vcrv = new ethers.Contract(vcrvAddress, [
+    "function liquidateBorrow(address borrower, uint256 repayAmount, address vTokenCollateral) external"
+  ], signer);
+
+  try{
     log("Sending liquidation tx...");
-
-    const tx = await vcrv.liquidateBorrow(
-      BORROWER,
-      REPAY_AMOUNT,
-      VCRVUSD_ADDRESS
-    );
-
+    const tx = await vcrv.liquidateBorrow(borrowerAddress, repayAmount, vcrvUSDAddress);
     log("Tx submitted: " + tx.hash);
-
     const receipt = await tx.wait();
-    if (receipt.status === 1) {
-      log("✅ Liquidation confirmed");
-    } else {
-      log("❌ Tx mined but reverted");
-    }
+    if(receipt.status === 1) log("✅ Liquidation confirmed");
+    else log("❌ Tx mined but reverted");
+  }catch(err){ handleError(err); }
+}
 
-  } catch (err) {
-    // Print everything
-    log("❌ Error: " + err.message);
-    log("❌ Stack: " + err.stack);
+// ======= ERROR HANDLER =======
+function handleError(err){
+  console.error(err);
+  log("❌ Error: " + (err.message || err));
+  log("❌ Stack: " + (err.stack || ""));
 
-    // Nested error (common in ethers.js)
-    if (err.error) {
-      log("❌ Nested error: " + (err.error.message || JSON.stringify(err.error)));
-      log("❌ Nested stack: " + (err.error.stack || ""));
-    }
-
-    // If data exists (from RPC / revert reason)
-    if (err.data) {
-      log("❌ RPC data: " + JSON.stringify(err.data));
-    }
-
-    console.error(err); // also print to browser console
+  if(err.error){
+    log("❌ Nested error: " + (err.error.message || JSON.stringify(err.error)));
+    log("❌ Nested stack: " + (err.error.stack || ""));
   }
+
+  if(err.data) log("❌ RPC data: " + JSON.stringify(err.data));
+  log("❌ See console for full details");
 }
 </script>
 
