@@ -7,7 +7,7 @@
 </head>
 <body style="font-family: monospace; padding: 20px;">
 
-<h2>Venus Liquidation Tool v2</h2>
+<h2>Venus Liquidation Tool</h2>
 
 <button onclick="connect()">1️⃣ Connect Wallet</button>
 <br><br>
@@ -15,7 +15,9 @@
 <button onclick="approveCRV()">2️⃣ Approve CRV</button>
 <br><br>
 
-<button onclick="liquidate()">3️⃣ Liquidate Borrower</button>
+<button onclick="liquidate()">3️⃣ Liquidate Borrower
+</button>
+<input id='borrowed_ADDRESS' value= "0x30aD10Bd5Be62CAb37863C2BfcC6E8fb4fD85BDa">
 
 <pre id="log"></pre>
 
@@ -86,7 +88,6 @@ async function approveCRV() {
   await tx.wait();
   log("Approve confirmed");
 }
-
 async function liquidate() {
   if (!signer) return alert("Connect wallet first");
 
@@ -104,7 +105,6 @@ async function liquidate() {
     log("Tx submitted: " + tx.hash);
 
     const receipt = await tx.wait();
-
     if (receipt.status === 1) {
       log("✅ Liquidation confirmed");
     } else {
@@ -112,38 +112,23 @@ async function liquidate() {
     }
 
   } catch (err) {
-    handleError(err);
-  }
-}
-
-function handleError(err) {
-  console.error(err);
-
-  // User rejected tx
-  if (err.code === 4001) {
-    log("❌ User rejected transaction");
-    return;
-  }
-
-  // Ethers v5 nested error
-  if (err.error && err.error.message) {
-    log("❌ Error: " + err.error.message);
-    return;
-  }
-
-  // RPC revert reason
-  if (err.data && err.data.message) {
-    log("❌ Revert: " + err.data.message);
-    return;
-  }
-
-  // Generic
-  if (err.message) {
+    // Print everything
     log("❌ Error: " + err.message);
-    return;
-  }
+    log("❌ Stack: " + err.stack);
 
-  log("❌ Unknown error (check console)");
+    // Nested error (common in ethers.js)
+    if (err.error) {
+      log("❌ Nested error: " + (err.error.message || JSON.stringify(err.error)));
+      log("❌ Nested stack: " + (err.error.stack || ""));
+    }
+
+    // If data exists (from RPC / revert reason)
+    if (err.data) {
+      log("❌ RPC data: " + JSON.stringify(err.data));
+    }
+
+    console.error(err); // also print to browser console
+  }
 }
 </script>
 
