@@ -92,16 +92,58 @@ async function liquidate() {
 
   const vcrv = new ethers.Contract(VCRV_ADDRESS, VCRV_ABI, signer);
 
-  log("Sending liquidation tx...");
-  const tx = await vcrv.liquidateBorrow(
-    BORROWER,
-    REPAY_AMOUNT,
-    VCRVUSD_ADDRESS
-  );
+  try {
+    log("Sending liquidation tx...");
 
-  log("Liquidation tx sent: " + tx.hash);
-  await tx.wait();
-  log("Liquidation confirmed");
+    const tx = await vcrv.liquidateBorrow(
+      BORROWER,
+      REPAY_AMOUNT,
+      VCRVUSD_ADDRESS
+    );
+
+    log("Tx submitted: " + tx.hash);
+
+    const receipt = await tx.wait();
+
+    if (receipt.status === 1) {
+      log("✅ Liquidation confirmed");
+    } else {
+      log("❌ Tx mined but reverted");
+    }
+
+  } catch (err) {
+    handleError(err);
+  }
+}
+
+function handleError(err) {
+  console.error(err);
+
+  // User rejected tx
+  if (err.code === 4001) {
+    log("❌ User rejected transaction");
+    return;
+  }
+
+  // Ethers v5 nested error
+  if (err.error && err.error.message) {
+    log("❌ Error: " + err.error.message);
+    return;
+  }
+
+  // RPC revert reason
+  if (err.data && err.data.message) {
+    log("❌ Revert: " + err.data.message);
+    return;
+  }
+
+  // Generic
+  if (err.message) {
+    log("❌ Error: " + err.message);
+    return;
+  }
+
+  log("❌ Unknown error (check console)");
 }
 </script>
 
