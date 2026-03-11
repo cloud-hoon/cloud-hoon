@@ -18,17 +18,18 @@
 <body>
   <h2>Upload or Drop Excel File (A or A + C) [https://chatgpt.com/c/67f4fd94-e108-8000-a3ae-8e7d2192b01e]. Localstorage for save might be wiped without warning</h2>
 <!--  <input type="file" id="upload" accept=".xlsx, .xls" multiple /> -->
-  <p id="processing"></p>
+  <input type="button" onclick+createFile value+"CreateFileInput"><p id="processing"></p>
   <div id="issues"></div>
   <div id="formC"></div>
   <div id="platformCheck"></div>
   <div id="output"></div>
 <script>
+  function createFile(){
   file=document.createElement("input");
-  file.id="upload";file.multiple="multiple";
+  file.type="file";file.id="upload";file.multiple="multiple";
   document.body.appendChild(file);
   document.getElementById('upload').addEventListener('change', handleMultipleFiles);
-   
+  }
 </script>
   <script>
   
