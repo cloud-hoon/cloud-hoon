@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Excel Comparison Tool</title>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    table, th, td { border: 1px solid #ccc; border-collapse: collapse; padding: 4px; }
+    th { background: #eee; }
+    .changed { background-color: #ffcccc; }
+    body.dragover { background-color: #f0f8ff; }
+    #issues, #platformCheck, #formC, #output { margin-top: 20px; }
+    #issues h3, #platformCheck h3, #output h3, #formC h3 { color: #333; }
+    #issues ul { color: red; font-weight: bold; }
+    #processing { font-weight: bold; color: green; }
+  </style>
+</head>
+<body>
+  <h2>Upload or Drop Excel File (A or A + C) [https://chatgpt.com/c/67f4fd94-e108-8000-a3ae-8e7d2192b01e]. Localstorage for save might be wiped without warning</h2>
+  <input type="file" id="upload" accept=".xlsx, .xls" multiple />
+  <p id="processing"></p>
+  <div id="issues"></div>
+  <div id="formC"></div>
+  <div id="platformCheck"></div>
+  <div id="output"></div>
+
+  <script>
+    document.getElementById('upload').addEventListener('change', handleMultipleFiles);
+
+    window.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      document.body.classList.add('dragover');
+    });
+
+    window.addEventListener('dragleave', function(e) {
+      e.preventDefault();
+      document.body.classList.remove('dragover');
+    });
+
+    window.addEventListener('drop', function(e) {
+      e.preventDefault();
+      document.body.classList.remove('dragover');
+      if (e.dataTransfer.files.length > 0) {
+        handleMultipleFiles({ target: { files: e.dataTransfer.files } });
+      }
+    });
+
+    let globalHeaders = [];
+    let oldSerialsFromA = new Set();
+
+    function handleMultipleFiles(e) {
+      const files = Array.from(e.target.files);
+      const fileA = files.find(f => f.name.toUpperCase().endsWith('A.XLSX') || f.name.toUpperCase().endsWith('A.XLS'));
+      const fileC = files.find(f => f.name.toUpperCase().endsWith('C.XLSX') || f.name.toUpperCase().endsWith('C.XLS'));
+
+      if (!fileA) {
+        alert("Please upload File A or both File A and C.");
+        return;
+      }
+
+      document.getElementById('processing').textContent = fileC ? 'Processing File A first' : 'Processing File A...';
+
+      processFileA(fileA, () => {
+        if (fileC) {
+          document.getElementById('processing').textContent = 'Processing C now';
+          processFileC(fileC, () => {
+            document.getElementById('processing').textContent = '';
+          });
+        } else {
+          document.getElementById('processing').textContent = '';
+        }
+      });
+    }
+
+    function processFileA(file, callback) {
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        const data = new Uint8Array(evt.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+        let targetRowIndex = json.findIndex(row => row.includes("Machine List - After Change"));
+        if (targetRowIndex === -1) {
+          alert("Cannot find 'Machine List - After Change'");
+          return;
+        }
+
+        let oldValueRowIndex = json.findIndex(row => row.includes("Machine List - Before Change"));
+        if (oldValueRowIndex === -1) {
+          alert("Cannot find 'Machine List - Before Change'");
+          return;
+        }
+
+        let maxRowNum = 0;
+        for (let i = targetRowIndex + 4; i < json.length; i++) {
+          const num = parseInt(json[i]?.[0]);
+          if (!isNaN(num)) {
+            maxRowNum = Math.max(maxRowNum, num);
+          }
+        }
+        const noOfRows = maxRowNum;
+        const output = document.getElementById('output');
+        const issues = document.getElementById('issues');
+        const platformCheck = document.getElementById('platformCheck');
+        const formC = document.getElementById('formC');
+
+        output.innerHTML = `<h3>Output (Changes in Red)</h3>`;
+        issues.innerHTML = `<h3>Issues Detected</h3>`;
+        platformCheck.innerHTML = `<h3>Game Platform Check</h3><p>Click on Game ID to search. Refer to <a href="https://gccprod.sharepoint.com/:f:/r/sites/GRA-GTD/Shared%20Documents/Restricted/15%20QMS/Game%20Test%20Reports?csf=1&web=1&e=yXWwHv" target="_blank">Game Approval Reports</a></p>`;
+        formC.innerHTML = "";
+
+        globalHeaders = json[targetRowIndex + 3] || [];
+        let table = "<table><thead><tr>";
+        for (let col = 0; col < 21; col++) {
+          table += `<th>${globalHeaders[col] || 'Col ' + (col + 1)}</th>`;
+        }
+        table += "</tr></thead><tbody>";
+
+        const serialMismatch = [];
+        const platformMap = new Map();
+        const platformCols = [4, 8, 9, 10, 17, 18, 19, 20];
+
+        for (let currRow = 0; currRow < noOfRows; currRow++) {
+          const newRow = currRow + targetRowIndex + 4;
+          const oldRow = currRow + oldValueRowIndex + 4;
+
+          const newSerial = json[newRow]?.[5] || "";
+          const oldSerial = json[oldRow]?.[5] || "";
+
+          if (oldSerial) oldSerialsFromA.add(oldSerial.toString().trim());
+          if (newSerial !== oldSerial) {
+            serialMismatch.push(`Row ${newRow + 1}: New SN = '${newSerial}' vs Old SN = '${oldSerial}'`);
+          }
+// 4 Nov 2025 - ignore those moving to store (without loc)
+if(json[newRow]?.[3]){
+          let key = platformCols.map(i => json[newRow]?.[i] || '').join('|');
+          if (key.trim()) platformMap.set(key, platformCols.map(i => json[newRow]?.[i] || ''));
+}
+          table += "<tr>";
+          for (let col = 0; col < 21; col++) {
+            const newVal = json[newRow]?.[col] || "";
+            const oldVal = json[oldRow]?.[col] || "";
+            const changed = newVal !== oldVal;
+            const displayVal = changed && oldVal ? `${newVal} <span style="color: gray; font-size: 0.85em;">(was: ${oldVal})</span>` : newVal;
+            table += `<td class="${changed ? "changed" : ""}">${displayVal}</td>`;
+          }
+          table += "</tr>";
+        }
+
+        table += "</tbody></table>";
+// add link change summary
+        output.innerHTML += genLinkChanges(json, noOfRows, oldValueRowIndex, targetRowIndex) + table;
+
+        issues.innerHTML += serialMismatch.length > 0
+          ? '<ul>' + serialMismatch.map(item => `<li>${item}</li>`).join('') + '</ul>'
+          : '<p>No serial number issues detected.</p>';
+
+        if (platformMap.size > 0) {
+          const headerNames = platformCols.map(i => globalHeaders[i] || `Col ${i + 1}`);
+          let pTable = "<table id='pTable'><thead><tr>" + headerNames.map(h => `<th>${h}</th>`).join('') + "</tr></thead><tbody>";
+          platformMap.forEach(vals => {
+            pTable += "<tr>" + vals.map(v => `<td>${v}</td>`).join('') + "</tr>";
+          });
+
+          pTable += "</tbody></table>";
+          platformCheck.innerHTML += pTable;
+// 4 Nov 2025 add hyperlink to search game version for
+    for(i of document.querySelector('#pTable').querySelectorAll("td:nth-child(8n-5)")){
+searchStr=i.innerText+"/"+i.nextSibling.nextSibling.nextSibling.innerText;
+i.innerHTML="<a href='https://gccprod.sharepoint.com/sites/GRA-GTD/Shared%20Documents/Forms/AllItems.aspx?csf=1&web=1&e=yXWwHv&CID=8a8ef6aa%2D5d95%2D4e4d%2D9716%2D6bf76d7f1a71&FolderCTID=0x01200036D96607B0419C41814D2E98EA337E2E&id=%2Fsites%2FGRA%2DGTD%2FShared%20Documents%2FRestricted%2F15%20QMS%2FGame%20Test%20Reports&view=7&q="+encodeURI(i.innerHTML)+"' target=_blank>"+i.innerHTML+"</a>"+checkSearchStr(searchStr);
+}
+
+        } else {
+          platformCheck.innerHTML += '<p>No Game Platform data found.</p>';
+        }
+
+
+     callback();
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+// 6 Jan 2026 - Cache checked into localstorage
+// Check if searchStr is in localStorage
+function checkSearchStr(searchStr) {
+  const storedValue = localStorage.getItem(searchStr);
+ 
+  const messageContainer = document.getElementById('searchStatus');
+ 
+  if (storedValue) {
+    return `<span>[Found]</span>`;  // If found in localStorage
+  } else {
+    return  `<button onclick="saveSearchStr('${searchStr}');this.innerHTML='Saved'">Save</button>`;  // If not found, show [Save] button
+  }
+}
+
+// Save the searchStr to localStorage
+function saveSearchStr(searchStr) {
+  localStorage.setItem(searchStr, searchStr);  // Save it to localStorage
+ 
+}
+
+
+// === Column 12 Change Summary ===
+function genLinkChanges(sheetData, noOfRows, oldValueRowIndex, targetRowIndex){
+const col12Changes = {};
+for (let currRow = 0; currRow < noOfRows; currRow++) {
+  const oldRow = oldValueRowIndex + 4 + currRow;
+  const newRow = targetRowIndex + 4 + currRow;
+
+  const oldVal = sheetData[oldRow]?.[12];
+  const newVal = sheetData[newRow]?.[12];
+
+  if (oldVal !== newVal) {
+    if (oldVal) col12Changes[oldVal] = (col12Changes[oldVal] || 0) - 1;
+    if (newVal) col12Changes[newVal] = (col12Changes[newVal] || 0) + 1;
+  }
+}
+
+let changeSummary = "";
+if (Object.keys(col12Changes).length > 0) {
+  changeSummary = `<h4>Link Changes</h4><ul>`;
+  for (const [val, count] of Object.entries(col12Changes)) {
+    const action = count > 0 ? "added" : "removed";
+    changeSummary += `<li>${val} – ${Math.abs(count)} EGM${Math.abs(count) > 1 ? "s" : ""} ${action}</li>`;
+  }
+  changeSummary += `</ul>`;
+} else {
+  changeSummary = `<p>No changes detected in column 12.</p>`;
+}
+return changeSummary;
+}
+function findMatchValue(json, label) {
+  for (let row of json) {
+    for (let i = 0; i < row.length - 1; i++) {
+      if (typeof row[i] === 'string' && row[i].trim() === label) {
+        return parseFloat(row[i + 1]) || null;  // <-- gets the value from next COLUMN
+      }
+    }
+  }
+  return null;
+}
+
+    function processFileC(file, callback) {
+  const reader = new FileReader();
+  reader.onload = (evt) => {
+    const data = new Uint8Array(evt.target.result);
+    const workbook = XLSX.read(data, { type: 'array' });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+    let totalI = 0;
+    let totalJ = 0;
+    let lowDeploymentSerials = [];
+    let missingSerials = [];
+
+    for (let i = 2; i < json.length; i++) {
+      const row = json[i];
+      const serial = (row?.[1] || "").toString().trim();       // Column B
+      const deploymentDays = parseFloat(row[7]) || 0;          // Column H
+      const valI = parseFloat(row[8]) || 0;                    // Column I
+      const valJ = parseFloat(row[9]) || 0;                    // Column J
+
+      if (!row || (valI === 0 && valJ === 0)) break;
+
+      totalI += valI;
+      totalJ += valJ;
+
+      if (!oldSerialsFromA.has(serial)) {
+        missingSerials.push(serial);
+      } else if (deploymentDays < 90) {
+        lowDeploymentSerials.push({ serial, deploymentDays });
+      }
+    }
+
+    const hold = totalJ > 0 ? (1 - totalI / totalJ) * 100 : 0;
+
+    let matchPayout = findMatchValue(json, "Gross Total Payout");
+    let matchWagered = findMatchValue(json, "Gross Total Wagered");
+    let matchHold = findMatchValue(json, "Gross Actual Hold %");
+
+    let diffText = "";
+    if (matchPayout !== null && Math.abs(matchPayout - totalI) > 0.01) {
+      diffText += `<br/>Payout Difference: ${(totalI - matchPayout).toFixed(2)}`;
+    }
+    if (matchWagered !== null && Math.abs(matchWagered - totalJ) > 0.01) {
+      diffText += `<br/>Wagered Difference: ${(totalJ - matchWagered).toFixed(2)}`;
+    }
+    if (matchHold !== null && Math.abs(matchHold - hold) > 0.01) {
+      diffText += `<br/>Hold % Difference: ${(hold - matchHold).toFixed(2)}%`;
+    }
+
+    const formC = document.getElementById('formC');
+    formC.innerHTML = `<h3>Form C Summary</h3>
+      <p>Total I: ${totalI.toFixed(2)}<br/>
+      Total J: ${totalJ.toFixed(2)}<br/>
+      Hold %: ${hold.toFixed(2)}%${diffText}</p>`;
+
+    if (missingSerials.length > 0) {
+      formC.innerHTML += `<p style="color:red;">Missing serials in A: ${missingSerials.join(', ')}</p>`;
+    } else {
+      formC.innerHTML += `<p>All serials in C exist in A.</p>`;
+    }
+
+    if (lowDeploymentSerials.length > 0) {
+      formC.innerHTML += `<p style="color:red;">Serials with Deployment Days (col H) below 90:<br/>` +
+        lowDeploymentSerials.map(r => `${r.serial}: ${r.deploymentDays.toFixed(0)} days`).join('<br/>') + `</p>`;
+    }
+
+    callback();
+  };
+  reader.readAsArrayBuffer(file);
+}
+  </script>
+</body>
+</html>
