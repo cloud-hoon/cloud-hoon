@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>🤖 Robot Coding Adventure</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      background: #eef7ff;
+    }
+
+    h1 { font-size: 22px; }
+
+    #game {
+      width: 320px;
+      height: 320px;
+      margin: 10px auto;
+      position: relative;
+      border: 3px solid #333;
+      background: white;
+    }
+
+    .robot, .target, .obstacle {
+      width: 40px;
+      height: 40px;
+      position: absolute;
+    }
+
+    .robot { background: green; border-radius: 8px; }
+    .target { background: red; border-radius: 50%; }
+    .obstacle { background: black; }
+
+    button {
+      margin: 5px;
+      padding: 10px;
+      font-size: 18px;
+      border-radius: 8px;
+      border: none;
+      background: #2196F3;
+      color: white;
+    }
+
+    #plan, #message, #stats {
+      margin: 8px;
+      font-size: 16px;
+      min-height: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>🤖 Robot Coding Adventure</h1>
+
+<div id="game"></div>
+
+<div>
+  <button onclick="add('up')">⬆️</button>
+  <button onclick="add('down')">⬇️</button>
+  <button onclick="add('left')">⬅️</button>
+  <button onclick="add('right')">➡️</button>
+</div>
+
+<div id="plan">Plan:</div>
+
+<div>
+  <button onclick="run()">▶️ Run</button>
+  <button onclick="clearPlan()">🧹 Clear</button>
+</div>
+
+<div id="stats"></div>
+<div id="message"></div>
+
+<script>
+let game = document.getElementById("game");
+let robot, target, obstacles = [];
+
+let plan = [];
+let tries = 0;
+let maxMoves = 12;
+let startX = 0;
+let startY = 0;
+function speak(text) {
+  let msg = new SpeechSynthesisUtterance(text);
+  msg.rate = 8;
+  msg.pitch = 1.2;
+  speechSynthesis.speak(msg);
+}
+
+function rand() {
+  return Math.floor(Math.random() * 7) * 40;
+}
+
+function init() {
+  game.innerHTML = "";
+  obstacles = [];
+  plan = [];
+
+  // 🎲 Generate START position
+startX = rand();
+ startY = rand();
+
+  // 🎯 Generate TARGET (must not be same as start)
+  let tx, ty;
+  do {
+    tx = rand();
+    ty = rand();
+  } while (tx === startX && ty === startY);
+
+  // 🤖 Create robot at random start
+  robot = create("robot", startX, startY);
+
+  // 🔴 Create target
+  target = create("target", tx, ty);
+
+  // 🧱 Generate obstacles (avoid start + target)
+  let obstacleCount = 4;
+  let placed = 0;
+
+  while (placed < obstacleCount) {
+    let ox = rand();
+    let oy = rand();
+
+    // ❌ Avoid overlapping start or target
+    if (
+      (ox === startX && oy === startY) ||
+      (ox === tx && oy === ty)
+    ) continue;
+
+    // ❌ Avoid duplicate obstacles
+    let exists = obstacles.some(o => o.x === ox && o.y === oy);
+    if (exists) continue;
+
+    obstacles.push({ x: ox, y: oy });
+    create("obstacle", ox, oy);
+    placed++;
+  }
+
+  update();
+  message("Plan your moves! 🧠");
+}
+function create(cls, x, y) {
+  let el = document.createElement("div");
+  el.className = cls;
+  el.style.left = x + "px";
+  el.style.top = y + "px";
+  game.appendChild(el);
+  return el;
+}
+
+function add(dir) {
+  if (plan.length >= maxMoves) {
+    message("Too many moves! Try shorter plan 😊");
+    speak("Too many moves");
+    return;
+  }
+  plan.push(dir);
+  update();
+}
+
+function clearPlan() {
+  plan = [];
+  update();
+}
+
+function update() {
+  document.getElementById("plan").innerHTML =
+    "Plan: " + plan.join(" → ");
+
+  document.getElementById("stats").innerHTML =
+    "Tries: " + tries + " | Moves: " + plan.length + "/" + maxMoves;
+}
+
+function message(msg) {
+  document.getElementById("message").innerHTML = msg;
+}
+
+function run() {
+  tries++;
+  update();
+
+let x = startX;
+let y = startY;
+let i = 0;
+
+  function step() {
+    if (i >= plan.length) return end(x, y);
+
+    let move = plan[i];
+    speak(move);
+
+    if (move === "up") y -= 40;
+    if (move === "down") y += 40;
+    if (move === "left") x -= 40;
+    if (move === "right") x += 40;
+
+    robot.style.left = x + "px";
+    robot.style.top = y + "px";
+
+    if (x < 0 || y < 0 || x > 280 || y > 280)
+      return fail("Hit wall! 💥");
+
+    for (let o of obstacles)
+      if (o.x === x && o.y === y)
+        return fail("Oops obstacle! 🚧");
+
+    i++;
+    setTimeout(step, 400);
+  }
+
+  step();
+}
+
+function end(x, y) {
+  let tx = parseInt(target.style.left);
+  let ty = parseInt(target.style.top);
+
+  if (x === tx && y === ty) {
+    let stars = plan.length <= 6 ? "⭐⭐⭐" :
+                plan.length <= 9 ? "⭐⭐" : "⭐";
+
+    message("🎉 Great job! " + stars + " Next level starting...");
+    speak("Great job! Get ready for the next level!");
+
+    // 🎯 Auto next level after short delay
+    setTimeout(() => {
+      init();       // generate new random level
+    }, 1500);
+
+  } else {
+    fail("Not there yet!");
+  }
+}
+
+function fail(msg) {
+  message(msg);
+  speak(msg);
+
+  setTimeout(() => {
+    robot.style.left = startX + "px";
+    robot.style.top = startY + "px";
+  }, 800);
+}
+
+init();
+</script>
+
+</body>
+</html>
